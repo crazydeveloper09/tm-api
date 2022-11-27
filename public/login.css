@@ -1,0 +1,103 @@
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: #28a745;
+}
+#info {
+  background: #28a745;
+  height: 100vh;
+  color: white;
+  
+}
+#form {
+  background:#ece9e9;
+  height: 100vh;
+}
+
+a {
+  font-size: 20px;
+  color:  #1a1a1a;
+}
+
+::-webkit-scrollbar { 
+  width: 0px!important;
+} 
+
+.form-control:focus,
+.form-select:focus {
+    border: 2px solid #28a745;
+    box-shadow: none;
+}
+
+
+#form .login {
+  font-size: 45px;
+  font-weight: 700;
+  color:#28a745;
+}
+
+#form .username {
+  font-size: 18px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.button {
+  width: 100%;
+  margin-bottom: 15px;
+  font-weight: 700;
+  
+}
+
+.btn-golden {
+  background: #f6b26b;
+  border-color: #f6b26b;
+}
+
+.btn-green {
+  background: #28a745;
+  border-color: #28a745;
+}
+
+@media (max-width: 992px) {
+  #info {
+      display: none;
+  }
+  #form1 {
+      margin: 4%;
+  }
+  body {
+    margin: 0;
+    background: #dbd9d9;
+  }
+  .container-full {
+    margin: 0;
+  }
+}
+
+#description_r {
+  color: #c9c7c7;
+  font-size:18px;
+}
+
+
+.description {
+  color: black;
+  font-size: 20px;
+  margin-top: 10px;
+  font-weight: normal;
+}
+
+ .title {
+  font-size: 35px;
+  color: #fb8200;
+  font-weight: 700;
+  
+}
+
+.title_r {
+  font-size: 45px;
+  color: #28a745;
+  font-weight: 700;
+  
+}

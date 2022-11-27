@@ -1,0 +1,28 @@
+<%- include("partials/header") %> 
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="text-center">
+                    Wolne tereny zboru <%= currentUser.username %>: <%= territories.length %>
+                </h1>
+            </div>
+        </div>
+        <%- include("partials/freeSearch") %>
+        <% if(territories.length===0){ %>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-12">
+                    <div class="alert alert-info text-center" role="alert">
+                        Nie ma na razie wolnych terenów
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="row">
+                <% territories.forEach((territory) => { %>
+                    <%- include("partials/territory", {territory: territory}) %>
+                <% }) %>
+            </div>
+        <% } %>
+        <script src="/manageFreeSearch.js"></script>
+
+<%- include("partials/footer") %>
