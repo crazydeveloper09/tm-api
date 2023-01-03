@@ -148,15 +148,18 @@
                                 Czy jest fizyczna karta terenu?
                                 
                             </label>
+                            <div class="d-none" id="physicalCard">
+                                <%= territory.isPhysicalCard %>
+                            </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="territory[isPhysicalCard]" value="true" checked="<%= territory.isPhysicalCard %>">
-                                <label class="form-check-label" for="flexRadioDisabled">
+                                <input class="form-check-input" type="radio" name="territory[isPhysicalCard]" value="true" id="physicalCardYes">
+                                <label class="form-check-label">
                                   Tak
                                 </label>
                               </div>
                               <div class="form-check">
-                                <input class="form-check-input" type="radio" name="territory[isPhysicalCard]" value="false" checked="<%= !territory.isPhysicalCard %>">
-                                <label class="form-check-label" for="flexRadioCheckedDisabled">
+                                <input class="form-check-input" type="radio" name="territory[isPhysicalCard]" value="false" id="physicalCardNo">
+                                <label class="form-check-label">
                                   Nie
                                 </label>
                               </div>
@@ -178,6 +181,14 @@
         document.getElementById("send").setAttribute("disabled", "disabled");
         document.getElementById("send").innerText = `Edytowanie...`;
     })
+
+
+    if(document.getElementById("physicalCard").innerText.trim() === 'true'){
+        document.getElementById("physicalCardYes").checked = true;
+    } else {
+        document.getElementById("physicalCardNo").checked = true;
+    }
+
     </script>    
 </body>
 </html>

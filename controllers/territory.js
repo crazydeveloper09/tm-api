@@ -42,7 +42,7 @@ export const renderListOfAvailableTerritories = (req, res, next) => {
     Territory
         .find({ $and: [{congregation: req.user._id}, {type: 'free'}]})
         .populate("preacher")
-        .sort({lastWorked: -1})
+        .sort({lastWorked: 1})
         .exec()
         .then((territories) => {
             res.render("index", {

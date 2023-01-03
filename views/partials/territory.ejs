@@ -36,7 +36,7 @@
                 
             
                 <p class="info">Ostatnio opracowane: <strong><%= territory.lastWorked %></strong></p>
-                <% if(typeof territory.preacher !== 'undefined'){ %>
+                <% if(territory?.preacher){ %>
                     <p class="info">Głosiciel: <strong><%= territory.preacher.name %></strong></p>
                     <p class="info">Pobrany: <strong><%= territory.taken %></strong></p>
                     <p class="info"><strong><%= territory.preacher.name %> ma ten teren
@@ -54,14 +54,19 @@
                 <% } else { %>
                     <p class="info"><strong>Teren oznaczony jako <span class="text-success">wolny</span></strong> </p>
                     <p class="info"><strong>Teren nie był opracowywany od 
-                            <% if(countDaysFromNow(territory.lastWorked) < 31){ %>
+                            <% if((countDaysFromNow(territory.lastWorked)) < 31){ %>
                                 <%= countDaysFromNow(territory.lastWorked) %> dni
-                            <% } else if(countDaysFromNow(territory.lastWorked) < 62){ %>
+                            <% } else if((countDaysFromNow(territory.lastWorked)) <= 62){ %>
                                 <span class="text-primary"><%= countDaysFromNow(territory.lastWorked) %></span> dni
-                            <% } else if(countDaysFromNow(territory.lastWorked) < 93){ %>
+                            <% } else if((countDaysFromNow(territory.lastWorked)) <= 93){ %>
+                                <span class="text-warning"><%= countDaysFromNow(territory.lastWorked) %></span> dni
+                            <% } else if((countDaysFromNow(territory.lastWorked)) <= 124){ %>
                                 <span class="text-orange" style="color: #fd7e14;"><%= countDaysFromNow(territory.lastWorked) %></span> dni
-                            <% } else if(countDaysFromNow(territory.lastWorked) >= 124){ %>
+                            <% } else if((countDaysFromNow(territory.lastWorked)) >= 124){ %>
                                 <span class="text-danger"><%= countDaysFromNow(territory.lastWorked) %></span> dni
+                                <br>
+                                <br>
+                                <span class="text-danger">Teren musi być ponownie opracowany</span>
                             <% } %>
                     </strong></p>
                 <% } %>
