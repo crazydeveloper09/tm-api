@@ -97,56 +97,56 @@
                         <h2 class="territory-section">Historia</h2>
                         <% territory.history.reverse().forEach((checkout) => { %>
                             <div class="col-lg-12">
-                                <h3 id="name"><%= checkout.date.toLocaleDateString() %></h3>
-                                <p class="info">Miejscowość: <strong><%= checkout.record.city %></strong></p>
-                                <p class="info">Rodzaj: <strong><%= checkout.record.kind %></strong></p>
+                                <h3 id="name"><%= checkout.date?.toLocaleDateString() %></h3>
+                                <p class="info">Miejscowość: <strong><%= checkout.record?.city %></strong></p>
+                                <p class="info">Rodzaj: <strong><%= checkout.record?.kind %></strong></p>
                                 <p class="info">Ulica: 
-                                    <strong><%= checkout.record.street %> 
-                                        <% if(typeof checkout.record.beginNumber !== 'undefined'){ %>
-                                            <%= checkout.record.beginNumber %> 
-                                                            <% if(typeof checkout.record.endNumber !== 'undefined'){ %>
-                                                                - <%= checkout.record.endNumber %>
+                                    <strong><%= checkout.record?.street %> 
+                                        <% if(typeof checkout.record?.beginNumber !== 'undefined'){ %>
+                                            <%= checkout.record?.beginNumber %> 
+                                                            <% if(typeof checkout.record?.endNumber !== 'undefined'){ %>
+                                                                - <%= checkout.record?.endNumber %>
                                                             <% } %>
                                                         <% } %>
                                                     </strong>
                                                 </p>
-                                                <% if(typeof checkout.record.description !== 'undefined' && checkout.record.description !== ''){ %>
-                                                    <p class="info">Opis: <strong><%= checkout.record.description %></strong></p>
+                                                <% if(typeof checkout.record?.description !== 'undefined' && checkout.record?.description !== ''){ %>
+                                                    <p class="info">Opis: <strong><%= checkout.record?.description %></strong></p>
                                                 <% } %>
                                                 
                                                 
-                                                <p class="info">Ostatnio opracowane: <strong><%= checkout.record.lastWorked %></strong></p>
+                                                <p class="info">Ostatnio opracowane: <strong><%= checkout.record?.lastWorked %></strong></p>
                                                 
-                                                <% if(typeof checkout.record.preacher !== 'undefined'){ %>
-                                                    <p class="info">Głosiciel: <strong><%= checkout.record.preacher.name %></strong></p>
-                                                    <p class="info">Pobrany: <strong><%= checkout.record.taken %></strong></p>
-                                                    <p class="info"><strong><%= checkout.record.preacher.name %> ma ten teren
-                                                        <% if(countDaysFromNow(checkout.record.taken) < 90){ %>
-                                                            <%= countDaysFromNow(checkout.record.taken) %> dni
-                                                        <% } else if(countDaysFromNow(checkout.record.taken) < 120){ %>
-                                                            <span class="text-primary"><%= countDaysFromNow(checkout.record.taken) %></span> dni
-                                                        <% } else if(countDaysFromNow(checkout.record.taken) >= 120){ %>
-                                                            <span class="text-danger"><%= countDaysFromNow(checkout.record.taken) %></span> dni
+                                                <% if(typeof checkout.preacher !== 'undefined'){ %>
+                                                    <p class="info">Głosiciel: <strong><%= checkout.preacher.name %></strong></p>
+                                                    <p class="info">Pobrany: <strong><%= checkout.record?.taken %></strong></p>
+                                                    <p class="info"><strong><%= checkout.preacher.name %> ma ten teren
+                                                        <% if(countDaysFromNow(checkout.record?.taken) < 90){ %>
+                                                            <%= countDaysFromNow(checkout.record?.taken) %> dni
+                                                        <% } else if(countDaysFromNow(checkout.record?.taken) < 120){ %>
+                                                            <span class="text-primary"><%= countDaysFromNow(checkout.record?.taken) %></span> dni
+                                                        <% } else if(countDaysFromNow(checkout.record?.taken) >= 120){ %>
+                                                            <span class="text-danger"><%= countDaysFromNow(checkout.record?.taken) %></span> dni
                                                             <br>
                                                             <br>
-                                                            <span class="text-danger"><strong>Przypomnij <%= checkout.record.preacher.name %> o oddaniu terenu</strong> </span>
+                                                            <span class="text-danger"><strong>Przypomnij <%= checkout.record?.preacher.name %> o oddaniu terenu</strong> </span>
                                                         <% } %>
                                                     </strong></p>
                                                 <% } else { %>
                                                     <p class="info"><strong>Teren oznaczony jako <span class="text-success">wolny</span></strong> </p>
                                                     <p class="info"><strong>Teren nie był opracowywany od 
-                                                            <% if(countDaysFromNow(checkout.record.lastWorked) < 31){ %>
-                                                                <%= countDaysFromNow(checkout.record.lastWorked) %> dni
-                                                            <% } else if(countDaysFromNow(checkout.record.lastWorked) < 62){ %>
-                                                                <span class="text-primary"><%= countDaysFromNow(checkout.record.lastWorked) %></span> dni
-                                                            <% } else if(countDaysFromNow(checkout.record.lastWorked) < 93){ %>
-                                                                <span class="text-orange" style="color: #fd7e14;"><%= countDaysFromNow(checkout.record.lastWorked) %></span> dni
-                                                            <% } else if(countDaysFromNow(checkout.record.lastWorked) >= 124){ %>
-                                                                <span class="text-danger"><%= countDaysFromNow(checkout.record.lastWorked) %></span> dni
+                                                            <% if(countDaysFromNow(checkout.record?.lastWorked) < 31){ %>
+                                                                <%= countDaysFromNow(checkout.record?.lastWorked) %> dni
+                                                            <% } else if(countDaysFromNow(checkout.record?.lastWorked) < 62){ %>
+                                                                <span class="text-primary"><%= countDaysFromNow(checkout.record?.lastWorked) %></span> dni
+                                                            <% } else if(countDaysFromNow(checkout.record?.lastWorked) < 93){ %>
+                                                                <span class="text-orange" style="color: #fd7e14;"><%= countDaysFromNow(checkout.record?.lastWorked) %></span> dni
+                                                            <% } else if(countDaysFromNow(checkout.record?.lastWorked) >= 124){ %>
+                                                                <span class="text-danger"><%= countDaysFromNow(checkout.record?.lastWorked) %></span> dni
                                                             <% } %>
                                                     </strong></p>
                                                 <% } %>
-                                                <% if(!checkout.record.isPhysicalCard){ %>
+                                                <% if(!checkout.record?.isPhysicalCard){ %>
                                                     <p class="info" style="color: #9999CC;">
                                                         <strong>
                                                             Teren nie posiada fizycznej karty

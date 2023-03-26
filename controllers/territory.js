@@ -297,13 +297,20 @@ export const createTerritory = (req, res, next) => {
 export const renderTerritoryHistory = (req, res, next) => {
     Territory
         .findById(req.params.territory_id)
-        .populate(["preacher", "history"])
+        .populate(["preacher", "history", {
+            path: "history",
+            populate: {
+                path: "preacher",
+                model: "Preacher"
+            }
+        }])
         .exec()
         .then((territory) => {
             Territory
                 .find({congregation: req.user._id})
                 .exec()
                 .then((territories) => {
+                    console.log(territory.history[territory.history.length - 1].preacher)
                     const currentIndex = territories.findIndex(t => t._id.toString() === territory._id.toString());
                     res.render("./territories/show", {
                         header: `Teren nr ${territory.number} | Territory Manager`,
@@ -343,16 +350,19 @@ export const renderTerritoryEditForm = (req, res, next) => {
 }
 
 export const editTerritory = (req, res, next) => {
-  
     Territory
         .findById(req.params.territory_id)
         .populate("preacher")
         .exec()
         .then((territory) => {
+            let record = territory;
+            console.log(record.preacher)
             Checkout
-                .create({ record: territory})
+                .create(record.preacher ? { record: record, preacher: record.preacher } : { record: record })
                 .then((createdCheckout) => {
                     territory.history.push(createdCheckout);
+                    
+                    
                     territory.city = req.body.territory.city;
                     territory.street = req.body.territory.street;
                     territory.number = req.body.territory.number;
