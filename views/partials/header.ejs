@@ -12,66 +12,54 @@
     
     <body>
         
-        
-        <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-success">
-        <div class="container">
-        <a href="/territories/available" class="navbar-brand"><i class="fas fa-map-marked-alt"></i> Territory Manager</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation" style="border: none">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-    
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto text-center">
-            <% if(typeof home !== 'undefined'){ %>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/territories/available">Home</a>
-                </li>
-            <% } else { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/territories/available">Home</a>
-                </li>
-            <% } %>
-           
-            <% if(typeof all !== 'undefined'){ %>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/territories">Tereny</a>
-                </li>
-            <% } else { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/territories">Tereny</a>
-                </li>
-            <% } %>
-        
+        <nav class="my_nav fixed-bottom">
+            <ul>
+                <% if(typeof home !== 'undefined'){ %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link my_active" href="/territories/available"><i class="fa-solid fa-house"></i> <br> Home</a>
+                    </li>
+                <% } else { %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link" href="/territories/available"><i class="fa-solid fa-house"></i> <br> Home</a>
+                    </li>
+                <% } %>
+               
+                <% if(typeof all !== 'undefined'){ %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link my_active" href="/territories"><i class="fas fa-map-marked-alt"></i> <br> Tereny</a>
+                    </li>
+                <% } else { %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link" href="/territories"><i class="fas fa-map-marked-alt"></i> <br> Tereny</a>
+                    </li>
+                <% } %>
             
-            <% if(typeof pre !== 'undefined'){ %>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/preachers">Głosiciele</a>
-                </li>
-            <% } else { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/preachers">Głosiciele</a>
-                </li>
-            <% } %>
-
-            <% if(typeof congregation !== 'undefined'){ %>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/congregations/<%= currentUser._id %>">Zbór</a>
-                </li>
-            <% } else { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/congregations/<%= currentUser._id %>">Zbór</a>
-                </li>
-            <% } %>
+                
+                <% if(typeof pre !== 'undefined'){ %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link my_active" href="/preachers"><i class="fa-solid fa-user"></i> <br> Głosiciele</a>
+                    </li>
+                <% } else { %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link" href="/preachers"><i class="fa-solid fa-user"></i> <br> Głosiciele</a>
+                    </li>
+                <% } %>
     
-            <li class="nav-item">
-                <a class="nav-link" href="/logout">Wyloguj</a>
-                        
-            </li>
-        </ul>
-       
-      </div>	
-        </div>	
-     
+                <% if(typeof congregation !== 'undefined'){ %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link my_active" href="/congregations/<%= currentUser._id %>"><i class="fa-solid fa-people-group"></i> <br> Zbór</a>
+                    </li>
+                <% } else { %>
+                    <li class="my_nav-item">
+                        <a class="my_nav-link" href="/congregations/<%= currentUser._id %>"><i class="fa-solid fa-people-group"></i> <br> Zbór</a>
+                    </li>
+                <% } %>
         
-        
-    </nav>
+                <li class="my_nav-item">
+                    <a class="my_nav-link" href="/logout"><i class="fa-solid fa-right-from-bracket"></i> <br> Wyloguj</a>
+                            
+                </li>
+            </ul>
+
+        </nav>
+   
