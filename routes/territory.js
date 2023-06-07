@@ -12,6 +12,7 @@ import {
     renderTerritoryHistory,
     searchAllTerritories,
     searchAvailableTerritories,
+    searchChangesByDate,
 } from "../controllers/territory.js";
 
 const router = express.Router({ mergeParams: true });
@@ -20,6 +21,7 @@ router.get("/", isLoggedIn, renderListOfAllTerritories);
 router.get("/available", isLoggedIn, renderListOfAvailableTerritories);
 router.get("/new", isLoggedIn, renderNewTerritoryForm);
 router.get("/search", isLoggedIn, searchAllTerritories);
+router.get("/dateChanges", isLoggedIn, searchChangesByDate);
 router.get("/:territory_id/edit", isLoggedIn, renderTerritoryEditForm);
 router.get("/:territory_id", isLoggedIn, renderTerritoryHistory);
 router.get("/:territory_id/delete", isLoggedIn, confirmDeletingTerritory);

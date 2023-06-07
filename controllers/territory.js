@@ -5,7 +5,7 @@ import Checkout from "../models/checkout.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
 import mongoose from "mongoose";
-import { countDaysFromNow, escapeRegex } from "../helpers.js";
+import { countDaysFromNow, dateToISOString, escapeRegex } from "../helpers.js";
 
 const app = express();
 
@@ -28,7 +28,8 @@ export const renderListOfAllTerritories = (req, res, next) => {
                         currentUser: req.user, 
                         territories: territories, 
                         preachers: preachers,
-                        countDaysFromNow: countDaysFromNow, 
+                        countDaysFromNow: countDaysFromNow,
+                        dateToISOString: dateToISOString, 
                         header: "Wszystkie tereny | Territory Manager", 
                         all: "" 
                     });
@@ -97,6 +98,7 @@ export const searchAllTerritories = (req, res, next) => {
                             currentUser: req.user, 
                             preachers: preachers,
                             countDaysFromNow: countDaysFromNow,
+                            dateToISOString: dateToISOString,
                             header: "Wyszukiwanie terenów po miejscowości | Territory Manager"
                         });
                     })
@@ -127,6 +129,7 @@ export const searchAllTerritories = (req, res, next) => {
                             currentUser: req.user, 
                             preachers: preachers,
                             countDaysFromNow: countDaysFromNow,
+                            dateToISOString: dateToISOString,
                             header: "Wyszukiwanie terenów po ulicy | Territory Manager"
                         });
                     })
@@ -158,6 +161,7 @@ export const searchAllTerritories = (req, res, next) => {
                             currentUser: req.user, 
                             preachers: preachers,
                             countDaysFromNow: countDaysFromNow,
+                            dateToISOString: dateToISOString,
                             header: "Wyszukiwanie terenów po nr terenu | Territory Manager"
                         });
                     })
@@ -196,6 +200,7 @@ export const searchAllTerritories = (req, res, next) => {
                                     currentUser: req.user, 
                                     preachers: preachers,
                                     countDaysFromNow: countDaysFromNow,
+                                    dateToISOString: dateToISOString,
                                     header: "Wyszukiwanie terenów po głosicielu | Territory Manager"
                                 });
                             })
@@ -228,6 +233,7 @@ export const searchAllTerritories = (req, res, next) => {
                             currentUser: req.user, 
                             preachers: preachers,
                             countDaysFromNow: countDaysFromNow,
+                            dateToISOString: dateToISOString,
                             header: "Wyszukiwanie terenów po rodzaju terenu | Territory Manager"
                         })
                     })
@@ -257,6 +263,7 @@ export const searchAllTerritories = (req, res, next) => {
                         currentUser: req.user, 
                         preachers: preachers,
                         countDaysFromNow: countDaysFromNow,
+                        dateToISOString: dateToISOString,
                         header: "Wyszukiwanie terenów | Territory Manager"
                     });
                 })
@@ -504,4 +511,34 @@ export const searchAvailableTerritories = (req, res, next) => {
             })
             .catch((err) => console.log(err))
     }
+}
+
+export const searchChangesByDate = (req, res, next) => {
+    Territory
+        .find({
+            $and: [{
+                $or: [{ lastWorked: req.query.date }, { taken: req.query.date }]
+            }]
+        })
+        .populate("preacher")
+        .exec()
+        .then((territories) => {
+            Preacher
+            .find({congregation: req.user._id})
+            .sort({name: 1})
+            .exec()
+            .then((preachers) => {
+                res.render('./territories/dateChanges', {
+                    territories: territories,
+                    date: req.query.date,
+                    header: 'Wyszukiwanie po dacie | Territory Manager',
+                    currentUser: req.user,
+                    preachers: preachers,
+                    countDaysFromNow: countDaysFromNow,
+                    dateToISOString: dateToISOString
+                })
+            })
+            .catch((err) => console.log(err))
+        })
+        .catch((err) => console.log(err))
 }

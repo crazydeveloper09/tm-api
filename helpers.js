@@ -40,3 +40,9 @@ export const sendEmail = async (subject, to, text) => {
         }
     });
 }
+
+export const dateToISOString = (date) => {
+    let newDate = new Date();
+    newDate.setDate(date);
+    return newDate.toISOString().slice(0, 10);
+}
