@@ -1,0 +1,33 @@
+<%- include("../partials/header") %>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="text-center"><%= congregation.username %></h1>
+            </div>
+        </div>
+
+            <div class="row justify-content-between info">
+                
+                    <div class="col-lg-6">
+                        Email sługi terenu
+                    </div>
+                    <div class="col-lg-6 text-end">
+                        <strong><%= congregation.territoryServantEmail %></strong>
+                    </div>
+                    <div class="col-lg-6">
+                        Email nadzorcy służby
+                    </div>
+                    <div class="col-lg-6 text-end">
+                        <strong><%= congregation.ministryOverseerEmail %></strong>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="col-lg-12">
+                        <a href="/congregations/<%=congregation._id %>/edit" class="btn btn-success">Edytuj</a>
+                    </div>
+                    
+            </div>
+    </div>
+
+<%- include("../partials/footer") %>
