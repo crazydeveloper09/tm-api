@@ -405,7 +405,7 @@ export const editTerritory = (req, res, next) => {
             let record = territory;
             geocoder.geocode(req.body.territory.location, function (err, data) {
                 if (err || !data.length) {
-                    req.flash('error', err?.message);
+                    req.flash('error', err.message);
                     return res.redirect(`/territories/${req.user._id}/edit`);
                 }
 
