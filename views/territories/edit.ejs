@@ -8,7 +8,7 @@
                     <i class="fas fa-arrow-left"></i>
                     Wróć do strony z wolnymi terenami
                 </a>
-                <h1 class="login">Edytuj teren nr <%= territory.number %> zboru <%= currentUser.username %></h1>
+                <h1 class="login">Edytuj teren nr <%= territory?.number %> zboru <%= currentUser.username %></h1>
                 <% if(error.length > 0){ %>
                     <div class="alert alert-danger" role="alert">
                         <%= error %>
@@ -20,12 +20,12 @@
                     </div>
                 <% } %>
                     
-                        <form action="/territories/<%= territory._id %>?_method=PUT" method="post" id="form4">
+                        <form action="/territories/<%= territory?._id %>?_method=PUT" method="post" id="form4">
                             
                             
                             <div class="form-floating mb-3">
                        
-                                <input type="number" name="territory[number]" id="number" value="<%= territory.number %>" placeholder="Wpisz nr terenu" class="form-control">
+                                <input type="number" name="territory[number]" id="number" value="<%= territory?.number %>" placeholder="Wpisz nr terenu" class="form-control">
                                 <label for="number" class="username">
                                     Edytuj nr terenu
                                     

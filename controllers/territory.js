@@ -388,7 +388,7 @@ export const renderTerritoryEditForm = (req, res, next) => {
                         currentUser: req.user, 
                         territory: territory, 
                         preachers: preachers, 
-                        header: `Edytuj teren nr ${territory.number} zboru ${req.user.username} | Territory Manager`
+                        header: `Edytuj teren nr ${territory?.number} zboru ${req.user.username} | Territory Manager`
                     });
                 })
                 .catch((err) => console.log(err))
