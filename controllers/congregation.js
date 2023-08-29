@@ -2,13 +2,24 @@ import express from "express";
 import Congregation from "../models/congregation.js";
 import flash from "connect-flash";
 import passport from "passport";
+import dotenv from 'dotenv';
+import node_geocoder from "node-geocoder";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
 
-const app = express();
+dotenv.config();
 
+const app = express();
 app.use(flash());
 app.use(methodOverride("_method"));
+
+let options = {
+    provider: 'google',
+    httpAdapter: 'https',
+    apiKey: process.env.GEOCODER_API_KEY,
+    formatter: null
+  };
+let geocoder = node_geocoder(options);
 
 export const renderRegisterCongregationForm = (req, res, next) => {
     if(req.query.code === process.env.REGISTER_CODE){
@@ -25,46 +36,56 @@ export const registerCongregation = (req, res, next) => {
         req.flash("error", "Hasła nie są te same");
         res.render("./congregations/new", { error:  "Hasła nie są te same", congregation: req.body, header: "Rejestracja zboru | Territory Manager"});
     } else {
-        let verificationCode = '';
-        for (let i = 0; i <= 5; i++) {
-            let number = Math.floor(Math.random() * 10);
-            let numberString = number.toString();
-            verificationCode += numberString;
-        }
-        let newUser = new Congregation({
-            username: req.body.username,
-            territoryServantEmail: req.body.territoryServantEmail,
-            ministryOverseerEmail: req.body.ministryOverseerEmail,
-            verificationNumber: verificationCode,
-            verificationExpires: Date.now() + 360000
-        });
-        Congregation.register(newUser, req.body.password, function(err, congregation) {
-            if(err) {
-                
-                return res.render("./congregations/new", { error: err.message});
-            } 
-            passport.authenticate("local")(req, res, function() {
-                const subject = 'Weryfikacja maila w Territory Manager';
-                const emailText = `<p class="description">
-                Witaj <em>${congregation.username}</em>,
-                <br>
-                Jesteś na ostatniej prostej do możliwości zarządzania terenami w Territory Manager. Wystarczy, że 
-                Ty lub nadzorca służby w zborze potwierdzicie email poniższym 
-                kodem weryfikacyjnym:
-                <br>
-                <br>
-                <strong>${congregation.verificationNumber}</strong>
-                <br>
-                <br>
-                Wasz brat,
-                <br>
-                Maciek
-                <br>
-                <em>Wiadomość wysłana automatycznie, nie odpowiadaj na nią</em>
-            </p>`
-                sendEmail(subject, congregation.territoryServantEmail, emailText)
-                sendEmail(subject, congregation.ministryOverseerEmail, emailText)
-                res.redirect(`/congregations/${congregation._id}/verification`);
+        geocoder.geocode(req.body.mainCity, function (err, data) {
+            if (err || !data.length) {
+                req.flash('error', err.message);
+                return res.redirect(`/congregations/new`);
+            }
+
+            let verificationCode = '';
+            for (let i = 0; i <= 5; i++) {
+                let number = Math.floor(Math.random() * 10);
+                let numberString = number.toString();
+                verificationCode += numberString;
+            }
+            let newUser = new Congregation({
+                username: req.body.username,
+                territoryServantEmail: req.body.territoryServantEmail,
+                ministryOverseerEmail: req.body.ministryOverseerEmail,
+                verificationNumber: verificationCode,
+                mainCity: req.body.mainCity,
+                mainCityLatitude: data[0].latitude,
+                mainCityLongitude: data[0].longitude,
+                verificationExpires: Date.now() + 360000
+            });
+            Congregation.register(newUser, req.body.password, function(err, congregation) {
+                if(err) {
+                    
+                    return res.render("./congregations/new", { error: err.message});
+                } 
+                passport.authenticate("local")(req, res, function() {
+                    const subject = 'Weryfikacja maila w Territory Manager';
+                    const emailText = `<p class="description">
+                    Witaj <em>${congregation.username}</em>,
+                    <br>
+                    Jesteś na ostatniej prostej do możliwości zarządzania terenami w Territory Manager. Wystarczy, że 
+                    Ty lub nadzorca służby w zborze potwierdzicie email poniższym 
+                    kodem weryfikacyjnym:
+                    <br>
+                    <br>
+                    <strong>${congregation.verificationNumber}</strong>
+                    <br>
+                    <br>
+                    Wasz brat,
+                    <br>
+                    Maciek
+                    <br>
+                    <em>Wiadomość wysłana automatycznie, nie odpowiadaj na nią</em>
+                </p>`
+                    sendEmail(subject, congregation.territoryServantEmail, emailText)
+                    sendEmail(subject, congregation.ministryOverseerEmail, emailText)
+                    res.redirect(`/congregations/${congregation._id}/verification`);
+                });
             });
         });
     }
@@ -103,7 +124,20 @@ export const editCongregation = (req, res, next) => {
     Congregation
         .findByIdAndUpdate(req.params.congregation_id, req.body.congregation)
         .exec()
-        .then((congregation) => res.redirect(`/congregations/${congregation._id}`))
+        .then((congregation) => {
+            geocoder.geocode(req.body.congregation.mainCity, function (err, data) {
+                if (err || !data.length) {
+                    req.flash('error', err.message);
+                    return res.redirect(`/congregations/new`);
+                }
+
+                congregation.mainCity = req.body.congregation.mainCity;
+                congregation.mainCityLatitude = data[0].latitude;
+                congregation.mainCityLongitude = data[0].longitude;
+                congregation.save();
+                res.redirect(`/congregations/${congregation._id}`)
+            });
+        })
         .catch((err) => console.log(err))
 }
 

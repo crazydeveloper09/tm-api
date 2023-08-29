@@ -26,7 +26,10 @@ const territorySchema = new mongoose.Schema({
     isPhysicalCard: {
         type: Boolean,
         default: true
-    }
+    },
+    longitude: Number,
+    latitude: Number,
+    location: String,
 });
 
 export default mongoose.model("Territory", territorySchema);

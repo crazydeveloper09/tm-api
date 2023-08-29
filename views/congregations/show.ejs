@@ -21,6 +21,30 @@
                     <div class="col-lg-6 text-end">
                         <strong><%= congregation.ministryOverseerEmail %></strong>
                     </div>
+                    <div class="col-lg-6">
+                        Główne miasto zboru
+                    </div>
+                    <div class="col-lg-6 text-end">
+                        <strong><%= congregation.mainCity %></strong>
+                    </div>
+
+                    <% if (congregation.mainCity) { %>
+                        <p id="lat" style="display: none;"><%= congregation.mainCityLatitude %></p>
+                        <p id="lng" style="display: none;"><%= congregation.mainCityLongitude %></p>
+                        <div id="map" style="width: 100%; height: 400px; margin: 30px 0 "></div>
+                    <% } else { %>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12">
+                                <div class="alert alert-info text-center info" role="alert">
+                                    <strong>
+                                        Edytuj informacje zborowe i uzupełnij pole <em>Główne miasto zboru</em>, żeby zobaczyć niespodziankę. 
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+
+
                     <br>
                     <br>
                     <div class="col-lg-12">
@@ -29,5 +53,32 @@
                     
             </div>
     </div>
+
+    <script>
+        function initMap() {
+          var lat = parseFloat(document.getElementById("lat").innerText);
+          var lng = parseFloat(document.getElementById("lng").innerText);
+          var center = {lat: lat, lng: lng };
+          var map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 16,
+              center: center,
+              scrollwheel: false
+          });
+          var contactString = `
+            <strong>Główne miasto zboru <%= congregation.username %></strong>
+          `
+          var infowindow = new google.maps.InfoWindow({
+            contact: contactString
+          });
+          var marker = new google.maps.Marker({
+              position: center,
+              map: map
+          });
+          marker.addListener('click', function() {
+            infowindow.open(map, marker);
+          });
+        }
+      </script>
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKvmIASZjDfZNXZZn2fa4pGvR6T3cQTcA&callback=initMap"></script>
 
 <%- include("../partials/footer") %>

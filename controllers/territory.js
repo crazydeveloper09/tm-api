@@ -4,10 +4,29 @@ import Territory from "../models/territory.js";
 import Checkout from "../models/checkout.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
-import mongoose from "mongoose";
+import dotenv from 'dotenv';
+import node_geocoder from "node-geocoder";
+// import mbxClient from '@mapbox/mapbox-sdk';
+// import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
 import { countDaysFromNow, dateToISOString, escapeRegex } from "../helpers.js";
 
+dotenv.config();
+
 const app = express();
+// const mbxMainClient = mbxClient({ accessToken: process.env.MAPBOX_TOKEN });
+// const geocoder = mbxGeocoding(mbxMainClient);
+
+// console.log(mbxMainClient);
+// console.log(geocoder.forwardGeocode())
+
+let options = {
+    provider: 'google',
+    httpAdapter: 'https',
+    apiKey: process.env.GEOCODER_API_KEY,
+    formatter: null
+  };
+let geocoder = node_geocoder(options);
+
 
 app.use(flash());
 app.use(methodOverride("_method"));
@@ -289,14 +308,36 @@ export const createTerritory = (req, res, next) => {
     Territory
         .create(newTerritory)
         .then((createdTerritory) => {
-            if(req.body.preacher === ""){
-                createdTerritory.type="free";
-            } else {
-                createdTerritory.preacher = req.body.preacher;
-            }
-            createdTerritory.isPhysicalCard = req.body.isPhysicalCard === 'true';
-            createdTerritory.save();
-            res.redirect("/territories/available");
+            console.log(req.body.location)
+            geocoder.geocode(req.body.location, function (err, data) {
+                if (err || !data.length) {
+                    req.flash('error', err.message);
+                    return res.redirect(`/territories/new`);
+                }
+                console.log(data)
+                if(req.body.preacher === ""){
+                    createdTerritory.type="free";
+                } else {
+                    createdTerritory.preacher = req.body.preacher;
+                }
+                createdTerritory.latitude = data[0].latitude;
+                createdTerritory.longitude = data[0].longitude;
+                createdTerritory.location = data[0].formattedAddress;
+                createdTerritory.isPhysicalCard = req.body.isPhysicalCard === 'true';
+                createdTerritory.save();
+
+                res.redirect("/territories/available");
+            })
+            // geocoder
+            //     .forwardGeocode({
+            //         query: 'Paris, France',
+            //         limit: 2
+            //     })
+            //     .send()
+            //     .then((response) => {
+            //         console.log(response.body)
+            //     })
+            //     .catch(err => console.log(err))  
         })
         .catch((err) => console.log(err))
 }
@@ -317,7 +358,6 @@ export const renderTerritoryHistory = (req, res, next) => {
                 .find({congregation: req.user._id})
                 .exec()
                 .then((territories) => {
-                    console.log(territory.history[territory.history.length - 1].preacher)
                     const currentIndex = territories.findIndex(t => t._id.toString() === territory._id.toString());
                     res.render("./territories/show", {
                         header: `Teren nr ${territory.number} | Territory Manager`,
@@ -363,13 +403,21 @@ export const editTerritory = (req, res, next) => {
         .exec()
         .then((territory) => {
             let record = territory;
-            console.log(record.preacher)
-            Checkout
+            geocoder.geocode(req.body.territory.location, function (err, data) {
+                if (err || !data.length) {
+                    req.flash('error', err.message);
+                    return res.redirect(`/territories/${req.user._id}/edit`);
+                }
+
+
+                Checkout
                 .create(record.preacher ? { record: record, preacher: record.preacher } : { record: record })
                 .then((createdCheckout) => {
                     territory.history.push(createdCheckout);
                     
-                    
+                    territory.latitude = data[0].latitude;
+                    territory.longitude = data[0].longitude;
+                    territory.location = data[0].formattedAddress;
                     territory.city = req.body.territory.city;
                     territory.street = req.body.territory.street;
                     territory.number = req.body.territory.number;
@@ -392,6 +440,8 @@ export const editTerritory = (req, res, next) => {
                     res.redirect(`/territories/${territory._id}`);
                 })
                 .catch((err) => console.log(err))
+            });
+            
         })
         .catch((err) => console.log(err))
 }

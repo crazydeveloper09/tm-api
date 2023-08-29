@@ -90,7 +90,15 @@
                                 </label>
                                 
                             </div>
-                            
+                            <div class="form-floating mb-3" id="locationDiv">
+                       
+                                <input type="text" name="territory[location]" id="location" autocomplete="off" placeholder="location" class="form-control" required>
+                                <label for="location" class="username" id="locationLabel">
+                                   Pełna lokalizacja np. Mechaniczna 30, Głogów
+                                    
+                                </label>
+                                
+                            </div>
                             <div class="form-floating mb-3">
                        
                                 <input type="date" name="territory[lastWorked]" id="lastWorked" value="<%= territory.lastWorked %>" class="form-control">

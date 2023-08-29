@@ -23,7 +23,10 @@ const congregationSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Preacher"
         }
-    ]
+    ],
+    mainCity: String,
+    mainCityLatitude: Number,
+    mainCityLongitude: Number,
 })
 congregationSchema.plugin(passportLocalMongoose);
 export default mongoose.model("Congregation", congregationSchema);

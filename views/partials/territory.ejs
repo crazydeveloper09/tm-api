@@ -87,7 +87,19 @@
                         <a href="/territories/<%= territory._id %>/edit" class="btn btn-primary">Edytuj</a>
                         <a href="/territories/<%= territory._id %>/delete" class="btn btn-danger">Usuń</a>
                 </div>
-                
+
+                <% if (typeof show !== 'undefined') { %>
+                    <% if (territory.location) { %>
+                    
+                        <p id="lat" style="display: none;"><%= territory.latitude %></p>
+                        <p id="lng" style="display: none;"><%= territory.longitude %></p>
+                        <div id="map" style="width: 100%; height: 400px; margin-top: 30px"></div>
+                    <% } else { %>
+                        <p class="info" style="margin-top: 30px;">
+                            <strong>Edytuj teren i uzupełnij pole "Pełna lokalizacja", a czeka na Ciebie miła niespodzianka</strong>
+                        </p>
+                    <% } %>
+                <% } %>
             </div>
             <% if(typeof show !== 'undefined') { %>
                 <br>
