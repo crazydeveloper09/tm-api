@@ -33,14 +33,17 @@
             <div class="row">
                 <% preachers.forEach((preacher) => { %>
                     <div class="col-lg-12">
-                                <span class="info float-start"><%= preacher.name %></span>
-                                <div class="d-inline float-end preachers-buttons">
-                                    <a href="/preachers/<%= preacher._id %>/edit" class="btn btn-primary">Edytuj</a>
-                                    <a href="/preachers/<%= preacher._id %>/delete" class="btn btn-danger">Usuń</a>
-                                </div>
-                                
-                                <hr style="clear: both;">
+                        <div class="preacher__info">
+                            <div class="info">
+                                <p><%= preacher.name %></p>
+                                <a href="/territories/search?preacher=<%= preacher._id %>" class="preacher__link">Zobacz tereny głosiciela</a>
                             </div>
+                            <div class="preachers-buttons">
+                                <a href="/preachers/<%= preacher._id %>/edit" class="btn btn-primary">Edytuj</a>
+                                <a href="/preachers/<%= preacher._id %>/delete" class="btn btn-danger">Usuń</a>
+                            </div>
+                        </div>
+                    </div>
                 <% }) %>
                
             </div>

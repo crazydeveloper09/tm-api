@@ -143,6 +143,36 @@ input[type=search]::placeholder {
     color: #28a745;
 }
 
+.congregation__info {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #9999CC;
+    padding: 15px 0;
+}
+
+.congregation__info p {
+    margin-bottom: 0;
+}
+
+.preacher__info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border-bottom: 1px solid #9999CC;
+    padding: 10px 0;
+}
+
+.preacher__link {
+    font-size: 17px;
+    color: #28a745;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+
+.preacher__info p {
+    margin-bottom: 5px;
+}
+
 
 @media (max-width: 572px) {
     body {
@@ -166,5 +196,23 @@ input[type=search]::placeholder {
     }
     .card {
         margin-bottom: 20px;
+    }
+
+    .congregation__info {
+        display: block;
+        text-align: center;
+    }
+
+    .text-end {
+        text-align: center;
+    }
+
+    .preacher__info {
+        display: block;
+        text-align: center;
+    }
+
+    .preachers-buttons {
+        margin-top: 15px;
     }
 }
