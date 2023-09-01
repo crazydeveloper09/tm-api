@@ -145,9 +145,12 @@ input[type=search]::placeholder {
 
 .congregation__info {
     display: flex;
+    background: #fff;
     justify-content: space-between;
-    border-bottom: 1px solid #9999CC;
-    padding: 15px 0;
+    border: 1px solid #9999CC;
+    border-radius: 10px;
+    margin-top: 15px;
+    padding: 15px;
 }
 
 .congregation__info p {
@@ -156,10 +159,14 @@ input[type=search]::placeholder {
 
 .preacher__info {
     display: flex;
+    background: #fff;
     justify-content: space-between;
+    align-items: baseline;
     width: 100%;
-    border-bottom: 1px solid #9999CC;
-    padding: 10px 0;
+    border: 1px solid #9999CC;
+    border-radius: 10px;
+    margin-top: 15px;
+    padding: 15px;
 }
 
 .preacher__link {
