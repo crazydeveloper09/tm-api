@@ -1,13 +1,13 @@
 <%- include ("../partials/headera") %> 
                 <div class="col-lg-6 col-md-12" id="form">
                     <div class="row justify-content-center">
-                        <div class="col-lg-8 col-md-12" style="margin-top: 10%">
+                        <div class="col-lg-8 col-md-12" style="margin-top: 6%; height:100%">
                             <div id="form1">
                                 <a href="/territories/available">
                                     <i class="fas fa-arrow-left"></i>
                                     Wróć do strony głównej
                                 </a>
-                                <h1 class="login"> Zaloguj się do panelu</h1>
+                                <h1 class="login">Rejestracja zboru</h1>
                                 <% if(error.length > 0){ %>
                                     <div class="alert alert-danger" role="alert">
                                         <%= error %>
@@ -53,7 +53,7 @@
                        
                                             <input type="text" name="mainCity" id="mainCity" autocomplete="off" placeholder="mainCity" class="form-control" required>
                                             <label for="mainCity" class="username" id="mainCityLabel">
-                                               Główne miasto zboru np. Głogów, Polska
+                                               Główne miasto zboru np. Głogów, Polska 
                                                 
                                             </label>
                                             

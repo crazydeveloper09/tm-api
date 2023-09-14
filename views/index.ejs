@@ -92,7 +92,7 @@
                         });
                     
                         marker.addListener("click", () => {
-                            infoWindow.setContent(`${territory.location} <br> <strong>Teren nieopracowany od ${countDays(territory.lastWorked)} dni</strong>`);
+                            infoWindow.setContent(`${territory.location} <br>Rodzaj: <strong>${territory.kind}</strong> <br> <strong>Teren nieopracowany od ${countDays(territory.lastWorked)} dni</strong>`);
                             infoWindow.open(map, marker);
                         });
                         markers.push(marker)

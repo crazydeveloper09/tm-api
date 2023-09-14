@@ -9,10 +9,14 @@
             </div>
         </div>
         <%- include("../partials/territorySearch") %>
-        <div class="territory-navigation">
-            <a href="/territories/dateChanges?date=<%= dateToISOString(new Date(date).getDate() - 1) %>"><i class="fa-solid fa-backward"></i> <%= dateToISOString(new Date(date).getDate() - 1) %></a>
-            <a href="/territories/dateChanges?date=<%= dateToISOString(new Date(date).getDate() + 1) %>"></i> <%= dateToISOString(new Date(date).getDate() + 1) %> <i class="fa-solid fa-forward"></i></a>
+        <div id="dateSearch">
             
+                <form action="/territories/dateChanges" method="get">
+                    <div class="input-group mb-3">
+                        <input type="date" class="form-control" name="date" value="<%= date %>" placeholder="Wpisz nr terenu" aria-label="Wpisz nr terenu" aria-describedby="basic-addon2">
+                        <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
         </div>
         <% if(territories.length===0){ %>
             <div class="row justify-content-center">

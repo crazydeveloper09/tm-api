@@ -130,9 +130,9 @@
                                                 <p class="info">Ostatnio opracowane: <strong><%= checkout.record?.lastWorked %></strong></p>
                                                 
                                                 <% if(typeof checkout.preacher !== 'undefined'){ %>
-                                                    <p class="info">Głosiciel: <strong><%= checkout.preacher.name %></strong></p>
+                                                    <p class="info">Głosiciel: <strong><%= checkout.preacher?.name %></strong></p>
                                                     <p class="info">Pobrany: <strong><%= checkout.record?.taken %></strong></p>
-                                                    <p class="info"><strong><%= checkout.preacher.name %> ma ten teren
+                                                    <p class="info"><strong><%= checkout.preacher?.name %> ma ten teren
                                                         <% if(countDaysFromNow(checkout.record?.taken) < 90){ %>
                                                             <%= countDaysFromNow(checkout.record?.taken) %> dni
                                                         <% } else if(countDaysFromNow(checkout.record?.taken) < 120){ %>
@@ -141,7 +141,7 @@
                                                             <span class="text-danger"><%= countDaysFromNow(checkout.record?.taken) %></span> dni
                                                             <br>
                                                             <br>
-                                                            <span class="text-danger"><strong>Przypomnij <%= checkout.record?.preacher.name %> o oddaniu terenu</strong> </span>
+                                                            <span class="text-danger"><strong>Przypomnij <%= checkout.record?.preacher?.name %> o oddaniu terenu</strong> </span>
                                                         <% } %>
                                                     </strong></p>
                                                 <% } else { %>
