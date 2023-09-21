@@ -16,23 +16,20 @@ export const countDaysFromNow = (date) => {
     return Math.round(Math.abs(new Date() - new Date(date)) / 86400000);
 }
 
-export const sendEmail = async (subject, to, text) => {
+export const sendEmail = async (subject, to, text, congregation) => {
     const DOMAIN = 'websiteswithpassion.pl';
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });
+    const mailgunVariables = JSON.stringify({
+        text: text,
+        username: congregation.username,
+        verificationCode: congregation.verificationNumber,
+    })
     const data = {
         from: `Weryfikacja konta Territory Manager <admin@websiteswithpassion.pl>`,
         to: to,
         subject: subject,
-        html: `<html>
-                <head>
-                    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-                        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-                    <link rel="stylesheet" type="text/css" href="./style.css">
-                </head>
-                <body>
-                    ${text}
-                </body>
-            </html>`
+        template: 'weryfikacja territory manager',
+        'h:X-Mailgun-Variables': mailgunVariables
     };
     mg.messages().send(data, function (error, body) {
         if (error) {

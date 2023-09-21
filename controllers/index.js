@@ -46,24 +46,10 @@ export const authenticateCongregation = (req, res, next) => {
                 user.verificationExpires = Date.now() + 360000;
                 user.save()
                 const subject = 'Potwierdź swoją tożsamość';
-                const emailText = `<p class="description">
-                Witaj <em>${user.username}</em>,
-                <br>
-                Zanim będziesz mógł zarządzać terenami
-                chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby. Proszę wpisz na stronie poniższy kod weryfikacyjny.
-                <br>
-                <br>
-                <strong>${user.verificationNumber}</strong>
-                <br>
-                <br>
-                Wasz brat,
-                <br>
-                Maciek
-                <br>
-                <em>Wiadomość wysłana automatycznie, nie odpowiadaj na nią</em>
-            </p>`;
-                sendEmail(subject, user.territoryServantEmail, emailText)
-                sendEmail(subject, user.ministryOverseerEmail, emailText)
+                const emailText = `Zanim będziesz mógł zarządzać terenami
+                chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby. Proszę wpisz na stronie poniższy kod weryfikacyjny.`;
+                sendEmail(subject, user.territoryServantEmail, emailText, user)
+                sendEmail(subject, user.ministryOverseerEmail, emailText, user)
                 return res.redirect(`/congregations/${user._id}/two-factor`);
             });
         } else {

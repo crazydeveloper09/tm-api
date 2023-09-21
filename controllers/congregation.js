@@ -65,25 +65,11 @@ export const registerCongregation = (req, res, next) => {
                 } 
                 passport.authenticate("local")(req, res, function() {
                     const subject = 'Weryfikacja maila w Territory Manager';
-                    const emailText = `<p class="description">
-                    Witaj <em>${congregation.username}</em>,
-                    <br>
-                    Jesteś na ostatniej prostej do możliwości zarządzania terenami w Territory Manager. Wystarczy, że 
+                    const emailText = `Jesteś na ostatniej prostej do możliwości zarządzania terenami w Territory Manager. Wystarczy, że 
                     Ty lub nadzorca służby w zborze potwierdzicie email poniższym 
-                    kodem weryfikacyjnym:
-                    <br>
-                    <br>
-                    <strong>${congregation.verificationNumber}</strong>
-                    <br>
-                    <br>
-                    Wasz brat,
-                    <br>
-                    Maciek
-                    <br>
-                    <em>Wiadomość wysłana automatycznie, nie odpowiadaj na nią</em>
-                </p>`
-                    sendEmail(subject, congregation.territoryServantEmail, emailText)
-                    sendEmail(subject, congregation.ministryOverseerEmail, emailText)
+                    kodem weryfikacyjnym:`
+                    sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+                    sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
                     res.redirect(`/congregations/${congregation._id}/verification`);
                 });
             });
@@ -212,27 +198,11 @@ export const resendVerificationCode = (req, res, next) => {
             congregation.verificationExpires = Date.now() + 360000;
             congregation.save()
             const subject = 'Ponowne wysłanie kodu, by potwierdzić email';
-            const emailText = ` <p class="description">
-                Witaj <em>${congregation.username}</em>,
-                <br>
-                Właśnie dostałem prośbę o ponowne wysłanie kodu do
+            const emailText = `Właśnie dostałem prośbę o ponowne wysłanie kodu do
                 weryfikacji emaila w Territory Manager.
-                Jeśli to nie byłeś ty, zignoruj wiadomość. 
-                <br>
-                Kod potrzebny do weryfikacji to:
-                <br>
-                <br>
-                <strong>${congregation.verificationNumber}</strong>
-                <br>
-                <br>
-                Wasz brat,
-                <br>
-                Maciek
-                <br>
-                <em>Wiadomość wysłana automatycznie, nie odpowiadaj na nią</em>
-            </p>`;
-            sendEmail(subject, congregation.territoryServantEmail, emailText)
-            sendEmail(subject, congregation.ministryOverseerEmail, emailText)
+                Jeśli to nie byłeś ty, zignoruj wiadomość.`;
+            sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+            sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
             res.redirect(`/congregations/${congregation._id}/verification`);
         })
         .catch((err) => console.log(err))
@@ -303,28 +273,12 @@ export const resendTwoFactorCode = (req, res, next) => {
             congregation.verificationExpires = Date.now() + 360000;
             congregation.save()
             const subject = 'Ponowne wysłanie kodu weryfikacyjnego';
-            let emailText = `<p class="description">
-            Witaj <em>${congregation.username}</em>,
-            <br>
-            Właśnie dostałem prośbę o ponowne wysłanie kodu do
+            let emailText = `Właśnie dostałem prośbę o ponowne wysłanie kodu do
             dwustopniowej weryfikacji logowania do Territory Manager.
-            Jeśli to nie byłeś ty, zignoruj wiadomość. 
-            <br>
-            Kod potrzebny do weryfikacji to:
-            <br>
-            <br>
-            <strong>${congregation.verificationNumber}</strong>
-            <br>
-            <br>
-            Wasz brat,
-            <br>
-            Maciek
-            <br>
-            <em>Wiadomość wysłana automatycznie, nie odpowiadaj na nią</em>
-            </p>`;
+            Jeśli to nie byłeś ty, zignoruj wiadomość.`;
             
-            sendEmail(subject, congregation.territoryServantEmail, emailText)
-            sendEmail(subject, congregation.ministryOverseerEmail, emailText)
+            sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+            sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
             res.redirect(`/congregations/${congregation._id}/two-factor`);
         })
         .catch((err) => console.log(err))
