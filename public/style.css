@@ -66,6 +66,12 @@ body {
     border: 3px solid #9999CC;
 }
 
+.section__title {
+    color: #000;
+    margin: 15px 0;
+    font-weight: 500;
+}
+
 .territory-section {
     font-size: 28px;
     font-weight: 700;
@@ -83,6 +89,47 @@ h4 {
     font-size: 22px;
     font-weight: 400;
 }
+th a {
+    color: #fff;
+    margin-left: 10px;
+}
+thead,
+.ministryGroup__title {
+    background: #9999CC;
+    color: #fff;
+    border-color: #fff;
+    padding: 5px;
+    text-align: center;
+    border-left: 1px solid white;
+    margin-bottom: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.ministryGroups {
+    display: flex;
+    margin-top: 20px;
+}
+.ministryGroup {
+    
+}
+
+.ministryGroup__item {
+    text-align: center;
+    border-bottom: 1px solid grey;
+    border-left: 1px solid grey;
+    padding: 8px;
+    margin-bottom: 0;
+}
+
+.ministryGroup:last-child {
+    border-right: 1px solid grey;
+}
+
+.ministryGroup__item:nth-of-type(2n) {
+    background: #d6d6d6;
+}
+
+
 
 .btn-golden {
     background: #f6b26b;

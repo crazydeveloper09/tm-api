@@ -1,12 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
-import bodyParser from "body-parser";
 import passport from "passport";
 import expressSession from 'express-session';
 import indexRoutes from "./routes/index.js";
 import preachersRoutes from "./routes/preacher.js";
 import territoriesRoutes from "./routes/territory.js";
 import congregationsRoutes from "./routes/congregation.js";
+import ministryGroupsRoutes from "./routes/ministryGroup.js";
 import Congregation from "./models/congregation.js";
 import LocalStrategy from "passport-local";
 import flash from "connect-flash";
@@ -18,12 +18,12 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 
-const __dirname = path.dirname(__filename);
+export const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
 app.use(flash());
@@ -32,13 +32,13 @@ app.use(helmet({
 }))
 dotenv.config();
 
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true})
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
 
 
 app.use(expressSession({
     secret: "heheszki",
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }));
 app.use(function(req, res, next) {
     res.locals.error = req.flash("error");
@@ -55,6 +55,7 @@ passport.deserializeUser(Congregation.deserializeUser());
 app.use("/preachers", preachersRoutes);
 app.use("/territories", territoriesRoutes);
 app.use("/congregations", congregationsRoutes)
+app.use("/congregations/:congregation_id/ministryGroups", ministryGroupsRoutes)
 app.use(indexRoutes);
 
 app.listen(process.env.PORT);

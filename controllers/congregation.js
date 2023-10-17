@@ -1,11 +1,13 @@
 import express from "express";
 import Congregation from "../models/congregation.js";
+import MinistryGroup from "../models/ministryGroup.js";
 import flash from "connect-flash";
 import passport from "passport";
 import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
+import ministryGroup from "../models/ministryGroup.js";
 
 dotenv.config();
 
@@ -83,11 +85,19 @@ export const renderCongregationInfo = (req, res, next) => {
         .populate(["preacher", "territories"])
         .exec()
         .then((congregation) => {
-            res.render("./congregations/show", {
-                header: `Zbór ${congregation.username} | Territory Manager`,
-                congregation: congregation,
-                currentUser: req.user,
-            })
+            MinistryGroup
+                .find({ congregation: congregation._id })
+                .populate(["preachers", "overseer"])
+                .exec()
+                .then((ministryGroups) => {
+                    res.render("./congregations/show", {
+                        header: `Zbór ${congregation.username} | Territory Manager`,
+                        congregation,
+                        currentUser: req.user,
+                        ministryGroups
+                    })
+                })
+                .catch((err) => console.log(err))
         })
         .catch((err) =>  console.log(err))
 }

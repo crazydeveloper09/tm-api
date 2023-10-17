@@ -1,13 +1,17 @@
 <%- include("../partials/headera") %>
-
-<div class="col-lg-6 col-md-12" id="form">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-12" style="margin-top: 25%">
+        <div class="col-lg-6 col-md-12" id="form">
+            <div>
+                <h1 class="text-center" class="appTitle"><i class="fas fa-map-marked-alt fa-3x"></i> <br> Territory Manager</h1>
+                <h4 class="text-center" class="appDescription">I zarządzanie terenami staje się o wiele prostsze</h4>
+            </div>
             <div id="form1">
-                <a href="/preachers">
-                    <i class="fas fa-arrow-left"></i>
-                    Wróć do strony ze spisem głosicieli
-                </a>
+                <div class="text-center">
+                    <a href="/preachers">
+                        <i class="fas fa-arrow-left"></i>
+                        Wróć do strony ze spisem głosicieli
+                    </a>
+                </div>
                 <h1 class="login">Dodaj głosiciela do zboru <%= currentUser.username %></h1>
                 <% if(error.length > 0){ %>
                     <div class="alert alert-danger" role="alert">
@@ -38,8 +42,6 @@
             </div>
             
         </div>
-    </div>
-
 
 <script src="/script.js"></script>
 <script>

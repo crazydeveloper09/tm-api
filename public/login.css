@@ -11,12 +11,18 @@ body {
 }
 #form {
   background:#ece9e9;
-  height: 100vh;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 3% 0;
+  -webkit-box-shadow: 0 0 53px 12px #1c7330;
+-moz-box-shadow: 0 0 53px 12px #1c7330;
+box-shadow: 0 0 53px 12px #1c7330;
 }
 
-a {
+#form1 a {
   font-size: 20px;
   color:  #1a1a1a;
+  text-align: center;
 }
 
 ::-webkit-scrollbar { 
@@ -33,6 +39,7 @@ a {
 #form .login {
   font-size: 45px;
   font-weight: 700;
+  text-align: center;
   color:#28a745;
 }
 
@@ -67,8 +74,8 @@ a {
       margin: 4%;
   }
   body {
-    margin: 0;
-    background: #dbd9d9;
+    padding: 20px;
+    background: #28a745;
   }
   .container-full {
     margin: 0;

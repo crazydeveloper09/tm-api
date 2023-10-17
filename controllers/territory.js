@@ -382,6 +382,7 @@ export const renderTerritoryEditForm = (req, res, next) => {
         .then((territory) => {
             Preacher
                 .find({congregation: req.user._id})
+                .sort({name: 1})
                 .exec()
                 .then((preachers) => {
                     res.render("./territories/edit", { 

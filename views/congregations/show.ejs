@@ -4,10 +4,16 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="text-center"><%= congregation.username %></h1>
+                <% if(success.length > 0){ %>
+                    <div class="alert alert-success" role="alert">
+                        <%= success %>
+                    </div>
+                <% } %>
             </div>
         </div>
-
+        <h2 class="section__title">Ogólne informacje</h2>
             <div class="row info" style="padding: 0 15px;">
+            
                     <div class="col-lg-12 congregation__info">
                         <p>Email sługi terenu</p>
                         <p class="text-lg-end text-sm-center"><strong><%= congregation.territoryServantEmail %></strong></p>
@@ -22,32 +28,84 @@
                             <p>Główne miasto zboru</p>
                             <p class="text-lg-end text-sm-center"><strong><%= congregation.mainCity %></strong></p>
                         </div>
+                        
+                        
+
                     
 
-                    <% if (congregation.mainCity) { %>
-                        <p id="lat" style="display: none;"><%= congregation.mainCityLatitude %></p>
-                        <p id="lng" style="display: none;"><%= congregation.mainCityLongitude %></p>
-                        <div id="map" style="width: 100%; height: 400px; margin: 30px 0 "></div>
-                    <% } else { %>
-                        <div class="row justify-content-center">
-                            <div class="col-lg-12">
-                                <div class="alert alert-info text-center info" role="alert">
-                                    <strong>
-                                        Edytuj informacje zborowe i uzupełnij pole <em>Główne miasto zboru</em>, żeby zobaczyć niespodziankę. 
-                                    </strong>
-                                </div>
-                            </div>
-                        </div>
-                    <% } %>
-
 
                     <br>
                     <br>
-                    <div class="col-lg-12">
-                        <a href="/congregations/<%=congregation._id %>/edit" class="btn btn-success">Edytuj</a>
-                    </div>
+                    
                     
             </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-lg-12">
+                    <a href="/congregations/<%=congregation._id %>/edit" class="btn btn-success">Edytuj</a>
+                    <a href="/congregations/<%=congregation._id %>/ministryGroups/new" class="btn btn-primary">Dodaj grupę służby</a>
+                </div>
+            </div>
+            <div class="row">
+                
+                <h2 class="section__title">Grupy służby</h2>
+                <% if(ministryGroups?.length === 0){ %>
+
+                <% } else { %>
+                    <div class="col-lg-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <% ministryGroups.forEach((group) => { %>
+                                            <th>
+                                                <%= group.name %>
+                                                <a href="/congregations/<%=congregation._id %>/ministryGroups/<%= group._id %>/edit"><i class="fas fa-pen"></i></a>
+                                                <a href="/congregations/<%=congregation._id %>/ministryGroups/<%= group._id %>/delete"><i class="fas fa-trash"></i></a>
+                                            </th>
+                                        <% }) %>
+                                    </tr>
+                                    
+                                </thead>
+                                <tbody>
+                                    <% const maxItems = Math.max(...ministryGroups.map(group => group.preachers.length)); %> 
+                                    <% for(let i=0; i< maxItems; i++) { %>
+                                        <tr class="text-center">
+                                           <% ministryGroups.forEach((group, j) => { %>
+                                                <% if(ministryGroups[j]?.preachers[i]?.name === group.overseer.name){ %>
+                                                    <td><strong><%= ministryGroups[j]?.preachers[i]?.name %></strong></td>
+                                                <% } else { %>
+                                                    <td><%= ministryGroups[j]?.preachers[i]?.name %></td>
+                                                <% } %>
+                                              
+                                           <% }) %>
+                                           
+                                        </tr>
+                                        
+                                     <% } %>
+                                </tbody>
+                    
+                            </table>
+                        </div>
+                    </div>
+                <% } %>
+                <a href="/congregations/<%=congregation._id %>/ministryGroups/generate-pdf" class="btn btn-primary">Generuj grupy do druku</a>
+            </div>
+            <h2 class="section__title">Mapka</h2>
+            <% if (congregation.mainCity) { %>
+                <p id="lat" style="display: none;"><%= congregation.mainCityLatitude %></p>
+                <p id="lng" style="display: none;"><%= congregation.mainCityLongitude %></p>
+                <div id="map" style="width: 100%; height: 400px; margin: 30px 0; padding-bottom: 20px; "></div>
+            <% } else { %>
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <div class="alert alert-info text-center info" role="alert">
+                            <strong>
+                                Edytuj informacje zborowe i uzupełnij pole <em>Główne miasto zboru</em>, żeby zobaczyć niespodziankę. 
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
     </div>
 
     <script>

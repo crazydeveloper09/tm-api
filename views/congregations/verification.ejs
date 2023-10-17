@@ -1,9 +1,11 @@
 <%- include("../partials/headera") %>
-<div class="col-lg-6 col-md-12" id="form">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-12" style="margin-top: 6%">
+        <div class="col-lg-6 col-md-12" id="form">
             <div id="form1">
-               
+                <div>
+                    <h1 class="text-center" class="appTitle"><i class="fas fa-map-marked-alt fa-3x"></i> <br> Territory Manager</h1>
+                    <h4 class="text-center" class="appDescription">I zarządzanie terenami staje się o wiele prostsze</h4>
+                </div>
                 <h1 class="login">Zweryfikuj konto w Territory Manager</h1>
                 <% if(error.length > 0){ %>
                     <div class="alert alert-danger" role="alert">
@@ -41,7 +43,6 @@
         </div>
         
     </div>
-</div>
 <script>
     document.getElementById("form4").addEventListener("submit", () => {
         document.getElementById("send").setAttribute("disabled", "disabled");
