@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import convertHTMLToPDF from "pdf-puppeteer";
 import { __dirname } from "../app.js";
+import chromium from 'chromium';
 const app = express();
 
 app.use(flash());
@@ -46,8 +47,12 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                     printBackground: true,
                     landscape: true
                 }
+                
+                const puppeteerArgs = {
+                  executablePath: chromium.path
+                }
         
-                convertHTMLToPDF(str, callback, options);
+                convertHTMLToPDF(str, callback, options, puppeteerArgs);
             });
             
         })
