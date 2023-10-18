@@ -49,7 +49,8 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                 }
                 
                 const puppeteerArgs = {
-                  executablePath: chromium.path
+                  headless:false,
+                  args: ["--no-sandbox"]
                 }
         
                 convertHTMLToPDF(str, callback, options, puppeteerArgs);
