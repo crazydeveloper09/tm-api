@@ -48,7 +48,7 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                     landscape: true
                 }
                 
-                const puppeteerArgs = { headless: "new", args: ["--no-sandbox", "--disable-setuid-sandbox"]}
+                const puppeteerArgs = { headless:false, args: ["--no-sandbox"]}
         
                 convertHTMLToPDF(str, callback, options, puppeteerArgs);
             });
