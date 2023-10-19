@@ -37,8 +37,17 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                   
                     
                 
-                    req.flash("success", "Plik pomyślnie utworzony. Zobacz folder Pobrane")
-                    res.redirect(`/congregations/${req.user._id}`)
+                   res.download(data.filename, `Grupy_sluzby_${title}.pdf`, (err) => {
+                        if (err) {
+                            res.send({
+                                error : err,
+                                msg   : "Problem downloading the file"
+                            })
+                        } else {
+                            req.flash("success", "Plik pomyślnie utworzony. Zobacz folder Pobrane")
+                    
+                        }
+                    })
                 });
             
             });
