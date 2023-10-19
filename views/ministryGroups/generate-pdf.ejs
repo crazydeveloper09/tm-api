@@ -18,6 +18,12 @@
         .table>:not(caption)>*>* {
           padding: 4px
         }
+      td {
+        font-size: 10px
+      }
+      tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
         thead {
             background: #9999CC;
             color: #fff;
@@ -53,7 +59,7 @@
                                 <tr class="text-center">
                                    <% ministryGroups.forEach((group, j) => { %>
                                         <% if(ministryGroups[j]?.preachers[i]?.name === group.overseer.name){ %>
-                                            <td style="background-color: #ece9e9;"><strong><%= ministryGroups[j]?.preachers[i]?.name %></strong></td>
+                                            <td style="background-color: rgba(40,167,69, 0.2);"><strong><%= ministryGroups[j]?.preachers[i]?.name %></strong></td>
                                         <% } else { %>
                                             <td><%= ministryGroups[j]?.preachers[i]?.name %></td>
                                         <% } %>
