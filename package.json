@@ -32,5 +32,8 @@
   "type": "module",
   "devDependencies": {
     "@googlemaps/markerclusterer": "^2.4.0"
+  },
+  "engines": {
+    "node": "16.14.2"
   }
 }
