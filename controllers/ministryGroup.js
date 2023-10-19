@@ -30,7 +30,7 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                 const DOWNLOAD_DIR = path.join(process.env.HOME || process.env.USERPROFILE, 'downloads/')
 
 
-                var options = { format: 'A4', orientation: 'landscape' };
+                var options = { format: 'A4', orientation: 'landscape', timeout: 540000 };
 
                 pdf.create(str, options).toFile(`${DOWNLOAD_DIR}Grupy_sluzby_${title}.pdf`, function(err, data) {
                     if (err) return console.log(err);
