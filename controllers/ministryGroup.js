@@ -34,6 +34,8 @@ export const generateListOfMinistryGroups = (req, res, next) => {
 
                 pdf.create(str, options).toFile(`${DOWNLOAD_DIR}Grupy_sluzby_${title}.pdf`, function(err, data) {
                     if (err) return console.log(err);
+                  
+                    
                 
                     req.flash("success", "Plik pomyślnie utworzony. Zobacz folder Pobrane")
                     res.redirect(`/congregations/${req.user._id}`)
