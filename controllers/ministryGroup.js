@@ -6,10 +6,7 @@ import methodOverride from "method-override";
 import ejs from 'ejs';
 import pdf from 'html-pdf';
 import path from 'path';
-import fs from 'fs';
-import convertHTMLToPDF from "pdf-puppeteer";
 import { __dirname } from "../app.js";
-import chromium from 'chromium';
 const app = express();
 
 app.use(flash());
@@ -31,26 +28,17 @@ export const generateListOfMinistryGroups = (req, res, next) => {
 
                 const title = data.currentUser.username.split(" ").join("-");
                 const DOWNLOAD_DIR = path.join(process.env.HOME || process.env.USERPROFILE, 'downloads/')
-                const callback = (pdf) => {
-                    fs.writeFile(`${DOWNLOAD_DIR}Grupy_sluzby_${title}.pdf`, pdf, {}, (err) => {
-                        if(err){
-                            return console.error('error', err)
-                        }
-                        req.flash("success", "Plik pomyślnie utworzony. Zobacz sekcję Pobrane")
-                        res.redirect(`/congregations/${req.user._id}`)
-                    })
 
-                    
-                }
 
-                const options = {
-                    printBackground: true,
-                    landscape: true
-                }
+                var options = { format: 'A4', orientation: 'landscape' };
+
+                pdf.create(str, options).toFile(`${DOWNLOAD_DIR}Grupy_sluzby_${title}.pdf`, function(err, data) {
+                    if (err) return console.log(err);
                 
-                const puppeteerArgs = { headless:false, args: ["--no-sandbox"]}
-        
-                convertHTMLToPDF(str, callback, options, puppeteerArgs);
+                    req.flash("success", "Plik pomyślnie utworzony. Zobacz folder Pobrane")
+                    res.redirect(`/congregations/${req.user._id}`)
+                });
+            
             });
             
         })
