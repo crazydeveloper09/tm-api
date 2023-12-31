@@ -1,15 +1,12 @@
 import express from "express";
 import { isLoggedIn } from "../helpers.js";
 import {
-    confirmDeletingTerritory,
     createTerritory,
     deleteTerritory,
     editTerritory,
-    renderListOfAllTerritories,
-    renderListOfAvailableTerritories,
-    renderNewTerritoryForm,
-    renderTerritoryEditForm,
-    renderTerritoryHistory,
+    getListOfAllTerritories,
+    getListOfAvailableTerritories,
+    getTerritoryHistory,
     searchAllTerritories,
     searchAvailableTerritories,
     searchChangesByDate,
@@ -17,14 +14,11 @@ import {
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", isLoggedIn, renderListOfAllTerritories);
-router.get("/available", isLoggedIn, renderListOfAvailableTerritories);
-router.get("/new", isLoggedIn, renderNewTerritoryForm);
-router.get("/search", isLoggedIn, searchAllTerritories);
+router.get("/", isLoggedIn, getListOfAllTerritories);
+router.get("/available", isLoggedIn, getListOfAvailableTerritories);
+router.get("/all/search", isLoggedIn, searchAllTerritories);
 router.get("/dateChanges", isLoggedIn, searchChangesByDate);
-router.get("/:territory_id/edit", isLoggedIn, renderTerritoryEditForm);
-router.get("/:territory_id", isLoggedIn, renderTerritoryHistory);
-router.get("/:territory_id/delete", isLoggedIn, confirmDeletingTerritory);
+router.get("/:territory_id", isLoggedIn, getTerritoryHistory);
 router.get("/available/search", isLoggedIn, searchAvailableTerritories);
 
 router.post("/", isLoggedIn, createTerritory);

@@ -1,23 +1,21 @@
 import express from "express";
 import { isLoggedIn } from "../helpers.js";
 import {
-    confirmDeletingPreacher,
     createPreacher,
     deletePreacher,
     editPreacher,
-    renderListOfPreachers,
-    renderNewPreacherForm,
-    renderPreacherEditForm,
+    getAllPreachers,
+    getListOfPreachers,
+    getPreacherInfo,
     searchPreachers,
 } from "../controllers/preacher.js";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", isLoggedIn, renderListOfPreachers);
-router.get("/new", isLoggedIn, renderNewPreacherForm);
-router.get("/:preacher_id/edit", isLoggedIn, renderPreacherEditForm);
-router.get("/:preacher_id/delete", isLoggedIn, confirmDeletingPreacher);
+router.get("/", isLoggedIn, getListOfPreachers);
+router.get("/all", isLoggedIn, getAllPreachers);
 router.get("/search", isLoggedIn, searchPreachers);
+router.get("/:preacher_id", isLoggedIn, getPreacherInfo);
 
 router.post("/", isLoggedIn, createPreacher);
 

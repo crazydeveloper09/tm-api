@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const territorySchema = new mongoose.Schema({
     city: String,
@@ -31,5 +32,7 @@ const territorySchema = new mongoose.Schema({
     latitude: Number,
     location: String,
 });
+
+territorySchema.plugin(mongoosePaginate)
 
 export default mongoose.model("Territory", territorySchema);

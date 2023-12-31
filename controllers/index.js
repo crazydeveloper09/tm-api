@@ -9,28 +9,13 @@ const app = express();
 app.use(flash());
 app.use(methodOverride("_method"));
 
-export const redirectToLogin = (req, res, next) => {
-    res.redirect("/login");
-}
-
-export const renderLoginForm = (req, res, next) => {
-    res.render("login", {
-        header: "Logowanie | Territory Manager"
-    });
-}
-
-export const renderPrivacyPolicy = (req, res, next) => {
-    res.render("policy", {
-        header: "Polityka Prywatności i klauzula RODO | Territory Manager"
-    });
-}
 
 export const authenticateCongregation = (req, res, next) => {
     passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
         if (!user) {
-            req.flash("error", "Zła nazwa użytkownika lub hasło");
-            return res.redirect(`/login`);
+            console.log(req.body)
+            return res.send("Zła nazwa użytkownika lub hasło");
         }
         if(user.verificated){
             req.logIn(user, function (err) {
@@ -50,7 +35,8 @@ export const authenticateCongregation = (req, res, next) => {
                 chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby. Proszę wpisz na stronie poniższy kod weryfikacyjny.`;
                 sendEmail(subject, user.territoryServantEmail, emailText, user)
                 sendEmail(subject, user.ministryOverseerEmail, emailText, user)
-                return res.redirect(`/congregations/${user._id}/two-factor`);
+                
+                return res.send({ message: "Poprawnie zalogowano", userID: user._id});
             });
         } else {
             res.redirect(`/congregations/${user._id}/verification`)
@@ -61,5 +47,5 @@ export const authenticateCongregation = (req, res, next) => {
 
 export const logOutCongregation = (req, res, next) => {
     req.logout();
-    res.redirect("/login");
+    res.send("Poprawnie wylogowano");
 }

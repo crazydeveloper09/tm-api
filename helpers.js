@@ -1,12 +1,7 @@
 import mailgun from 'mailgun-js';
+import passport from 'passport';
 
-export const isLoggedIn = (req, res, next)  => {
-    if(req.isAuthenticated()) {
-        return next();
-    }
-    req.flash("error", "Prosimy zaloguj się najpierw");
-    res.redirect("/login");
-}
+export const isLoggedIn = passport.authenticate('jwt');
 
 export const escapeRegex = (text) => {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

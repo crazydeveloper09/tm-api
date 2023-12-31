@@ -31,95 +31,73 @@ let geocoder = node_geocoder(options);
 app.use(flash());
 app.use(methodOverride("_method"));
 
-export const renderListOfAllTerritories = (req, res, next) => {
+export const getListOfAllTerritories = (req, res, next) => {
+    const paginationOptions = {
+        limit: req.query.limit || 20,
+        page: req.query.page || 1,
+        populate: 'preacher',
+        sort: {number: 1}
+    }
     Territory
-        .find({congregation: req.user._id})
-        .sort({number: 1})
-        .populate("preacher")
-        .exec()
-        .then((territories) => {
+        .paginate({congregation: req.user._id}, paginationOptions)
+        .then((result) => {
             Preacher
                 .find({congregation: req.user._id})
                 .sort({name: 1})
                 .exec()
                 .then((preachers) => {
-                    res.render("./territories/index", {
-                        currentUser: req.user, 
-                        territories: territories, 
-                        preachers: preachers,
-                        countDaysFromNow: countDaysFromNow,
-                        dateToISOString: dateToISOString, 
-                        header: "Wszystkie tereny | Territory Manager", 
-                        all: "" 
-                    });
+                    res.json(result);
                 })
                 .catch((err) => console.log(err))
         })
         .catch((err) => console.log(err))
 }
 
-export const renderListOfAvailableTerritories = (req, res, next) => {
+export const getListOfAvailableTerritories = (req, res, next) => {
+    const paginationOptions = {
+        limit: req.query.limit || 15,
+        page: req.query.page || 1,
+        populate: 'preacher',
+        sort: {lastWorked: 1}
+    }
     Territory
         .find({ $and: [{congregation: req.user._id}, {type: 'free'}]})
-        .populate("preacher")
-        .sort({lastWorked: 1})
         .exec()
         .then((territories) => {
-            res.render("index", {
-                currentUser: req.user, 
-                territories: territories,
-                countDaysFromNow: countDaysFromNow, 
-                header: "Home | Territory Manager", 
-                home: ""
-            });
+            Territory
+                .paginate({ $and: [{congregation: req.user._id}, {type: 'free'}]}, paginationOptions)
+                .then((result) => {
+                    res.json(result);
+                })
+                .catch((err) => console.log(err))
         })
         .catch((err) => console.log(err))
 }
 
-export const renderNewTerritoryForm = (req, res, next) => {
-    Preacher
-        .find({congregation: req.user._id})
-        .sort({name: 1})
-        .exec()
-        .then((preachers) => {
-            res.render("./territories/new", { 
-                currentUser: req.user, 
-                preachers: preachers, 
-                header: "Dodaj teren | Territory Manager", 
-                newT: "" 
-            });
-        })
-        .catch((err) => console.log(err))
-}
 
 export const searchAllTerritories = (req, res, next) => {
+    const paginationOptions = {
+        limit: req.query.limit || 20,
+        page: req.query.page || 1,
+        populate: 'preacher',
+        sort: {number: 1}
+    }
     if(typeof req.query.city !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.city), 'gi');
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {city: regex}, 
                     {congregation: req.user._id}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
-            .then((territories) => {
+            }, paginationOptions)
+            .then((result) => {
                 Preacher
                     .find({congregation: req.user._id})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
-                        res.render("./territories/search", {
-                            param: req.query.city, 
-                            territories: territories, 
-                            currentUser: req.user, 
-                            preachers: preachers,
-                            countDaysFromNow: countDaysFromNow,
-                            dateToISOString: dateToISOString,
-                            header: "Wyszukiwanie terenów po miejscowości | Territory Manager"
-                        });
+                        res.json(result);
                     })
                     .catch((err) => console.log(err))
             })
@@ -127,30 +105,19 @@ export const searchAllTerritories = (req, res, next) => {
     } else if(typeof req.query.street !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.street), 'gi');
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {street: regex}, 
                     {congregation: req.user._id}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
-            .then((territories) => {
+            }, paginationOptions)
+            .then((result) => {
                 Preacher
                     .find({congregation: req.user._id})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
-                        res.render("./territories/search", {
-                            param: req.query.street, 
-                            territories: territories, 
-                            currentUser: req.user, 
-                            preachers: preachers,
-                            countDaysFromNow: countDaysFromNow,
-                            dateToISOString: dateToISOString,
-                            header: "Wyszukiwanie terenów po ulicy | Territory Manager"
-                        });
+                        res.json(result);
                     })
                     .catch((err) => console.log(err))
             })
@@ -159,30 +126,19 @@ export const searchAllTerritories = (req, res, next) => {
     } else if(typeof req.query.number !== 'undefined'){
         
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {number: req.query.number}, 
                     {congregation: req.user._id}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
-            .then((territories) => {
+            }, paginationOptions)
+            .then((result) => {
                 Preacher
                     .find({congregation: req.user._id})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
-                        res.render("./territories/search", {
-                            param: req.query.number, 
-                            territories: territories, 
-                            currentUser: req.user, 
-                            preachers: preachers,
-                            countDaysFromNow: countDaysFromNow,
-                            dateToISOString: dateToISOString,
-                            header: "Wyszukiwanie terenów po nr terenu | Territory Manager"
-                        });
+                        res.json(result);
                     })
                     .catch((err) => console.log(err))
             })
@@ -198,30 +154,19 @@ export const searchAllTerritories = (req, res, next) => {
             .exec()
             .then((preacher) => {
                 Territory
-                    .find({
+                    .paginate({
                         $and: [
                             {preacher: preacher._id}, 
                             {congregation: req.user._id}
                         ]
-                    })
-                    .sort({number: 1})
-                    .populate("preacher")
-                    .exec()
-                    .then((territories) => {
+                    }, paginationOptions)
+                    .then((result) => {
                         Preacher
                             .find({congregation: req.user._id})
                             .sort({name: 1})
                             .exec()
                             .then((preachers) => {
-                                res.render("./territories/search", {
-                                    param: preacher.name, 
-                                    territories: territories,
-                                    currentUser: req.user, 
-                                    preachers: preachers,
-                                    countDaysFromNow: countDaysFromNow,
-                                    dateToISOString: dateToISOString,
-                                    header: "Wyszukiwanie terenów po głosicielu | Territory Manager"
-                                });
+                                res.json(result);
                             })
                             .catch((err) => console.log(err))
                     })
@@ -231,60 +176,38 @@ export const searchAllTerritories = (req, res, next) => {
     } else if(typeof req.query.kind !== 'undefined'){
         
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {kind: req.query.kind}, 
                     {congregation: req.user._id}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
-            .then((territories) => {
+            }, paginationOptions)
+            .then((result) => {
                 Preacher
                     .find({congregation: req.user._id})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
-                        res.render("./territories/search", {
-                            param: req.query.kind, 
-                            territories: territories,
-                            currentUser: req.user, 
-                            preachers: preachers,
-                            countDaysFromNow: countDaysFromNow,
-                            dateToISOString: dateToISOString,
-                            header: "Wyszukiwanie terenów po rodzaju terenu | Territory Manager"
-                        })
+                        res.json(result)
                     })
                     .catch((err) => console.log(err))
             })
             .catch((err) => console.log(err))
-    } else {
+    } else if(typeof req.query.taken !== 'undefined') {
         Territory
-        .find({
+        .paginate({
             $and: [
                 {type: { $not: /free/ }}, 
                 {congregation: req.user._id}
             ]
-        })
-        .sort({number: 1})
-        .populate("preacher")
-        .exec()
-        .then((territories) => {
+        }, paginationOptions)
+        .then((result) => {
             Preacher
                 .find({congregation: req.user._id})
                 .sort({name: 1})
                 .exec()
                 .then((preachers) => {
-                    res.render("./territories/search", {
-                        param: 'Zajęte tereny', 
-                        territories: territories, 
-                        currentUser: req.user, 
-                        preachers: preachers,
-                        countDaysFromNow: countDaysFromNow,
-                        dateToISOString: dateToISOString,
-                        header: "Wyszukiwanie terenów | Territory Manager"
-                    });
+                    res.json(result);
                 })
                 .catch((err) => console.log(err))
         })
@@ -293,13 +216,15 @@ export const searchAllTerritories = (req, res, next) => {
 }
 
 export const createTerritory = (req, res, next) => {
+    const taken = new Date(req.body.taken).toISOString().slice(0, 10);
+    const lastWorked = new Date(req.body.lastWorked).toISOString().slice(0, 10);
     let newTerritory = new Territory({
         city: req.body.city, 
         street: req.body.street, 
-        lastWorked: req.body.lastP,
         beginNumber: req.body.beginNumber,
         endNumber: req.body.endNumber,
-        taken: req.body.taken,
+        taken,
+        lastWorked,
         description: req.body.description,
         number: req.body.number,
         kind: req.body.kind,
@@ -308,13 +233,12 @@ export const createTerritory = (req, res, next) => {
     Territory
         .create(newTerritory)
         .then((createdTerritory) => {
-            console.log(req.body.location)
             geocoder.geocode(req.body.location, function (err, data) {
                 if (err || !data.length) {
                     req.flash('error', err.message);
                     return res.redirect(`/territories/new`);
                 }
-                console.log(data)
+            
                 if(req.body.preacher === ""){
                     createdTerritory.type="free";
                 } else {
@@ -325,8 +249,8 @@ export const createTerritory = (req, res, next) => {
                 createdTerritory.location = data[0].formattedAddress;
                 createdTerritory.isPhysicalCard = req.body.isPhysicalCard === 'true';
                 createdTerritory.save();
-
-                res.redirect("/territories/available");
+                console.log(createdTerritory)
+                res.json(createdTerritory);
             })
             // geocoder
             //     .forwardGeocode({
@@ -342,7 +266,7 @@ export const createTerritory = (req, res, next) => {
         .catch((err) => console.log(err))
 }
 
-export const renderTerritoryHistory = (req, res, next) => {
+export const getTerritoryHistory = (req, res, next) => {
     Territory
         .findById(req.params.territory_id)
         .populate(["preacher", "history", {
@@ -359,43 +283,13 @@ export const renderTerritoryHistory = (req, res, next) => {
                 .exec()
                 .then((territories) => {
                     const currentIndex = territories.findIndex(t => t._id.toString() === territory._id.toString());
-                    res.render("./territories/show", {
-                        header: `Teren nr ${territory.number} | Territory Manager`,
-                        territory: territory,
-                        countDaysFromNow: countDaysFromNow,
-                        currentUser: req.user,
-                        currentIndex: currentIndex,
-                        territories: territories
-                    })
+                    res.json({territories, territory, currentIndex})
                 })
                 .catch((err) => console.log(err))
         })
         .catch((err) => console.log(err))
 }
 
-export const renderTerritoryEditForm = (req, res, next) => {
-    Territory
-        .findById(req.params.territory_id)
-        .sort({number: 1})
-        .populate("preacher")
-        .exec()
-        .then((territory) => {
-            Preacher
-                .find({congregation: req.user._id})
-                .sort({name: 1})
-                .exec()
-                .then((preachers) => {
-                    res.render("./territories/edit", { 
-                        currentUser: req.user, 
-                        territory: territory, 
-                        preachers: preachers, 
-                        header: `Edytuj teren nr ${territory?.number} zboru ${req.user.username} | Territory Manager`
-                    });
-                })
-                .catch((err) => console.log(err))
-        })
-        .catch((err) => console.log(err))
-}
 
 export const editTerritory = (req, res, next) => {
     Territory
@@ -414,6 +308,8 @@ export const editTerritory = (req, res, next) => {
                 Checkout
                 .create(record.preacher ? { record: record, preacher: record.preacher } : { record: record })
                 .then((createdCheckout) => {
+                    const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
+                    const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
                     territory.history.push(createdCheckout);
                     
                     territory.latitude = data[0].latitude;
@@ -423,10 +319,10 @@ export const editTerritory = (req, res, next) => {
                     territory.street = req.body.territory.street;
                     territory.number = req.body.territory.number;
                     territory.description = req.body.territory.description;
-                    territory.taken = req.body.territory.taken;
+                    territory.taken = taken;
                     territory.beginNumber = req.body.territory.beginNumber;
                     territory.endNumber = req.body.territory.endNumber;
-                    territory.lastWorked = req.body.territory.lastWorked;
+                    territory.lastWorked = lastWorked;
                     territory.kind = req.body.territory.kind;
                     
                     territory.isPhysicalCard = req.body.territory.isPhysicalCard === 'true';
@@ -438,7 +334,7 @@ export const editTerritory = (req, res, next) => {
                         territory.type = undefined;
                     }
                     territory.save();
-                    res.redirect(`/territories/${territory._id}`);
+                    res.json(territory);
                 })
                 .catch((err) => console.log(err))
             });
@@ -451,23 +347,10 @@ export const deleteTerritory = (req, res, next) => {
     Territory
         .findByIdAndDelete(req.params.territory_id)
         .exec()
-        .then((territory) =>  res.redirect("/territories"))
+        .then((territory) =>  res.json(territory))
         .catch((err) => console.log(err))
 }
 
-export const confirmDeletingTerritory = (req, res, next) => {
-    Territory
-        .findById(req.params.territory_id)
-        .exec()
-        .then((territory) =>{
-            res.render("./territories/deleteConfirm", {
-                territory: territory,
-                currentUser: req.user,
-                header: `Potwierdzenie usunięcia terenu | Territory Manager`
-            });
-        })
-        .catch((err) => console.log(err))
-}
 
 export const searchAvailableTerritories = (req, res, next) => {
     if(typeof req.query.city !== 'undefined'){
@@ -484,13 +367,7 @@ export const searchAvailableTerritories = (req, res, next) => {
             .populate("preacher")
             .exec()
             .then((territories) => {
-                res.render("./territories/availableSearch", {
-                    param: req.query.city, 
-                    territories: territories, 
-                    currentUser: req.user,
-                    countDaysFromNow: countDaysFromNow, 
-                    header: "Wyszukiwanie wolnych terenów po miejscowości | Territory Manager"
-                });
+                res.json(territories);
             })
             .catch((err) => console.log(err))
     } else if(typeof req.query.street !== 'undefined'){
@@ -507,13 +384,7 @@ export const searchAvailableTerritories = (req, res, next) => {
             .populate("preacher")
             .exec()
             .then((territories) => {
-                res.render("./territories/availableSearch", {
-                    param: req.query.street, 
-                    territories: territories, 
-                    currentUser: req.user, 
-                    countDaysFromNow: countDaysFromNow,
-                    header: "Wyszukiwanie wolnych terenów po ulicy | Territory Manager"
-                });
+                res.json(territories);
             })
             .catch((err) => console.log(err))
     } else if(typeof req.query.number !== 'undefined'){
@@ -530,13 +401,7 @@ export const searchAvailableTerritories = (req, res, next) => {
             .populate("preacher")
             .exec()
             .then((territories) => {
-                res.render("./territories/availableSearch", {
-                    param: req.query.number, 
-                    territories: territories, 
-                    currentUser: req.user, 
-                    countDaysFromNow: countDaysFromNow,
-                    header: "Wyszukiwanie wolnych terenów po nr terenu | Territory Manager"
-                });
+                res.json(territories);
             })
             .catch((err) => console.log(err))
     } else if(req.query.kind !== 'undefined'){
@@ -552,13 +417,7 @@ export const searchAvailableTerritories = (req, res, next) => {
             .populate("preacher")
             .exec()
             .then((territories) => {
-                res.render("./territories/availableSearch", {
-                    param: req.query.kind, 
-                    territories: territories, 
-                    currentUser: req.user, 
-                    countDaysFromNow: countDaysFromNow,
-                    header: "Wyszukiwanie wolnych terenów po nr terenu | Territory Manager"
-                });
+                res.json(territories);
             })
             .catch((err) => console.log(err))
     }
@@ -579,15 +438,7 @@ export const searchChangesByDate = (req, res, next) => {
             .sort({name: 1})
             .exec()
             .then((preachers) => {
-                res.render('./territories/dateChanges', {
-                    territories: territories,
-                    date: req.query.date,
-                    header: 'Wyszukiwanie po dacie | Territory Manager',
-                    currentUser: req.user,
-                    preachers: preachers,
-                    countDaysFromNow: countDaysFromNow,
-                    dateToISOString: dateToISOString
-                })
+                res.json(territories)
             })
             .catch((err) => console.log(err))
         })
