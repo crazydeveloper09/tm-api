@@ -353,19 +353,22 @@ export const deleteTerritory = (req, res, next) => {
 
 
 export const searchAvailableTerritories = (req, res, next) => {
+    const paginationOptions = {
+        limit: req.query.limit || 20,
+        page: req.query.page || 1,
+        populate: 'preacher',
+        sort: {lastWorked: 1}
+    }
     if(typeof req.query.city !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.city), 'gi');
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {city: regex}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
@@ -373,16 +376,13 @@ export const searchAvailableTerritories = (req, res, next) => {
     } else if(typeof req.query.street !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.street), 'gi');
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {street: regex}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
@@ -390,32 +390,26 @@ export const searchAvailableTerritories = (req, res, next) => {
     } else if(typeof req.query.number !== 'undefined'){
         
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {number: req.query.number}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
             .catch((err) => console.log(err))
     } else if(req.query.kind !== 'undefined'){
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {kind: req.query.kind}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
