@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
 // import mbxClient from '@mapbox/mapbox-sdk';
 // import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
-import { countDaysFromNow, dateToISOString, escapeRegex } from "../helpers.js";
+import { countDaysFromNow, dateToISOString, escapeRegex, createCheckout } from "../helpers.js";
 
 dotenv.config();
 
@@ -298,19 +298,21 @@ export const editTerritory = (req, res, next) => {
         .exec()
         .then((territory) => {
             let record = territory;
-            geocoder.geocode(req.body.territory.location, function (err, data) {
+            geocoder.geocode(req.body.territory.location, async function (err, data) {
                 if (err || !data.length) {
                     req.flash('error', err.message);
                     return res.redirect(`/territories/${req.user._id}/edit`);
                 }
+                const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
+                const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
 
-
-                Checkout
-                .create(record.preacher ? { record: record, preacher: record.preacher } : { record: record })
-                .then((createdCheckout) => {
-                    const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
-                    const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
-                    territory.history.push(createdCheckout);
+             
+                let checkout = territory.preacher?.toString().length !== 0 && req.body.territory.preacher === "" && await createCheckout(territory, req.body);
+            
+        
+                if(checkout){
+                    territory.history.push(checkout);
+                }
                     
                     territory.latitude = data[0].latitude;
                     territory.longitude = data[0].longitude;
@@ -335,8 +337,7 @@ export const editTerritory = (req, res, next) => {
                     }
                     territory.save();
                     res.json(territory);
-                })
-                .catch((err) => console.log(err))
+                
             });
             
         })
