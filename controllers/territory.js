@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
 // import mbxClient from '@mapbox/mapbox-sdk';
 // import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
-import { countDaysFromNow, dateToISOString, escapeRegex } from "../helpers.js";
+import { countDaysFromNow, createCheckout, dateToISOString, escapeRegex } from "../helpers.js";
 
 dotenv.config();
 
@@ -294,23 +294,25 @@ export const getTerritoryHistory = (req, res, next) => {
 export const editTerritory = (req, res, next) => {
     Territory
         .findById(req.params.territory_id)
-        .populate("preacher")
         .exec()
         .then((territory) => {
             let record = territory;
-            geocoder.geocode(req.body.territory.location, function (err, data) {
+            geocoder.geocode(req.body.territory.location, async function (err, data) {
                 if (err || !data.length) {
                     req.flash('error', err.message);
                     return res.redirect(`/territories/${req.user._id}/edit`);
                 }
 
 
-                Checkout
-                .create(record.preacher ? { record: record, preacher: record.preacher } : { record: record })
-                .then((createdCheckout) => {
+                
                     const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
                     const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
-                    territory.history.push(createdCheckout);
+                    let checkout = territory.preacher?.toString().length !== 0 && req.body.territory.preacher === "" && await createCheckout(territory, req.body);
+            
+        
+                    if(checkout){
+                        territory.history.push(checkout);
+                    }
                     
                     territory.latitude = data[0].latitude;
                     territory.longitude = data[0].longitude;
@@ -335,8 +337,7 @@ export const editTerritory = (req, res, next) => {
                     }
                     territory.save();
                     res.json(territory);
-                })
-                .catch((err) => console.log(err))
+                
             });
             
         })
@@ -353,19 +354,22 @@ export const deleteTerritory = (req, res, next) => {
 
 
 export const searchAvailableTerritories = (req, res, next) => {
+    const paginationOptions = {
+        limit: req.query.limit || 20,
+        page: req.query.page || 1,
+        populate: 'preacher',
+        sort: {lastWorked: 1}
+    }
     if(typeof req.query.city !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.city), 'gi');
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {city: regex}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
@@ -373,16 +377,13 @@ export const searchAvailableTerritories = (req, res, next) => {
     } else if(typeof req.query.street !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.street), 'gi');
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {street: regex}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
@@ -390,32 +391,26 @@ export const searchAvailableTerritories = (req, res, next) => {
     } else if(typeof req.query.number !== 'undefined'){
         
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {number: req.query.number}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
             .catch((err) => console.log(err))
     } else if(req.query.kind !== 'undefined'){
         Territory
-            .find({
+            .paginate({
                 $and: [
                     {kind: req.query.kind}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            })
-            .sort({number: 1})
-            .populate("preacher")
-            .exec()
+            }, paginationOptions)
             .then((territories) => {
                 res.json(territories);
             })
