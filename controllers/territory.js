@@ -6,18 +6,12 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
-// import mbxClient from '@mapbox/mapbox-sdk';
-// import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
 import { countDaysFromNow, dateToISOString, escapeRegex, createCheckout } from "../helpers.js";
 
 dotenv.config();
 
 const app = express();
-// const mbxMainClient = mbxClient({ accessToken: process.env.MAPBOX_TOKEN });
-// const geocoder = mbxGeocoding(mbxMainClient);
 
-// console.log(mbxMainClient);
-// console.log(geocoder.forwardGeocode())
 
 let options = {
     provider: 'google',
@@ -252,16 +246,7 @@ export const createTerritory = (req, res, next) => {
                 console.log(createdTerritory)
                 res.json(createdTerritory);
             })
-            // geocoder
-            //     .forwardGeocode({
-            //         query: 'Paris, France',
-            //         limit: 2
-            //     })
-            //     .send()
-            //     .then((response) => {
-            //         console.log(response.body)
-            //     })
-            //     .catch(err => console.log(err))  
+      
         })
         .catch((err) => console.log(err))
 }
