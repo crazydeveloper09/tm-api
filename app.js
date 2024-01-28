@@ -76,9 +76,9 @@ passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
 
 
 app.use("/preachers", preachersRoutes);
+app.use("/territories", territoriesRoutes);
 app.use("/congregations", congregationsRoutes)
 app.use("/congregations/:congregation_id/ministryGroups", ministryGroupsRoutes)
-app.use("/territories", territoriesRoutes);
 app.use(indexRoutes);
 
 app.listen(process.env.PORT);

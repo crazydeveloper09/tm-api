@@ -5,8 +5,6 @@ const checkoutSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    takenDate: Date,
-    passedBackDate: Date,
     record: Object,
     preacher:  {
         type: mongoose.Schema.Types.ObjectId,

@@ -6,12 +6,18 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
-import { countDaysFromNow, dateToISOString, escapeRegex, createCheckout } from "../helpers.js";
+// import mbxClient from '@mapbox/mapbox-sdk';
+// import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
+import { countDaysFromNow, dateToISOString, escapeRegex } from "../helpers.js";
 
 dotenv.config();
 
 const app = express();
+// const mbxMainClient = mbxClient({ accessToken: process.env.MAPBOX_TOKEN });
+// const geocoder = mbxGeocoding(mbxMainClient);
 
+// console.log(mbxMainClient);
+// console.log(geocoder.forwardGeocode())
 
 let options = {
     provider: 'google',
@@ -246,7 +252,16 @@ export const createTerritory = (req, res, next) => {
                 console.log(createdTerritory)
                 res.json(createdTerritory);
             })
-      
+            // geocoder
+            //     .forwardGeocode({
+            //         query: 'Paris, France',
+            //         limit: 2
+            //     })
+            //     .send()
+            //     .then((response) => {
+            //         console.log(response.body)
+            //     })
+            //     .catch(err => console.log(err))  
         })
         .catch((err) => console.log(err))
 }
@@ -279,45 +294,49 @@ export const getTerritoryHistory = (req, res, next) => {
 export const editTerritory = (req, res, next) => {
     Territory
         .findById(req.params.territory_id)
+        .populate("preacher")
         .exec()
         .then((territory) => {
             let record = territory;
-            geocoder.geocode(req.body.territory.location, async function (err, data) {
+            geocoder.geocode(req.body.territory.location, function (err, data) {
                 if (err || !data.length) {
                     req.flash('error', err.message);
                     return res.redirect(`/territories/${req.user._id}/edit`);
                 }
-        
-                let checkout = territory.preacher?.toString().length !== 0 && req.body.territory.preacher === "" && await createCheckout(territory, req.body);
-            
-        
-                if(checkout){
-                    territory.history.push(checkout);
-                }
-                        
-                        territory.latitude = data[0].latitude;
-                        territory.longitude = data[0].longitude;
-                        territory.location = data[0].formattedAddress;
-                        territory.city = req.body.territory.city;
-                        territory.street = req.body.territory.street;
-                        territory.number = req.body.territory.number;
-                        territory.description = req.body.territory.description;
-                        territory.taken = req.body.territory.taken;
-                        territory.beginNumber = req.body.territory.beginNumber;
-                        territory.endNumber = req.body.territory.endNumber;
-                        territory.lastWorked = req.body.territory.lastWorked;
-                        territory.kind = req.body.territory.kind;
-                        
-                        territory.isPhysicalCard = req.body.territory.isPhysicalCard === 'true';
-                        if(req.body.territory.preacher === ""){
-                            territory.preacher = undefined;
-                            territory.type = "free";
-                        } else {
-                            territory.preacher = req.body.territory.preacher;
-                            territory.type = undefined;
-                        }
-                        territory.save();
-                        res.json(territory);
+
+
+                Checkout
+                .create(record.preacher ? { record: record, preacher: record.preacher } : { record: record })
+                .then((createdCheckout) => {
+                    const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
+                    const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
+                    territory.history.push(createdCheckout);
+                    
+                    territory.latitude = data[0].latitude;
+                    territory.longitude = data[0].longitude;
+                    territory.location = data[0].formattedAddress;
+                    territory.city = req.body.territory.city;
+                    territory.street = req.body.territory.street;
+                    territory.number = req.body.territory.number;
+                    territory.description = req.body.territory.description;
+                    territory.taken = taken;
+                    territory.beginNumber = req.body.territory.beginNumber;
+                    territory.endNumber = req.body.territory.endNumber;
+                    territory.lastWorked = lastWorked;
+                    territory.kind = req.body.territory.kind;
+                    
+                    territory.isPhysicalCard = req.body.territory.isPhysicalCard === 'true';
+                    if(req.body.territory.preacher === ""){
+                        territory.preacher = undefined;
+                        territory.type = "free";
+                    } else {
+                        territory.preacher = req.body.territory.preacher;
+                        territory.type = undefined;
+                    }
+                    territory.save();
+                    res.json(territory);
+                })
+                .catch((err) => console.log(err))
             });
             
         })
@@ -334,22 +353,19 @@ export const deleteTerritory = (req, res, next) => {
 
 
 export const searchAvailableTerritories = (req, res, next) => {
-    const paginationOptions = {
-        limit: req.query.limit || 20,
-        page: req.query.page || 1,
-        populate: 'preacher',
-        sort: {lastWorked: 1}
-    }
     if(typeof req.query.city !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.city), 'gi');
         Territory
-            .paginate({
+            .find({
                 $and: [
                     {city: regex}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            }, paginationOptions)
+            })
+            .sort({number: 1})
+            .populate("preacher")
+            .exec()
             .then((territories) => {
                 res.json(territories);
             })
@@ -357,13 +373,16 @@ export const searchAvailableTerritories = (req, res, next) => {
     } else if(typeof req.query.street !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.street), 'gi');
         Territory
-            .paginate({
+            .find({
                 $and: [
                     {street: regex}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            }, paginationOptions)
+            })
+            .sort({number: 1})
+            .populate("preacher")
+            .exec()
             .then((territories) => {
                 res.json(territories);
             })
@@ -371,26 +390,32 @@ export const searchAvailableTerritories = (req, res, next) => {
     } else if(typeof req.query.number !== 'undefined'){
         
         Territory
-            .paginate({
+            .find({
                 $and: [
                     {number: req.query.number}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            }, paginationOptions)
+            })
+            .sort({number: 1})
+            .populate("preacher")
+            .exec()
             .then((territories) => {
                 res.json(territories);
             })
             .catch((err) => console.log(err))
     } else if(req.query.kind !== 'undefined'){
         Territory
-            .paginate({
+            .find({
                 $and: [
                     {kind: req.query.kind}, 
                     {congregation: req.user._id}, 
                     {type: 'free'}
                 ]
-            }, paginationOptions)
+            })
+            .sort({number: 1})
+            .populate("preacher")
+            .exec()
             .then((territories) => {
                 res.json(territories);
             })
