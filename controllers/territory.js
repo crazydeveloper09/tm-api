@@ -279,7 +279,6 @@ export const getTerritoryHistory = (req, res, next) => {
 export const editTerritory = (req, res, next) => {
     Territory
         .findById(req.params.territory_id)
-        .populate("preacher")
         .exec()
         .then((territory) => {
             let record = territory;
@@ -288,41 +287,37 @@ export const editTerritory = (req, res, next) => {
                     req.flash('error', err.message);
                     return res.redirect(`/territories/${req.user._id}/edit`);
                 }
-                const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
-                const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
-
-             
+        
                 let checkout = territory.preacher?.toString().length !== 0 && req.body.territory.preacher === "" && await createCheckout(territory, req.body);
             
         
                 if(checkout){
                     territory.history.push(checkout);
                 }
-                    
-                    territory.latitude = data[0].latitude;
-                    territory.longitude = data[0].longitude;
-                    territory.location = data[0].formattedAddress;
-                    territory.city = req.body.territory.city;
-                    territory.street = req.body.territory.street;
-                    territory.number = req.body.territory.number;
-                    territory.description = req.body.territory.description;
-                    territory.taken = taken;
-                    territory.beginNumber = req.body.territory.beginNumber;
-                    territory.endNumber = req.body.territory.endNumber;
-                    territory.lastWorked = lastWorked;
-                    territory.kind = req.body.territory.kind;
-                    
-                    territory.isPhysicalCard = req.body.territory.isPhysicalCard === 'true';
-                    if(req.body.territory.preacher === ""){
-                        territory.preacher = undefined;
-                        territory.type = "free";
-                    } else {
-                        territory.preacher = req.body.territory.preacher;
-                        territory.type = undefined;
-                    }
-                    territory.save();
-                    res.json(territory);
-                
+                        
+                        territory.latitude = data[0].latitude;
+                        territory.longitude = data[0].longitude;
+                        territory.location = data[0].formattedAddress;
+                        territory.city = req.body.territory.city;
+                        territory.street = req.body.territory.street;
+                        territory.number = req.body.territory.number;
+                        territory.description = req.body.territory.description;
+                        territory.taken = req.body.territory.taken;
+                        territory.beginNumber = req.body.territory.beginNumber;
+                        territory.endNumber = req.body.territory.endNumber;
+                        territory.lastWorked = req.body.territory.lastWorked;
+                        territory.kind = req.body.territory.kind;
+                        
+                        territory.isPhysicalCard = req.body.territory.isPhysicalCard === 'true';
+                        if(req.body.territory.preacher === ""){
+                            territory.preacher = undefined;
+                            territory.type = "free";
+                        } else {
+                            territory.preacher = req.body.territory.preacher;
+                            territory.type = undefined;
+                        }
+                        territory.save();
+                        res.json(territory);
             });
             
         })
