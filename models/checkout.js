@@ -12,6 +12,7 @@ const checkoutSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
     },
+    serviceYear: Number,
 })
 
 export default mongoose.model("Checkout", checkoutSchema)
