@@ -4,6 +4,7 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import { escapeRegex } from "../helpers.js";
 import Territory from "../models/territory.js";
+import Checkout from "../models/checkout.js";
 
 const app = express();
 
@@ -80,7 +81,34 @@ export const deletePreacher = (req, res, next) => {
                         territory.type = 'free';
                         territory.save()
                     })
-                    res.json(preacher)
+                    Checkout
+                        .find({ preacher: preacher._id })
+                        .exec()
+                        .then(async (checkouts) => {
+                        
+                                if(checkouts.length === 0){
+                                    res.json(preacher)
+                                } else {    
+                                    const oldPreacher = await Preacher.findOne({ name: 'Były głosiciel' }).exec();
+                                    if(oldPreacher){
+                                        checkouts.forEach((checkout) => {
+                                            checkout.preacher = oldPreacher;
+                                            checkout.save();
+                                            
+                                        })
+                                        res.json(preacher)
+                                    } else {
+                                        const newPreacher = await Preacher.create({ name: 'Były głosiciel', congregation: req.user._id});
+                                        checkouts.forEach((checkout) => {
+                                            checkout.preacher = newPreacher;
+                                            checkout.save();
+                                        })
+                                        res.json(preacher)
+                                    }
+                                }
+                            
+                        })
+                        .catch((err) => console.log(err))
                 })
         })
         .catch((err) => console.log(err))
