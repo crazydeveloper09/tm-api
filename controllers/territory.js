@@ -327,7 +327,7 @@ export const editTerritory = (req, res, next) => {
                     territory.lastWorked = lastWorked;
                     territory.kind = req.body.territory.kind;
                     
-                    territory.isPhysicalCard = req.body.territory.isPhysicalCard === 'true';
+                    territory.isPhysicalCard = req.body.territory.isPhysicalCard;
                     if(req.body.territory.preacher === ""){
                         territory.preacher = undefined;
                         territory.type = "free";
