@@ -3,6 +3,7 @@ import flash from "connect-flash";
 import passport from "passport";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
+import Activity from "../models/activity.js";
 
 const app = express();
 
@@ -18,9 +19,10 @@ export const authenticateCongregation = (req, res, next) => {
             return res.send("Zła nazwa użytkownika lub hasło");
         }
         if(user.verificated){
-            req.logIn(user, function (err) {
+            req.logIn(user, async function (err) {
                 console.log(info)
                 if (err) { return next(err); }
+                await Activity.create({ipAddress: req.ip, platform: req.header('sec-ch-ua-platform'), userAgent: req.header('user-agent'), applicationType: 'Aplikacja mobilna', congregation: user._id})
                 let verificationCode = '';
                 for (let i = 0; i <= 5; i++) {
                     let number = Math.floor(Math.random() * 10);

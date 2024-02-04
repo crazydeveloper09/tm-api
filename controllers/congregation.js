@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
-import ministryGroup from "../models/ministryGroup.js";
+import Activity from "../models/activity.js";
 
 dotenv.config();
 
@@ -103,5 +103,13 @@ export const resendTwoFactorCode = (req, res, next) => {
             sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
             res.send("Poprawnie wysłano kod do dwustopniwej weryfikacji");
         })
+        .catch((err) => console.log(err))
+}
+
+export const getAllCongregationActivities = (req, res, next) => {
+    Activity
+        .find({ congregation: req.params.congregation_id })
+        .exec()
+        .then((activities) => res.json(activities))
         .catch((err) => console.log(err))
 }
