@@ -1,6 +1,7 @@
 import express from "express";
 import {
     editCongregation,
+    getAllCongregationActivities,
     getCongregationInfo,
     resendTwoFactorCode,
     verifyTwoFactor,
