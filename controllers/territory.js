@@ -302,18 +302,7 @@ export const editTerritory = (req, res, next) => {
                     req.flash('error', err.message);
                     return res.redirect(`/territories/${req.user._id}/edit`);
                 }
-
-
                 
-                    const taken = new Date(req.body.territory.taken).toISOString().slice(0, 10);
-                    const lastWorked = new Date(req.body.territory.lastWorked).toISOString().slice(0, 10);
-                    let checkout = territory.preacher?.toString().length !== 0 && req.body.territory.preacher === "" && await createCheckout(territory, req.body);
-            
-        
-                    if(checkout){
-                        territory.history.push(checkout);
-                    }
-                    
                     territory.latitude = data[0].latitude;
                     territory.longitude = data[0].longitude;
                     territory.location = data[0].formattedAddress;
@@ -321,25 +310,54 @@ export const editTerritory = (req, res, next) => {
                     territory.street = req.body.territory.street;
                     territory.number = req.body.territory.number;
                     territory.description = req.body.territory.description;
-                    territory.taken = taken;
                     territory.beginNumber = req.body.territory.beginNumber;
                     territory.endNumber = req.body.territory.endNumber;
-                    territory.lastWorked = lastWorked;
+            
                     territory.kind = req.body.territory.kind;
                     
                     territory.isPhysicalCard = req.body.territory.isPhysicalCard;
-                    if(req.body.territory.preacher === ""){
-                        territory.preacher = undefined;
-                        territory.type = "free";
-                    } else {
-                        territory.preacher = req.body.territory.preacher;
-                        territory.type = undefined;
-                    }
                     territory.save();
                     res.json(territory);
                 
             });
             
+        })
+        .catch((err) => console.log(err))
+}
+
+export const assignTerritory = (req, res, next) => {
+    Territory
+        .findById(req.params.territory_id)
+        .exec()
+        .then((territory) => {
+            const taken = new Date().toISOString().slice(0, 10);
+            territory.taken = taken;
+            territory.preacher = req.body.preacher;
+            territory.type = undefined;
+            
+            territory.save();
+            res.json(territory);
+        })
+        .catch((err) => console.log(err))
+}
+
+export const makeTerritoryFreeAgain = (req, res, next) => {
+    Territory
+        .findById(req.params.territory_id)
+        .exec()
+        .then(async (territory) => {
+            const lastWorked = new Date(req.body.lastWorked).toISOString().slice(0, 10);
+            let checkout = await createCheckout(territory, req.body);
+        
+            if(checkout){
+                territory.history.push(checkout);
+            }
+            territory.lastWorked = lastWorked;
+            territory.preacher = undefined;
+            territory.type = "free";
+            
+            territory.save();
+            res.json(territory);
         })
         .catch((err) => console.log(err))
 }
