@@ -330,7 +330,8 @@ export const assignTerritory = (req, res, next) => {
         .findById(req.params.territory_id)
         .exec()
         .then((territory) => {
-            const taken = new Date().toISOString().slice(0, 10);
+            
+            const taken = req.query.isDateChosen === 'true' ? new Date(req.body.taken).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
             territory.taken = taken;
             territory.preacher = req.body.preacher;
             territory.type = undefined;

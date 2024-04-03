@@ -22,7 +22,7 @@ export const authenticateCongregation = (req, res, next) => {
         }
         if(user.verificated){
             req.logIn(user, function (err) {
-                console.log(info)
+        
                 if (err) { return next(err); }
 
                 let verificationCode = '';
