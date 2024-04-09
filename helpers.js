@@ -1,8 +1,13 @@
 import mailgun from 'mailgun-js';
-import passport from 'passport';
 import Checkout from './models/checkout.js';
 
-export const isLoggedIn = passport.authenticate('jwt');
+export const isLoggedIn = (req, res, next)  => {
+    if(req.isAuthenticated()) {
+        return next();
+    }
+    req.flash("error", "Prosimy zaloguj się najpierw");
+    res.redirect("/login");
+}
 
 export const escapeRegex = (text) => {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -43,7 +48,18 @@ export const dateToISOString = (date) => {
 export const createCheckout = async (territory, body) => {
     let date = new Date();
     const serviceYear = date.getMonth() <= 7 ? date.getFullYear() : date.getFullYear() + 1;
-    const lastWorked = new Date(body.territory.lastWorked).toISOString().slice(0, 10);
-    const createdCheckout = await Checkout.create({ preacher: territory.preacher, takenDate: territory.taken, passedBackDate: lastWorked, serviceYear  })
+    const createdCheckout = await Checkout.create({ preacher: territory.preacher, takenDate: territory.taken, passedBackDate: body.lastWorked, serviceYear  })
     return createdCheckout;
 }
+
+export const groupBy = function(data, key) {
+    return data.reduce(function(storage, item) {
+        let group = item[key];
+        
+        storage[group] = storage[group] || [];
+        
+        storage[group].push(item);
+        
+        return storage; 
+      }, {});
+  };

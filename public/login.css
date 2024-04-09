@@ -11,7 +11,7 @@ body {
 }
 #form {
   background:#ece9e9;
-  padding: 15px;
+  padding: 25px;
   border-radius: 10px;
   margin: 3% 0;
   -webkit-box-shadow: 0 0 53px 12px #1c7330;
@@ -70,8 +70,15 @@ box-shadow: 0 0 53px 12px #1c7330;
   #info {
       display: none;
   }
+  #form {
+    padding: 15px;
+  }
   #form1 {
       margin: 4%;
+  }
+
+  #form1 img {
+    width: 100%;
   }
   body {
     padding: 20px;
@@ -93,11 +100,12 @@ box-shadow: 0 0 53px 12px #1c7330;
   font-size: 20px;
   margin-top: 10px;
   font-weight: normal;
+  word-wrap: break-word;
 }
 
  .title {
-  font-size: 35px;
-  color: #fb8200;
+  font-size: 30px;
+  color: #9999cc;
   font-weight: 700;
   
 }

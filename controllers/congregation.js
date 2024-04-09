@@ -3,12 +3,12 @@ import Congregation from "../models/congregation.js";
 import MinistryGroup from "../models/ministryGroup.js";
 import flash from "connect-flash";
 import passport from "passport";
-import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
-import ministryGroup from "../models/ministryGroup.js";
+import Activity from "../models/activity.js";
+import Territory from "../models/territory.js";
 
 dotenv.config();
 
@@ -24,17 +24,106 @@ let options = {
   };
 let geocoder = node_geocoder(options);
 
+export const renderRegisterCongregationForm = (req, res, next) => {
+    if(req.query.code === process.env.REGISTER_CODE){
+        res.render("./congregations/new", {
+            header: "Rejestracja zboru | Territory Manager",
+            congregation: ''
+        });
+    }
+	
+}
 
-export const getCongregationInfo = (req, res, next) => {
-    console.log('request reached')
+export const registerCongregation = (req, res, next) => {
+    if(req.body.password !== req.body.confirm){
+        req.flash("error", "Hasła nie są te same");
+        res.render("./congregations/new", { error:  "Hasła nie są te same", congregation: req.body, header: "Rejestracja zboru | Territory Manager"});
+    } else {
+        geocoder.geocode(req.body.mainCity, function (err, data) {
+            if (err || !data.length) {
+                req.flash('error', err.message);
+                return res.redirect(`/congregations/new`);
+            }
+
+            let verificationCode = '';
+            for (let i = 0; i <= 5; i++) {
+                let number = Math.floor(Math.random() * 10);
+                let numberString = number.toString();
+                verificationCode += numberString;
+            }
+            let newUser = new Congregation({
+                username: req.body.username,
+                territoryServantEmail: req.body.territoryServantEmail,
+                ministryOverseerEmail: req.body.ministryOverseerEmail,
+                verificationNumber: verificationCode,
+                mainCity: req.body.mainCity,
+                mainCityLatitude: data[0].latitude,
+                mainCityLongitude: data[0].longitude,
+                verificationExpires: Date.now() + 360000
+            });
+            Congregation.register(newUser, req.body.password, function(err, congregation) {
+                if(err) {
+                    
+                    return res.render("./congregations/new", { error: err.message});
+                } 
+                passport.authenticate("local")(req, res, function() {
+                    const subject = 'Weryfikacja maila w Territory Manager';
+                    const emailText = `Jesteś na ostatniej prostej do możliwości zarządzania terenami w Territory Manager. Wystarczy, że 
+                    Ty lub nadzorca służby w zborze potwierdzicie email poniższym 
+                    kodem weryfikacyjnym:`
+                    sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+                    sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
+                    res.redirect(`/congregations/${congregation._id}/verification`);
+                });
+            });
+        });
+    }
+}
+
+export const renderCongregationInfo = (req, res, next) => {
     Congregation
-        .findById(req.user._id)
+        .findById(req.params.congregation_id)
         .populate(["preacher", "territories"])
         .exec()
         .then((congregation) => {
-            res.json({ congregation })
+            MinistryGroup
+                .find({ congregation: congregation._id })
+                .populate(["preachers", "overseer"])
+                .exec()
+                .then((ministryGroups) => {
+                    Territory
+                        .find({ congregation: congregation._id })
+                        .populate("history")
+                        .exec()
+                        .then((territories) => {
+                            res.render("./congregations/show", {
+                                header: `Zbór ${congregation.username} | Territory Manager`,
+                                congregation,
+                                currentUser: req.user,
+                                ministryGroups,
+                                territories
+                            })
+                        })
+                        .catch((err) => console.log(err))
+                    
+                })
+                .catch((err) => console.log(err))
         })
         .catch((err) =>  console.log(err))
+}
+
+export const renderEditCongregationForm = (req, res, next) => {
+    Congregation
+        .findById(req.params.congregation_id)
+        .exec()
+        .then((congregation) => {
+            res.render("./congregations/edit", { 
+                currentUser: req.user, 
+                congregation: congregation, 
+                header: `Edytuj głosiciela w zborze ${req.user.username} | Territory Manager`
+            });
+        })
+        .catch((err) => console.log(err));
 }
 
 export const editCongregation = (req, res, next) => {
@@ -44,20 +133,128 @@ export const editCongregation = (req, res, next) => {
         .then((congregation) => {
             geocoder.geocode(req.body.congregation.mainCity, function (err, data) {
                 if (err || !data.length) {
-                    return res.send(err.message);
+                    req.flash('error', err.message);
+                    return res.redirect(`/congregations/new`);
                 }
 
                 congregation.mainCity = req.body.congregation.mainCity;
                 congregation.mainCityLatitude = data[0].latitude;
                 congregation.mainCityLongitude = data[0].longitude;
                 congregation.save();
-                res.json(congregation)
+                res.redirect(`/congregations/${congregation._id}`)
             });
         })
         .catch((err) => console.log(err))
 }
 
+export const renderVerificationForm = (req, res, next) => {
+    Congregation
+        .findOne({
+            $and: [
+                {_id: req.params.congregation_id},
+                {verificationExpires: { $gt: Date.now()}}
+            ]
+        })
+        .exec()
+        .then((congregation) => {
+            if(congregation){
+                let header = "Weryfikacja konta | Territory Manager"
+                res.render("./congregations/verification", {
+                    header: header,
+                    congregation: congregation
+                })
+            } else {
+                req.flash("error", "Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")
+                let header = "Weryfikacja konta | Territory Manager"
+                res.render("./congregations/verification", {
+                    header: header,
+                    congregation_id: req.params.congregation_id
+                })
+            }
+        })
+        .catch((err) => console.log(err))
+}
 
+export const verifyCongregation = (req, res, next) => {
+    Congregation
+        .findOne({
+            $and: [
+                {_id: req.params.congregation_id},
+                {verificationExpires: { $gt: Date.now()}},
+            ]
+        })
+        .exec()
+        .then((congregation) => {
+            if(congregation){
+                if(congregation.verificationNumber === +req.body.code){
+                    congregation.verificated = true;
+                    congregation.save();
+                    req.flash("success", `Witaj ${congregation.username}. Bardzo nam miło, że do nas dołączyłeś`)
+                    res.redirect("/login")
+                } else {
+                    req.flash("error", "Kod weryfikacyjny jest niepoprawny. Spróbuj ponownie")
+                    res.redirect(`back`)
+                }
+            } else {
+                req.flash("error", "Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")
+                res.redirect("back")
+            }
+        })
+        .catch((err) => console.log(err))
+}
+
+export const resendVerificationCode = (req, res, next) => {
+    Congregation
+        .findById(req.params.congregation_id)
+        .exec()
+        .then((congregation) => {
+            let verificationCode = '';
+            for (let i = 0; i <= 5; i++) {
+                let number = Math.floor(Math.random() * 10);
+                let numberString = number.toString();
+                verificationCode += numberString;
+            }
+            congregation.verificationNumber = verificationCode;
+            congregation.verificationExpires = Date.now() + 360000;
+            congregation.save()
+            const subject = 'Ponowne wysłanie kodu, by potwierdzić email';
+            const emailText = `Właśnie dostałem prośbę o ponowne wysłanie kodu do
+                weryfikacji emaila w Territory Manager.
+                Jeśli to nie byłeś ty, zignoruj wiadomość.`;
+            sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+            sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
+            res.redirect(`/congregations/${congregation._id}/verification`);
+        })
+        .catch((err) => console.log(err))
+}
+
+export const renderTwoFactorForm = (req, res, next) => {
+    Congregation
+        .findOne({
+            $and: [
+                {_id: req.params.congregation_id},
+                {verificationExpires: { $gt: Date.now()}}
+            ]
+        })
+        .exec()
+        .then((congregation) => {
+            if(congregation){
+                let header = "Dwustopniowa weryfikacja | Territory Manager"
+                res.render("./congregations/two-factor", {
+                    header: header,
+                    congregation: congregation
+                })
+            } else {
+                req.flash("error", "Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")
+                let header = "Dwustopniowa werfyikacja | Territory Manager"
+                res.render("./congregations/two-factor", {
+                    header: header,
+                    congregation_id: req.params.congregation_id
+                })
+            }
+        })
+        .catch((err) => console.log(err))
+}
 
 export const verifyTwoFactor = (req, res, next) => {
     Congregation
@@ -71,10 +268,11 @@ export const verifyTwoFactor = (req, res, next) => {
         .exec()
         .then((congregation) => {
             if(congregation){
-                const token = jwt.sign({ userId: congregation._id }, process.env.JWT_SECRET)
-                res.send({message: `Pomyślnie zalogowałeś się do Territory Manager`, token})
+                req.flash("success", `Pomyślnie zalogowałeś się do Territory Manager`)
+                res.redirect(`/territories/available`)
             } else {
-                res.status(422).send("Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")
+                req.flash("error", "Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")
+                res.redirect("back")
             }
         })
         .catch((err) => console.log(err))
@@ -101,7 +299,20 @@ export const resendTwoFactorCode = (req, res, next) => {
             
             sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
             sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
-            res.send("Poprawnie wysłano kod do dwustopniwej weryfikacji");
+            res.redirect(`/congregations/${congregation._id}/two-factor`);
         })
         .catch((err) => console.log(err))
 }
+
+export const getAllCongregationActivities = (req, res, next) => {
+    Activity
+        .find({ congregation: req.params.congregation_id })
+        .exec()
+        .then((activities) => res.render('./congregations/activity', {
+            activities,
+            header: 'Aktywności logowania | Territory Manager',
+            currentUser: req.user
+        }))
+        .catch((err) => console.log(err))
+}
+    

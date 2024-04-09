@@ -66,6 +66,8 @@ body {
 }
 .card {
     margin-bottom: 90px;
+    padding: 10px;
+    border-radius: 10px;
 }
 .card.city {
     background: #f6edd9;
@@ -126,9 +128,6 @@ thead,
     display: flex;
     margin-top: 20px;
 }
-.ministryGroup {
-    
-}
 
 .ministryGroup__item {
     text-align: center;
@@ -146,6 +145,31 @@ thead,
     background: #d6d6d6;
 }
 
+.preachers-buttons a {
+    text-decoration: none;
+    font-size: 20px;
+    color: #9999CC;
+}
+
+.preachers-buttons a:first-child {
+    margin-right: 7px;
+}
+
+.congregation__icon {
+    text-decoration: none;
+    font-size: 25px;
+}
+
+.territory__icon a {
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+}
+
+.territory__icon a:not(:last-child) {
+    margin-right: 7px;
+}
+
 
 
 .btn-golden {
@@ -156,7 +180,7 @@ thead,
 #name {
     color: black;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 .info {
@@ -221,6 +245,11 @@ input[type=search]::placeholder {
     margin-bottom: 0;
 }
 
+.chart__container {
+    position: relative;  
+    width: 100%;
+}
+
 .preacher__info {
     display: flex;
     background: #fff;
@@ -243,6 +272,34 @@ input[type=search]::placeholder {
 .preacher__info p {
     margin-bottom: 5px;
 }
+
+.button {
+    width: 100%;
+    margin-bottom: 15px;
+    font-weight: 700;
+    
+  }
+  
+  .btn-golden {
+    background: #f6b26b;
+    border-color: #f6b26b;
+  }
+  
+  .btn-green {
+    background: #28a745;
+    border-color: #28a745;
+  }
+
+  .accordion-item,
+  .accordion-header,
+  .accordion-button {
+    background: transparent;
+    border: none;
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+  }
 
 
 @media (max-width: 572px) {
@@ -285,5 +342,13 @@ input[type=search]::placeholder {
 
     .preachers-buttons {
         margin-top: 15px;
+    }
+
+    .chart__container {
+        width: 900px;
+    }
+
+    .info {
+        font-size: 17px;
     }
 }
