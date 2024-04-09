@@ -242,7 +242,8 @@ export const renderTwoFactorForm = (req, res, next) => {
                 let header = "Dwustopniowa weryfikacja | Territory Manager"
                 res.render("./congregations/two-factor", {
                     header: header,
-                    congregation: congregation
+                    congregation: congregation,
+                    testUser: process.env.TEST_USER
                 })
             } else {
                 req.flash("error", "Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")

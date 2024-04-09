@@ -16,7 +16,15 @@
                         <%= success %>
                     </div>
                 <% } %>
+                
+        
                 <% if(typeof congregation !== 'undefined'){ %>
+                    <% if(congregation.username === testUser){ %>
+                       <p>
+                         Twój kod to: <%= congregation.verificationNumber %>
+                      </p>
+                      
+                     <% } %>
                     <form action="/congregations/<%= congregation._id %>/two-factor" method="post" id="form4">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" name="code" id="code" placeholder="123523" aria-label="Kod weryfikacyjny" aria-describedby="basic-addon1" required>
