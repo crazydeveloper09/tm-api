@@ -32,20 +32,11 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                 const title = data.currentUser.username.split(" ").join("-");
                 const DOWNLOAD_DIR = path.join(process.env.HOME || process.env.USERPROFILE, 'downloads/')
 
-                console.log(process.env.DEVELOPMENT_MODE)
-                const childProcessOptions = process.env.DEVELOPMENT_MODE === 'production' ?  {
-                    childProcessOptions: {
-                        env: {
-                            OPENSSL_CONF: '/dev/null',
-                        },
-                    }
-                } : {};
-                console.log(childProcessOptions)
+              
                 var options = { 
                     format: 'A4', 
                     orientation: 'landscape', 
                     timeout: 540000,
-                    ...childProcessOptions
                 };
 
                 pdf.create(str, options).toFile(`${DOWNLOAD_DIR}Grupy_sluzby_${title}.pdf`, function(err, data) {
