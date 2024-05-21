@@ -9,6 +9,7 @@ import congregationsRoutes from "./routes/congregation.js";
 import ministryGroupsRoutes from "./routes/ministryGroup.js";
 import Congregation from "./models/congregation.js";
 import LocalStrategy from "passport-local";
+import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import flash from "connect-flash";
 import dotenv from "dotenv";
 import methodOverride from "method-override";
@@ -23,8 +24,8 @@ export const __dirname = path.dirname(__filename);
 const app = express();
 
 app.set("view engine", "ejs");
-app.set("trust proxy", true)
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
 app.use(flash());
@@ -52,6 +53,27 @@ app.use(passport.session());
 passport.use(new LocalStrategy(Congregation.authenticate()));
 passport.serializeUser(Congregation.serializeUser());
 passport.deserializeUser(Congregation.deserializeUser());
+
+const jwtOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET,
+}
+
+passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
+    console.log(payload)
+    Congregation.findById(payload.userId, (err, user) => {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+    
+        }
+    })
+}))
+
 
 app.use("/preachers", preachersRoutes);
 app.use("/territories", territoriesRoutes);

@@ -6,11 +6,8 @@ import methodOverride from "method-override";
 import ejs from 'ejs';
 import pdf from 'html-pdf';
 import path from 'path';
-import dotenv from 'dotenv';
 import { __dirname } from "../app.js";
 const app = express();
-
-dotenv.config();
 
 app.use(flash());
 app.use(methodOverride("_method"))
@@ -32,12 +29,8 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                 const title = data.currentUser.username.split(" ").join("-");
                 const DOWNLOAD_DIR = path.join(process.env.HOME || process.env.USERPROFILE, 'downloads/')
 
-              
-                var options = { 
-                    format: 'A4', 
-                    orientation: 'landscape', 
-                    timeout: 540000,
-                };
+
+                var options = { format: 'A4', orientation: 'landscape', timeout: 540000 };
 
                 pdf.create(str, options).toFile(`${DOWNLOAD_DIR}Grupy_sluzby_${title}.pdf`, function(err, data) {
                     if (err) return console.log(err);
@@ -51,7 +44,7 @@ export const generateListOfMinistryGroups = (req, res, next) => {
                                 msg   : "Problem downloading the file"
                             })
                         } else {
-                            req.flash("success", "Plik pomyślnie utworzony. Zobacz folder Pobrane")
+                            res.send("Plik pomyślnie utworzony. Zobacz folder Pobrane")
                     
                         }
                     })
@@ -63,17 +56,13 @@ export const generateListOfMinistryGroups = (req, res, next) => {
         .catch((err) => console.log(err))
 }
 
-export const renderNewMinistryGroupForm = (req, res, next) => {
-    Preacher
-        .find({congregation: req.user._id})
-        .sort({name: 1})
+export const getListOfMinistryGroups = (req, res, next) => {
+    MinistryGroup
+        .find({ congregation: req.params.congregation_id })
+        .populate(["preachers", "overseer"])
         .exec()
-        .then((preachers) => {
-            res.render("./ministryGroups/new", { 
-                currentUser: req.user, 
-                header: "Dodaj grupę służby | Territory Manager", 
-                preachers 
-            });
+        .then((ministryGroups) => {
+            res.json(ministryGroups)
         })
         .catch((err) => console.log(err))
 }
@@ -86,44 +75,23 @@ export const createMinistryGroup = (req, res, next) => {
             createdMinistryGroup.preachers = typeof req.body.preachers === 'string' ? [req.body.preachers] : [...req.body.preachers];
             createdMinistryGroup.overseer = req.body.overseer;
             createdMinistryGroup.save();
-            res.redirect(`/congregations/${req.user._id}`);
+            res.json(createdMinistryGroup);
         })
         .catch((err) => console.log(err))
 }
 
-export const renderMinistryGroupEditForm = (req, res, next) => {
-    MinistryGroup
-        .findById(req.params.ministryGroup_id)
-        .populate(["preachers", "overseer"])
-        .exec()
-        .then((ministryGroup) => {
-            Preacher
-                .find({congregation: req.user._id})
-                .sort({name: 1})
-                .exec()
-                .then((preachers) => {
-                    res.render("./ministryGroups/edit", { 
-                        currentUser: req.user, 
-                        ministryGroup: ministryGroup, 
-                        preachers,
-                        header: `Edytuj grupę służby w zborze ${req.user.username} | Territory Manager`
-                    });
-                })
-                .catch((err) => console.log(err))
-        })
-        .catch((err) => console.log(err))
-}
+
 
 export const editMinistryGroup = (req, res, next) => {
     MinistryGroup
-        .findByIdAndUpdate(req.params.ministryGroup_id, req.body.ministryGroup)
+        .findById(req.params.ministryGroup_id)
         .exec()
         .then((ministryGroup) => {
             ministryGroup.name = req.body.ministryGroup.name;
-            ministryGroup.preachers = typeof req.body.preachers === 'string' ? [req.body.ministryGroup.preachers] : [...req.body.ministryGroup.preachers];
+            ministryGroup.preachers = typeof req.body.ministryGroup.preachers === 'string' ? [req.body.ministryGroup.preachers] : [...req.body.ministryGroup.preachers];
             ministryGroup.overseer = req.body.ministryGroup.overseer;
             ministryGroup.save();
-            res.redirect(`/congregations/${req.user._id}`);
+            res.json(ministryGroup);
         })
         .catch((err) => console.log(err))
 }
@@ -133,21 +101,8 @@ export const deleteMinistryGroup = (req, res, next) => {
         .findByIdAndDelete(req.params.ministryGroup_id)
         .exec()
         .then((ministryGroup) => {
-            res.redirect(`/congregations/${req.user._id}/`)
+            res.json(ministryGroup)
         })
         .catch((err) => console.log(err))
 }
 
-export const confirmDeletingMinistryGroup = (req, res, next) => {
-    MinistryGroup
-        .findById(req.params.ministryGroup_id)
-        .exec()
-        .then((ministryGroup) => {
-            res.render("./ministryGroups/deleteConfirm", {
-                ministryGroup: ministryGroup,
-                currentUser: req.user,
-                header: `Potwierdzenie usunięcia grupy służby | Territory Manager`
-            });
-        })
-        .catch((err) => console.log(err))
-}

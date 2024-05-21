@@ -4,7 +4,7 @@ import passport from "passport";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
 import Activity from "../models/activity.js";
-import ipWare from 'ipware'
+import ipWare from "ipware";
 
 const app = express();
 const getIP = ipWare().get_ip;
@@ -12,36 +12,19 @@ const getIP = ipWare().get_ip;
 app.use(flash());
 app.use(methodOverride("_method"));
 
-export const redirectToLogin = (req, res, next) => {
-    res.redirect("/login");
-}
-
-export const renderLoginForm = (req, res, next) => {
-    let ipInfo = getIP(req);
-    res.render("login", {
-        header: "Logowanie | Territory Manager",
-        ipInfo
-    });
-}
-
-export const renderPrivacyPolicy = (req, res, next) => {
-    res.render("policy", {
-        header: "Polityka Prywatności i klauzula RODO | Territory Manager"
-    });
-}
 
 export const authenticateCongregation = (req, res, next) => {
     passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
         if (!user) {
-            req.flash("error", "Zła nazwa użytkownika lub hasło");
-            return res.redirect(`/login`);
+            console.log(req.body)
+            return res.send("Zła nazwa użytkownika lub hasło");
         }
         if(user.verificated){
-            req.logIn(user, async function (err) {
+            req.logIn(user, function (err) {
+        
                 if (err) { return next(err); }
-                let ipInfo = getIP(req);
-                await Activity.create({ipAddress: ipInfo.clientIp, platform: req.header('sec-ch-ua-platform'), userAgent: req.header('user-agent'), applicationType: 'Aplikacja internetowa', congregation: user._id})
+
                 let verificationCode = '';
                 for (let i = 0; i <= 5; i++) {
                     let number = Math.floor(Math.random() * 10);
@@ -56,7 +39,16 @@ export const authenticateCongregation = (req, res, next) => {
                 chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby. Proszę wpisz na stronie poniższy kod weryfikacyjny.`;
                 sendEmail(subject, user.territoryServantEmail, emailText, user)
                 sendEmail(subject, user.ministryOverseerEmail, emailText, user)
-                return res.redirect(`/congregations/${user._id}/two-factor`);
+                let ipInfo = getIP(req);
+                Activity
+                    .create({ipAddress: ipInfo.clientIp, platform: req.header('sec-ch-ua-platform'), userAgent: req.header('user-agent'), applicationType: 'Aplikacja mobilna', congregation: user._id})
+                    .then((createdActivity) => {
+                        if(user.username === "Testy aplikacji mobilnej") {
+                            return  res.send({ message: `Poprawnie zalogowano. Twój kod to: ${verificationCode}`, userID: user._id})
+                        }
+                        res.send({ message: "Poprawnie zalogowano", userID: user._id})
+                    })
+                    .catch((err) => res.send(err))
             });
         } else {
             res.redirect(`/congregations/${user._id}/verification`)
@@ -67,5 +59,5 @@ export const authenticateCongregation = (req, res, next) => {
 
 export const logOutCongregation = (req, res, next) => {
     req.logout();
-    res.redirect("/login");
+    res.send("Poprawnie wylogowano");
 }

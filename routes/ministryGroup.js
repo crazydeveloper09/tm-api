@@ -1,21 +1,17 @@
 import express from "express";
 import { isLoggedIn } from "../helpers.js";
 import {
-    confirmDeletingMinistryGroup,
     createMinistryGroup,
     deleteMinistryGroup,
     editMinistryGroup,
     generateListOfMinistryGroups,
-    renderNewMinistryGroupForm,
-    renderMinistryGroupEditForm,
+    getListOfMinistryGroups,
 } from "../controllers/ministryGroup.js";
 
 const router = express.Router({ mergeParams: true });
 
 router.get("/generate-pdf", isLoggedIn, generateListOfMinistryGroups);
-router.get("/new", isLoggedIn, renderNewMinistryGroupForm);
-router.get("/:ministryGroup_id/edit", isLoggedIn, renderMinistryGroupEditForm);
-router.get("/:ministryGroup_id/delete", isLoggedIn, confirmDeletingMinistryGroup);
+router.get("/", isLoggedIn, getListOfMinistryGroups);
 
 router.post("/", isLoggedIn, createMinistryGroup);
 
