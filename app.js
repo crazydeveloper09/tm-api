@@ -8,6 +8,7 @@ import territoriesRoutes from "./routes/territory.js";
 import congregationsRoutes from "./routes/congregation.js";
 import ministryGroupsRoutes from "./routes/ministryGroup.js";
 import Congregation from "./models/congregation.js";
+import Preacher from "./models/preacher.js";
 import LocalStrategy from "passport-local";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import flash from "connect-flash";
@@ -16,6 +17,12 @@ import methodOverride from "method-override";
 import path from 'path';
 import helmet from "helmet";
 import { fileURLToPath } from 'url';
+import ministryMeetingRoutes from "./routes/ministryMeeting.js";
+import cartsScheduleRoutes from './routes/cartsSchedule.js';
+import meetingRoutes from './routes/meeting.js';
+import meetingAssignmentRoutes from './routes/meetingAssignment.js';
+import audioVideoRoutes from './routes/audioVideo.js';
+import ordinalRoutes from './routes/ordinal.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -51,8 +58,12 @@ app.use(function(req, res, next) {
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(Congregation.authenticate()));
-passport.serializeUser(Congregation.serializeUser());
-passport.deserializeUser(Congregation.deserializeUser());
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -60,25 +71,45 @@ const jwtOptions = {
 }
 
 passport.use(new JwtStrategy(jwtOptions, (payload, done) => {
-    console.log(payload)
-    Congregation.findById(payload.userId, (err, user) => {
-        if (err) {
-            return done(err, false);
-        }
-        if (user) {
-            return done(null, user);
-        } else {
-            return done(null, false);
+    if(payload.userId) {
+        Congregation.findById(payload.userId, (err, user) => {
+            if (err) {
+                return done(err, false);
+            }
+            if (user) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+        
+            }
+        })
+    } else {
+        Preacher.findById(payload.preacher, (err, user) => {
+            if (err) {
+                return done(err, false);
+            }
+            if (user) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+        
+            }
+        })
+    }
     
-        }
-    })
 }))
 
 
 app.use("/preachers", preachersRoutes);
 app.use("/territories", territoriesRoutes);
 app.use("/congregations", congregationsRoutes)
-app.use("/congregations/:congregation_id/ministryGroups", ministryGroupsRoutes)
+app.use("/congregations/:congregation_id/ministryGroups", ministryGroupsRoutes);
+app.use("/ministryMeetings", ministryMeetingRoutes)
+app.use("/meetings", meetingRoutes)
+app.use("/meetings/:meeting_id/assignments", meetingAssignmentRoutes)
+app.use("/meetings/:meeting_id/audioVideo", audioVideoRoutes)
+app.use("/meetings/:meeting_id/ordinals", ordinalRoutes)
+app.use("/cartsSchedule", cartsScheduleRoutes)
 app.use(indexRoutes);
 
 app.listen(process.env.PORT);

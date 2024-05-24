@@ -57,8 +57,9 @@ export const generateListOfMinistryGroups = (req, res, next) => {
 }
 
 export const getListOfMinistryGroups = (req, res, next) => {
+    const congregationID = req.user.username ? String(req.user._id) : req.user.congregation;
     MinistryGroup
-        .find({ congregation: req.params.congregation_id })
+        .find({ congregation: congregationID })
         .populate(["preachers", "overseer"])
         .exec()
         .then((ministryGroups) => {
