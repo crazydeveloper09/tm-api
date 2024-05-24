@@ -249,7 +249,6 @@ export const createTerritory = (req, res, next) => {
                 createdTerritory.location = data[0].formattedAddress;
                 createdTerritory.isPhysicalCard = req.body.isPhysicalCard === 'true';
                 createdTerritory.save();
-                console.log(createdTerritory)
                 res.json(createdTerritory);
             })
             // geocoder

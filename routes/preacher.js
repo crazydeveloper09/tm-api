@@ -4,9 +4,11 @@ import {
     createPreacher,
     deletePreacher,
     editPreacher,
+    generateLinkForPreacher,
     getAllPreachers,
     getListOfPreachers,
     getPreacherInfo,
+    preacherLogIn,
     searchPreachers,
 } from "../controllers/preacher.js";
 
@@ -18,6 +20,8 @@ router.get("/search", isLoggedIn, searchPreachers);
 router.get("/:preacher_id", isLoggedIn, getPreacherInfo);
 
 router.post("/", isLoggedIn, createPreacher);
+router.post("/login", preacherLogIn);
+router.post("/:preacher_id/generateLink", isLoggedIn, generateLinkForPreacher);
 
 router.put("/:preacher_id", isLoggedIn, editPreacher);
 

@@ -17,7 +17,6 @@ export const authenticateCongregation = (req, res, next) => {
     passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
         if (!user) {
-            console.log(req.body)
             return res.send("Zła nazwa użytkownika lub hasło");
         }
         if(user.verificated){
@@ -35,14 +34,17 @@ export const authenticateCongregation = (req, res, next) => {
                 user.verificationExpires = Date.now() + 360000;
                 user.save()
                 const subject = 'Potwierdź swoją tożsamość';
-                const emailText = `Zanim będziesz mógł zarządzać terenami
-                chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby. Proszę wpisz na stronie poniższy kod weryfikacyjny.`;
-                sendEmail(subject, user.territoryServantEmail, emailText, user)
-                sendEmail(subject, user.ministryOverseerEmail, emailText, user)
+                const emailText = `Zanim będziesz mógł zarządzać ${req.query.app ? 'planami zborowymi chcę mieć pewność, że loguje się administrator' : 'terenami chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby'}. Proszę wpisz na stronie poniższy kod weryfikacyjny.`;
+                sendEmail(subject, user.territoryServantEmail, emailText, user, req.query.app)
+                sendEmail(subject, user.ministryOverseerEmail, emailText, user, req.query.app)
                 let ipInfo = getIP(req);
                 Activity
                     .create({ipAddress: ipInfo.clientIp, platform: req.header('sec-ch-ua-platform'), userAgent: req.header('user-agent'), applicationType: 'Aplikacja mobilna', congregation: user._id})
                     .then((createdActivity) => {
+                        if(req.query.app){
+                            createdActivity.appName = req.query.app;
+                            createdActivity.save();
+                        }
                         if(user.username === "Testy aplikacji mobilnej") {
                             return  res.send({ message: `Poprawnie zalogowano. Twój kod to: ${verificationCode}`, userID: user._id})
                         }

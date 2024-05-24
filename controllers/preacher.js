@@ -4,6 +4,7 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import { escapeRegex } from "../helpers.js";
 import Territory from "../models/territory.js";
+import jwt from "jsonwebtoken";
 import Checkout from "../models/checkout.js";
 
 const app = express();
@@ -20,22 +21,39 @@ export const getListOfPreachers = (req, res, next) => {
     Preacher
         .paginate({congregation: req.user._id}, paginationOptions)
         .then((result) => {
-            res.json(result);
+            Preacher
+            .find({})
+            .exec()
+            .then((allPreachers) => {
+                allPreachers.forEach((preacher) => {
+                    preacher.link = `https://cong.plan.pl/preacher/${preacher._id}`;
+                    preacher.roles = ['can_see_meetings', 'can_see_minimeetings'];
+                    
+                    
+                    preacher.save()
+                })
+                res.json(result);
+            })
+            .catch((err) => console.log(err))
+    
+            
         })
         .catch((err) => console.log(err))
 }
 
 export const getPreacherInfo = (req, res, next) => {
+    const preacherID = req.user.congregation ? String(req.user._id) : String(req.params.preacher_id)
     Preacher
-        .findById(req.params.preacher_id)
+        .findById(preacherID)
         .exec()
         .then((preacher) => res.json(preacher))
-        .catch((err) => res.status(422).json(err))
+        .catch((err) => res.json(err))
 }
 
 export const getAllPreachers = (req, res, next) => {
+    const congregationID = req.user.username ? req.user._id : req.user.congregation;
     Preacher
-    .find({congregation: req.user._id})
+    .find({congregation: congregationID})
     .sort({name: 1})
     .exec()
     .then((preachers) => {
@@ -49,6 +67,10 @@ export const createPreacher = (req, res, next) => {
         .create({name: req.body.name})
         .then((createdPreacher) => {
             createdPreacher.congregation = req.user._id;
+            createdPreacher.link = `https://cong.plan.pl/preacher/${createdPreacher._id}`;
+            if(req.body.roles){
+                createdPreacher.roles = typeof req.body.roles === 'string' ? [req.body.roles] : [...req.body.roles]
+            }
             createdPreacher.save();
             res.json(createdPreacher);
         })
@@ -61,8 +83,38 @@ export const editPreacher = (req, res, next) => {
         .exec()
         .then((preacher) => {
             preacher.name = req.body.preacher.name;
+            if(req.body.preacher.roles){
+                preacher.roles = typeof req.body.preacher.roles === 'string' ? [req.body.preacher.roles] : [...req.body.preacher.roles]
+            }
+            
             preacher.save();
             res.json(preacher);
+        })
+        .catch((err) => console.log(err))
+}
+
+export const generateLinkForPreacher = (req, res, next) => {
+    Preacher
+        .findById(req.params.preacher_id)
+        .exec()
+        .then((preacher) => {
+            preacher.link = `https://cong.plan.pl/preacher/${preacher._id}`;
+            preacher.save()
+            res.json(preacher)
+        })
+        .catch((err) => console.log(err))
+}
+
+export const preacherLogIn = (req, res, next) => {
+    Preacher
+        .findOne({ link: req.body.link })
+        .exec()
+        .then((preacher) => {
+            if(!preacher){
+                return res.json("Nie znaleziono takiego użytkownika")
+            }
+            const token = jwt.sign({ preacher: preacher._id }, process.env.JWT_SECRET);
+            res.json({ token, preacher })
         })
         .catch((err) => console.log(err))
 }

@@ -26,7 +26,6 @@ let geocoder = node_geocoder(options);
 
 
 export const getCongregationInfo = (req, res, next) => {
-    console.log('request reached')
     Congregation
         .findById(req.user._id)
         .populate(["preacher", "territories"])
@@ -72,7 +71,7 @@ export const verifyTwoFactor = (req, res, next) => {
         .then((congregation) => {
             if(congregation){
                 const token = jwt.sign({ userId: congregation._id }, process.env.JWT_SECRET)
-                res.send({message: `Pomyślnie zalogowałeś się do Territory Manager`, token})
+                res.send({message: `Pomyślnie zalogowałeś się do ${req.query.app ? 'Congregation Planner': 'Territory Manager'}`, token})
             } else {
                 res.status(422).send("Kod weryfikacyjny wygasł lub nie ma takiego konta. Kliknij przycisk Wyślij kod ponownie poniżej ")
             }

@@ -12,6 +12,21 @@ export const countDaysFromNow = (date) => {
     return Math.round(Math.abs(new Date() - new Date(date)) / 86400000);
 }
 
+export const months = [
+    'Styczeń', 
+    'Luty', 
+    'Marzec', 
+    'Kwiecień', 
+    'Maj', 
+    'Czerwiec', 
+    'Lipiec', 
+    'Sierpień', 
+    'Wrzesień', 
+    'Październik', 
+    'Listopad', 
+    'Grudzień'
+];
+
 export const sendEmail = async (subject, to, text, congregation) => {
     const DOMAIN = 'websiteswithpassion.pl';
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });

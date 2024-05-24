@@ -12,6 +12,10 @@ const activitySchema = new mongoose.Schema({
     congregation: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Congregation'
+    },
+    appName: {
+        type: String,
+        default: "Territory Manager"
     }
 })
 
