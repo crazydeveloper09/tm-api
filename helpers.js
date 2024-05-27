@@ -27,16 +27,18 @@ export const months = [
     'Grudzień'
 ];
 
-export const sendEmail = async (subject, to, text, congregation) => {
+export const sendEmail = async (subject, to, text, congregation, app) => {
     const DOMAIN = 'websiteswithpassion.pl';
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });
     const mailgunVariables = JSON.stringify({
         text: text,
         username: congregation.username,
         verificationCode: congregation.verificationNumber,
+        appName: app || 'Territory Manager',
+        headerColor: app ? '#1f8aad': '#28a745',
     })
     const data = {
-        from: `Weryfikacja konta Territory Manager <admin@websiteswithpassion.pl>`,
+        from: `Weryfikacja konta ${app || 'Territory Manager'} <admin@websiteswithpassion.pl>`,
         to: to,
         subject: subject,
         template: 'weryfikacja territory manager',
