@@ -98,8 +98,8 @@ export const resendTwoFactorCode = (req, res, next) => {
             dwustopniowej weryfikacji logowania do Territory Manager.
             Jeśli to nie byłeś ty, zignoruj wiadomość.`;
             
-            sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
-            sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
+            sendEmail(subject, congregation.territoryServantEmail, emailText, congregation, req.query.app)
+            sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation, req.query.app)
             res.send("Poprawnie wysłano kod do dwustopniwej weryfikacji");
         })
         .catch((err) => console.log(err))

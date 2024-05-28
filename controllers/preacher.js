@@ -21,21 +21,8 @@ export const getListOfPreachers = (req, res, next) => {
     Preacher
         .paginate({congregation: req.user._id}, paginationOptions)
         .then((result) => {
-            Preacher
-            .find({})
-            .exec()
-            .then((allPreachers) => {
-                allPreachers.forEach((preacher) => {
-                    preacher.link = `https://cong.plan.pl/preacher/${preacher._id}`;
-                    preacher.roles = ['can_see_meetings', 'can_see_minimeetings'];
-                    
-                    
-                    preacher.save()
-                })
-                res.json(result);
-            })
-            .catch((err) => console.log(err))
-    
+        
+          res.json(result);
             
         })
         .catch((err) => console.log(err))
