@@ -12,6 +12,7 @@ const meetingAssignmentSchema = new mongoose.Schema({
         ref: "Preacher"
     },
     type: String,
+    defaultTopic: String,
     meeting: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Meeting"

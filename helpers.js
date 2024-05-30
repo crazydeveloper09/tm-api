@@ -64,3 +64,53 @@ export const createCheckout = async (territory, body) => {
     const createdCheckout = await Checkout.create({ preacher: territory.preacher, takenDate: territory.taken, passedBackDate: lastWorked, serviceYear  })
     return createdCheckout;
 }
+
+export const groupBy = function(data, key) {
+    return data.reduce(function(storage, item) {
+        let group = item[key];
+        
+        storage[group] = storage[group] || [];
+        
+        storage[group].push(item);
+        
+        return storage; 
+    }, {});
+
+};
+
+export const chooseMeetingTypeColorAndIcon = (type) => {
+    let fontColor;
+    let iconName;
+  switch (type) {
+    case "Studium Strażnicy": {
+      fontColor = "#588D3F";
+      iconName = 'fa-solid fa-book-open' ;
+      break;
+    }
+    case "Wykład biblijny": {
+      fontColor = "#292929";
+      iconName = 'fa-solid fa-book-bookmark';
+      break;
+    }
+    case "Skarby ze Słowa Bożego": {
+      fontColor = "#2A6B77";
+      iconName = 'fa-regular fa-gem';
+      break;
+    }
+    case "Ulepszajmy swoją służbę": {
+      fontColor = "#9B6D17";
+      iconName = 'fa-solid fa-briefcase';
+      break;
+    }
+    case "Chrześcijański tryb życia": {
+      fontColor = "#942926";
+      iconName = 'fa-regular fa-circle-up';
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
+  return { iconName, fontColor }
+};

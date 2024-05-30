@@ -5,6 +5,7 @@ const ministryMeetingSchema = new mongoose.Schema({
     date: Date,
     month: String,
     place: String,
+    defaultPlace: String,
     topic: String,
     lead: {
         type: mongoose.Schema.Types.ObjectId,

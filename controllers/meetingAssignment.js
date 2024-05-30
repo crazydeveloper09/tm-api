@@ -28,6 +28,7 @@ export const getListOfMeetingAssignments = (req, res, next) => {
 export const createMeetingAssignment = (req, res, next) => {
     let newMeetingAssignment = {
         topic: req.body.topic,
+        defaultTopic: req.body.defaultTopic,
         type: req.body.type,
         meeting: req.params.meeting_id
     }
@@ -67,6 +68,7 @@ export const editMeetingAssignment = (req, res, next) => {
         .exec()
         .then((meetingAssignment) => {
             meetingAssignment.topic = req.body.assignment.topic;
+            meetingAssignment.defaultTopic = req.body.assignment.defaultTopic;
             meetingAssignment.type = req.body.assignment.type;
             meetingAssignment.otherParticipant = req.body.assignment.otherParticipant !== "" ? req.body.assignment.otherParticipant : undefined;
             meetingAssignment.participant = req.body.assignment.participant !== "" ? req.body.assignment.participant : undefined;

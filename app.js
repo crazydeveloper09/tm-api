@@ -23,6 +23,7 @@ import meetingRoutes from './routes/meeting.js';
 import meetingAssignmentRoutes from './routes/meetingAssignment.js';
 import audioVideoRoutes from './routes/audioVideo.js';
 import ordinalRoutes from './routes/ordinal.js';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -39,6 +40,7 @@ app.use(flash());
 app.use(helmet({
     contentSecurityPolicy: false
 }))
+app.use(cors())
 dotenv.config();
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
