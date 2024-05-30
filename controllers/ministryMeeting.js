@@ -1,11 +1,7 @@
 import express from "express";
 import MinistryMeeting from "../models/ministryMeeting.js";
-import Preacher from "../models/preacher.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
-import ejs from 'ejs';
-import pdf from 'html-pdf';
-import path from 'path';
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 const app = express();
@@ -30,6 +26,7 @@ export const getListOfMinistryMeetingsOfPreacher = (req, res, next) => {
     MinistryMeeting
         .find({ $and: [{ congregation: congregationID }, {lead: req.user._id}] })
         .populate("lead")
+        .sort({ date: 1 })
         .exec()
         .then((ministryMeetings) => {
             res.json(ministryMeetings)
@@ -41,6 +38,7 @@ export const createMinistryMeeting = (req, res, next) => {
     let month = `${months[new Date(req.body.date).getMonth()]} ${new Date(req.body.date).getFullYear()}`;
     let newMinistryMeeting = {
         place: req.body.place,
+        defaultPlace: req.body.defaultPlace,
         hour: req.body.hour,
         date: req.body.date,
         month,

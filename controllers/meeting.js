@@ -1,12 +1,8 @@
 import express from "express";
 import Meeting from "../models/meeting.js";
-import Preacher from "../models/preacher.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
 import mongoose from "mongoose";
-import ejs from 'ejs';
-import pdf from 'html-pdf';
-import path from 'path';
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 import MeetingAssignment from "../models/meetingAssignment.js";
@@ -15,7 +11,7 @@ const app = express();
 app.use(flash());
 app.use(methodOverride("_method"))
 
-const meetingPopulate = [
+export const meetingPopulate = [
     "lead", 
     "beginPrayer",
     "cleaningGroup", 
@@ -102,6 +98,7 @@ export const getListOfMeetings = (req, res, next) => {
     Meeting
         .find({ congregation: congregationID })
         .populate(meetingPopulate)
+        .sort({ date: 1 })
         .exec()
         .then((meetings) => {
             res.json(meetings)
