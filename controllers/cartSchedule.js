@@ -35,7 +35,7 @@ export const getCurrentCartDay = (req, res, next) => {
 }
 
 export const createCartDay = (req, res, next) => {
-    let date = new Date(req.body.date).toLocaleDateString('pl-Pl')
+    let date = new Date(req.body.date).toLocaleDateString('pl-PL')
     let newCartDay = {
         place: req.body.place,
 
