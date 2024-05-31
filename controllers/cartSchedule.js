@@ -55,6 +55,7 @@ export const createCartDay = (req, res, next) => {
             }
             createdCartDay.hours.push(...hours);
             createdCartDay.save();
+            console.log(createdCartDay);
             res.json(createdCartDay);
         })
         .catch((err) => console.log(err))
