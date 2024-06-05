@@ -149,24 +149,22 @@ export const createMeeting = (req, res, next) => {
 
 export const editMeeting = (req, res, next) => {
     Meeting
-        .findByIdAndUpdate(req.params.meeting_id, req.body.meeting)
+        .findById(req.params.meeting_id)
         .exec()
         .then((meeting) => {
             if(req.body.meeting.otherEndPrayer){
                 meeting.otherEndPrayer = req.body.meeting.otherEndPrayer;
             }
-            if(req.body.meeting.lead){
-                meeting.lead = req.body.meeting.lead;
-            }
-            if(req.body.meeting.cleaningGroup){
-                meeting.cleaningGroup = req.body.meeting.cleaningGroup;
-            }
-            if(req.body.meeting.beginSong){
-                meeting.beginSong = req.body.meeting.beginSong;
-            }
-            if(req.body.meeting.beginPrayer){
-                meeting.beginPrayer = req.body.meeting.beginPrayer;
-            }
+            meeting.beginSong = +req.body.meeting.beginSong;
+            meeting.endSong = +req.body.meeting.endSong;
+            meeting.midSong = +req.body.meeting.midSong;
+            meeting.type = +req.body.meeting.midSong;
+            meeting.midSong = +req.body.meeting.midSong;
+            meeting.lead = req.body.meeting.lead !== "" ? req.body.meeting.lead : undefined;
+            meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
+            meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
+            meeting.endPrayer = req.body.meeting.endPrayer !== "" ? req.body.meeting.endPrayer : undefined;
+            
             meeting.save();
             
             res.json(meeting);
