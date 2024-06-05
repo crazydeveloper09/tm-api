@@ -158,8 +158,8 @@ export const editMeeting = (req, res, next) => {
             meeting.beginSong = +req.body.meeting.beginSong;
             meeting.endSong = +req.body.meeting.endSong;
             meeting.midSong = +req.body.meeting.midSong;
-            meeting.type = +req.body.meeting.midSong;
-            meeting.midSong = +req.body.meeting.midSong;
+            meeting.type = req.body.meeting.type;
+            meeting.date = req.body.meeting.date;
             meeting.lead = req.body.meeting.lead !== "" ? req.body.meeting.lead : undefined;
             meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
             meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
