@@ -1,6 +1,7 @@
 import mailgun from 'mailgun-js';
 import passport from 'passport';
 import Checkout from './models/checkout.js';
+import i18n from 'i18n';
 
 export const isLoggedIn = passport.authenticate('jwt');
 
@@ -13,18 +14,18 @@ export const countDaysFromNow = (date) => {
 }
 
 export const months = [
-    'Styczeń', 
-    'Luty', 
-    'Marzec', 
-    'Kwiecień', 
-    'Maj', 
-    'Czerwiec', 
-    'Lipiec', 
-    'Sierpień', 
-    'Wrzesień', 
-    'Październik', 
-    'Listopad', 
-    'Grudzień'
+    'january', 
+    'february', 
+    'march', 
+    'april', 
+    'may', 
+    'june', 
+    'july', 
+    'august', 
+    'september', 
+    'october', 
+    'november', 
+    'december'
 ];
 
 export const sendEmail = async (subject, to, text, congregation, app) => {
@@ -36,6 +37,9 @@ export const sendEmail = async (subject, to, text, congregation, app) => {
         verificationCode: congregation.verificationNumber,
         appName: app || 'Territory Manager',
         headerColor: app ? '#1f8aad': '#28a745',
+        mailWelcome: i18n.__("mailWelcome"),
+        mailGreetings: i18n.__("mailGreetings"),
+        automaticMessageInfo: i18n.__("automaticMessageInfo"),
     })
     const data = {
         from: `Weryfikacja konta ${app || 'Territory Manager'} <admin@websiteswithpassion.pl>`,

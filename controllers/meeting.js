@@ -6,6 +6,9 @@ import mongoose from "mongoose";
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 import MeetingAssignment from "../models/meetingAssignment.js";
+import ordinal from "../models/ordinal.js";
+import audioVideo from "../models/audioVideo.js";
+import i18n from "i18n";
 const app = express();
 
 app.use(flash());
@@ -107,7 +110,8 @@ export const getListOfMeetings = (req, res, next) => {
 }
 
 export const createMeeting = (req, res, next) => {
-    let month = `${months[new Date(req.body.date).getMonth()]} ${new Date(req.body.date).getFullYear()}`;
+    i18n.setLocale(req.query.locale);
+    let month = `${i18n.__(months[new Date(req.body.date).getMonth()])} ${new Date(req.body.date).getFullYear()}`;
     let newMeeting = {
         date: req.body.date,
         month,
@@ -182,7 +186,14 @@ export const deleteMeeting = (req, res, next) => {
             MeetingAssignment
                 .deleteMany({ meeting: req.params.meeting_id })
                 .then((deletedAssignments) => {
-                    res.json(meeting)
+                    ordinal
+                        .deleteMany({ meeting: req.params.meeting_id })
+                        .then((deletedOrdinals) => {
+                            audioVideo
+                                .deleteMany({ meeting: req.params.meeting_id })
+                                .then((deletedAudioVideos) => res.json(meeting))
+                        })
+                    
                 })
                 .catch((err) => console.log(err))
         })

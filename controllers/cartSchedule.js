@@ -49,7 +49,7 @@ export const createCartDay = (req, res, next) => {
             createdCartDay.congregation = congregationID;
             const hours = []
             for(let i = req.body.startHour; i <= req.body.finalHour; i++){
-                const hourDescription = `${i}:00 - ${i + 1}:00`;
+                const hourDescription = `${i}:${req.body.startMinute} - ${i + 1}:${req.body.finishMinute}`;
                 const createdCartHour = await CartHour.create({ timeDescription: hourDescription, preacher1: undefined, preacher2: undefined, congregation: req.user._id, cartDay: createdCartDay._id })
                 hours.push(createdCartHour);
             }

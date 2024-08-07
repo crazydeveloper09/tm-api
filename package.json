@@ -19,6 +19,7 @@
     "express-session": "^1.17.0",
     "helmet": "^6.0.0",
     "html-pdf": "^3.0.1",
+    "i18n": "^0.15.1",
     "ipware": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mailgun-js": "^0.22.0",

@@ -4,6 +4,7 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
+import i18n from "i18n";
 const app = express();
 
 app.use(flash());
@@ -35,14 +36,14 @@ export const getListOfMinistryMeetingsOfPreacher = (req, res, next) => {
 }
 
 export const createMinistryMeeting = (req, res, next) => {
-    let month = `${months[new Date(req.body.date).getMonth()]} ${new Date(req.body.date).getFullYear()}`;
+    i18n.setLocale(req.query.locale);
+    let month = `${i18n.__(months[new Date(req.body.date).getMonth()])} ${new Date(req.body.date).getFullYear()}`;
     let newMinistryMeeting = {
         place: req.body.place,
         defaultPlace: req.body.defaultPlace,
         hour: req.body.hour,
         date: req.body.date,
         month,
-        lead: req.body.lead
     }
 
     MinistryMeeting
@@ -52,6 +53,9 @@ export const createMinistryMeeting = (req, res, next) => {
             createdMinistryMeeting.congregation = congregationID;
             if(req.body.topic){
                 createdMinistryMeeting.topic = req.body.topic;
+            }
+            if(req.body.lead){
+                createdMeeting.lead = req.body.lead;
             }
             createdMinistryMeeting.save();
             res.json(createdMinistryMeeting);
@@ -69,6 +73,9 @@ export const editMinistryMeeting = (req, res, next) => {
             if(req.body.ministryMeeting.topic){
                 ministryMeeting.topic = req.body.ministryMeeting.topic;
                 ministryMeeting.save();
+            }
+            if(req.body.ministryMeeting.lead){
+                ministryMeeting.lead = req.body.ministryMeeting.lead;
             }
             
             res.json(ministryMeeting);

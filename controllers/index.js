@@ -5,6 +5,7 @@ import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
 import Activity from "../models/activity.js";
 import ipWare from "ipware";
+import i18n from "i18n";
 
 const app = express();
 const getIP = ipWare().get_ip;
@@ -14,10 +15,11 @@ app.use(methodOverride("_method"));
 
 
 export const authenticateCongregation = (req, res, next) => {
+    i18n.setLocale(req.language);
     passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
         if (!user) {
-            return res.send("Zła nazwa użytkownika lub hasło");
+            return res.send(i18n.__("badLogIn"));
         }
         if(user.verificated){
             req.logIn(user, function (err) {
@@ -33,8 +35,8 @@ export const authenticateCongregation = (req, res, next) => {
                 user.verificationNumber = verificationCode;
                 user.verificationExpires = Date.now() + 360000;
                 user.save()
-                const subject = 'Potwierdź swoją tożsamość';
-                const emailText = `Zanim będziesz mógł zarządzać ${req.query.app ? 'planami zborowymi chcę mieć pewność, że loguje się administrator' : 'terenami chcę mieć pewność, że loguje się sługa terenu lub nadzorca służby'}. Proszę wpisz na stronie poniższy kod weryfikacyjny.`;
+                const subject = i18n.__("twoFactorTitle");
+                const emailText = `${i18n.__("twoFactorFirstPart")} ${req.query.app ? i18n.__("twoFactorSecondPartPlanner") : i18n.__("twoFactorSecondPartTerritory")}. ${i18n.__("twoFactorThirdPart")}`;
                 sendEmail(subject, user.territoryServantEmail, emailText, user, req.query.app)
                 sendEmail(subject, user.ministryOverseerEmail, emailText, user, req.query.app)
                 let ipInfo = getIP(req);
@@ -46,9 +48,9 @@ export const authenticateCongregation = (req, res, next) => {
                             createdActivity.save();
                         }
                         if(user.username === "Testy aplikacji mobilnej") {
-                            return  res.send({ message: `Poprawnie zalogowano. Twój kod to: ${verificationCode}`, userID: user._id})
+                            return  res.send({ message: `${i18n.__("successfulLogInWithCode")} ${verificationCode}`, userID: user._id})
                         }
-                        res.send({ message: "Poprawnie zalogowano", userID: user._id})
+                        res.send({ message: i18n.__("successfulLogIn"), userID: user._id})
                     })
                     .catch((err) => res.send(err))
             });
