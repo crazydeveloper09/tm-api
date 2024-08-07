@@ -24,6 +24,7 @@ import meetingAssignmentRoutes from './routes/meetingAssignment.js';
 import audioVideoRoutes from './routes/audioVideo.js';
 import ordinalRoutes from './routes/ordinal.js';
 import cors from 'cors';
+import i18n from "i18n";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -45,7 +46,14 @@ dotenv.config();
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
 
+i18n.configure({
+    locales: ["en", "pl"],
+   	register: global,
+	defaultLocale: 'en',
+    directory: __dirname + '/locales',
+})
 
+app.use(i18n.init);
 app.use(expressSession({
     secret: "heheszki",
     resave: true,

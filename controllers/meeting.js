@@ -6,6 +6,9 @@ import mongoose from "mongoose";
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 import MeetingAssignment from "../models/meetingAssignment.js";
+import ordinal from "../models/ordinal.js";
+import audioVideo from "../models/audioVideo.js";
+import i18n from "i18n";
 const app = express();
 
 app.use(flash());
@@ -107,7 +110,8 @@ export const getListOfMeetings = (req, res, next) => {
 }
 
 export const createMeeting = (req, res, next) => {
-    let month = `${months[new Date(req.body.date).getMonth()]} ${new Date(req.body.date).getFullYear()}`;
+    i18n.setLocale(req.query.locale);
+    let month = `${i18n.__(months[new Date(req.body.date).getMonth()])} ${new Date(req.body.date).getFullYear()}`;
     let newMeeting = {
         date: req.body.date,
         month,
@@ -149,22 +153,24 @@ export const createMeeting = (req, res, next) => {
 
 export const editMeeting = (req, res, next) => {
     Meeting
-        .findById(req.params.meeting_id)
+        .findByIdAndUpdate(req.params.meeting_id, req.body.meeting)
         .exec()
         .then((meeting) => {
             if(req.body.meeting.otherEndPrayer){
                 meeting.otherEndPrayer = req.body.meeting.otherEndPrayer;
             }
-            meeting.beginSong = +req.body.meeting.beginSong;
-            meeting.endSong = +req.body.meeting.endSong;
-            meeting.midSong = +req.body.meeting.midSong;
-            meeting.type = req.body.meeting.type;
-            meeting.date = req.body.meeting.date;
-            meeting.lead = req.body.meeting.lead !== "" ? req.body.meeting.lead : undefined;
-            meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
-            meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
-            meeting.endPrayer = req.body.meeting.endPrayer !== "" ? req.body.meeting.endPrayer : undefined;
-            
+            if(req.body.meeting.lead){
+                meeting.lead = req.body.meeting.lead;
+            }
+            if(req.body.meeting.cleaningGroup){
+                meeting.cleaningGroup = req.body.meeting.cleaningGroup;
+            }
+            if(req.body.meeting.beginSong){
+                meeting.beginSong = req.body.meeting.beginSong;
+            }
+            if(req.body.meeting.beginPrayer){
+                meeting.beginPrayer = req.body.meeting.beginPrayer;
+            }
             meeting.save();
             
             res.json(meeting);
@@ -180,7 +186,14 @@ export const deleteMeeting = (req, res, next) => {
             MeetingAssignment
                 .deleteMany({ meeting: req.params.meeting_id })
                 .then((deletedAssignments) => {
-                    res.json(meeting)
+                    ordinal
+                        .deleteMany({ meeting: req.params.meeting_id })
+                        .then((deletedOrdinals) => {
+                            audioVideo
+                                .deleteMany({ meeting: req.params.meeting_id })
+                                .then((deletedAudioVideos) => res.json(meeting))
+                        })
+                    
                 })
                 .catch((err) => console.log(err))
         })
