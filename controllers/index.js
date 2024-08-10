@@ -15,7 +15,7 @@ app.use(methodOverride("_method"));
 
 
 export const authenticateCongregation = (req, res, next) => {
-    i18n.setLocale(req.language);
+    i18n.setLocale(req.query.locale);
     passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
         if (!user) {
