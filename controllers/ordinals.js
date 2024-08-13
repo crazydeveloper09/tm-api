@@ -19,12 +19,8 @@ export const createOrdinal = (req, res, next) => {
     Ordinal
         .create(newOrdinal)
         .then((createdOrdinal) => {
-            if(req.body.hallway2){
-                createdOrdinal.hallway2 = req.body.hallway2;
-            }
-            if(req.body.parking){
-                createdOrdinal.parking = req.body.parking;
-            }
+            createdOrdinal.hallway2 = req.body.hallway2 !== "" ? req.body.hallway2 : undefined;
+            createdOrdinal.parking = req.body.parking !== "" ? req.body.parking : undefined;
             
             createdOrdinal.save();
             Meeting
