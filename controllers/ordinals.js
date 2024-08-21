@@ -44,10 +44,10 @@ export const editOrdinal = (req, res, next) => {
         .findById(req.params.ordinal_id)
         .exec()
         .then((ordinal) => {
-            ordinal.hallway2 = req.body.ordinal.hallway2 !== "" ? req.body.ordinal.hallway2 : undefined;
-            ordinal.parking = req.body.ordinal.parking !== "" ? req.body.ordinal.parking : undefined;
-            ordinal.hallway1 = req.body.ordinal.hallway1;
-            ordinal.auditorium = req.body.ordinal.auditorium;
+            ordinal.hallway2 = req.body.attendant.hallway2 !== "" ? req.body.attendant.hallway2 : undefined;
+            ordinal.parking = req.body.attendant.parking !== "" ? req.body.attendant.parking : undefined;
+            ordinal.hallway1 = req.body.attendant.hallway1;
+            ordinal.auditorium = req.body.attendant.auditorium;
             
             ordinal.save();
             
