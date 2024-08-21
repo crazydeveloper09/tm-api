@@ -156,21 +156,13 @@ export const editMeeting = (req, res, next) => {
         .findByIdAndUpdate(req.params.meeting_id, req.body.meeting)
         .exec()
         .then((meeting) => {
-            if(req.body.meeting.otherEndPrayer){
-                meeting.otherEndPrayer = req.body.meeting.otherEndPrayer;
-            }
-            if(req.body.meeting.lead){
-                meeting.lead = req.body.meeting.lead;
-            }
-            if(req.body.meeting.cleaningGroup){
-                meeting.cleaningGroup = req.body.meeting.cleaningGroup;
-            }
-            if(req.body.meeting.beginSong){
-                meeting.beginSong = req.body.meeting.beginSong;
-            }
-            if(req.body.meeting.beginPrayer){
-                meeting.beginPrayer = req.body.meeting.beginPrayer;
-            }
+            console.log(req.body.meeting)
+            meeting.otherEndPrayer = req.body.meeting.otherEndPrayer !== "" ? req.body.meeting.otherEndPrayer : undefined;
+            meeting.lead = req.body.meeting.lead !== "" ? req.body.meeting.lead : undefined;
+            meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
+            meeting.beginSong = req.body.meeting.beginSong !== "" ? req.body.meeting.beginSong : undefined;
+            meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
+            
             meeting.save();
             
             res.json(meeting);
