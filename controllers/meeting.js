@@ -153,7 +153,7 @@ export const createMeeting = (req, res, next) => {
 
 export const editMeeting = (req, res, next) => {
     Meeting
-        .findByIdAndUpdate(req.params.meeting_id, req.body.meeting)
+        .findById(req.params.meeting_id)
         .exec()
         .then((meeting) => {
             console.log(req.body.meeting)
@@ -162,6 +162,9 @@ export const editMeeting = (req, res, next) => {
             meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
             meeting.beginSong = req.body.meeting.beginSong !== "" ? req.body.meeting.beginSong : undefined;
             meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
+       
+            meeting.midSong = +req.body.meeting.midSong,
+            meeting.endSong = +req.body.meeting.endSong
             
             meeting.save();
             
