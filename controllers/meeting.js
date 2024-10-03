@@ -162,6 +162,7 @@ export const editMeeting = (req, res, next) => {
             meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
             meeting.beginSong = req.body.meeting.beginSong !== "" ? req.body.meeting.beginSong : undefined;
             meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
+            meeting.endPrayer = req.body.meeting.endPrayer !== "" ? req.body.meeting.endPrayer : undefined;
        
             meeting.midSong = +req.body.meeting.midSong,
             meeting.endSong = +req.body.meeting.endSong
