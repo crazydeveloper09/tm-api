@@ -55,7 +55,7 @@ export const createMinistryMeeting = (req, res, next) => {
                 createdMinistryMeeting.topic = req.body.topic;
             }
             if(req.body.lead){
-                createdMeeting.lead = req.body.lead;
+                createdMinistryMeeting.lead = req.body.lead;
             }
             createdMinistryMeeting.save();
             res.json(createdMinistryMeeting);
