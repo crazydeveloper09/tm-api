@@ -118,7 +118,7 @@ app.use("/ministryMeetings", ministryMeetingRoutes)
 app.use("/meetings", meetingRoutes)
 app.use("/meetings/:meeting_id/assignments", meetingAssignmentRoutes)
 app.use("/meetings/:meeting_id/audioVideo", audioVideoRoutes)
-app.use("/meetings/:meeting_id/ordinals", ordinalRoutes)
+app.use("/meetings/:meeting_id/attendants", ordinalRoutes)
 app.use("/cartsSchedule", cartsScheduleRoutes)
 app.use(indexRoutes);
 
