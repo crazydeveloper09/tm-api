@@ -125,23 +125,26 @@ export const createMeeting = (req, res, next) => {
         .then((createdMeeting) => {
             const congregationID = req.user.username ? req.user._id : req.user.congregation;
             createdMeeting.congregation = congregationID;
-            if(req.body.otherEndPrayer){
+            if(req.body.otherEndPrayer !== ""){
                 createdMeeting.otherEndPrayer = req.body.otherEndPrayer;
             }
-            if(req.body.cleaningGroup){
+            if(req.body.cleaningGroup !== ""){
                 createdMeeting.cleaningGroup = req.body.cleaningGroup;
             }
-            if(req.body.lead){
+            if(req.body.lead !== ""){
                 createdMeeting.lead = req.body.lead;
+                sendNotificationToPreacher(req.body.lead, i18n.__("leadLabel"), createdMeeting.date)
             }
-            if(req.body.beginSong){
+            if(req.body.beginSong !== ""){
                 createdMeeting.beginSong = +req.body.beginSong;
             }
-            if(req.body.beginPrayer){
+            if(req.body.beginPrayer !== ""){
                 createdMeeting.beginPrayer = req.body.beginPrayer;
+                sendNotificationToPreacher(req.body.beginPrayer, i18n.__("beginPrayerLabel"), createdMeeting.date)
             }
-            if(req.body.endPrayer){
+            if(req.body.endPrayer !== ""){
                 createdMeeting.endPrayer = req.body.endPrayer;
+                sendNotificationToPreacher(req.body.endPrayer, i18n.__("endPrayerLabel"), createdMeeting.date)
             }
             createdMeeting.save();
             res.json(createdMeeting);
@@ -156,17 +159,27 @@ export const editMeeting = (req, res, next) => {
         .findById(req.params.meeting_id)
         .exec()
         .then((meeting) => {
-            console.log(req.body.meeting)
-            meeting.otherEndPrayer = req.body.meeting.otherEndPrayer !== "" ? req.body.meeting.otherEndPrayer : undefined;
-            meeting.lead = req.body.meeting.lead !== "" ? req.body.meeting.lead : undefined;
-            meeting.cleaningGroup = req.body.meeting.cleaningGroup !== "" ? req.body.meeting.cleaningGroup : undefined;
-            meeting.beginSong = req.body.meeting.beginSong !== "" ? req.body.meeting.beginSong : undefined;
-            meeting.beginPrayer = req.body.meeting.beginPrayer !== "" ? req.body.meeting.beginPrayer : undefined;
-            meeting.endPrayer = req.body.meeting.endPrayer !== "" ? req.body.meeting.endPrayer : undefined;
-       
-            meeting.midSong = +req.body.meeting.midSong,
-            meeting.endSong = +req.body.meeting.endSong
-            
+            if(req.body.meeting.otherEndPrayer !== ""){
+                meeting.otherEndPrayer = req.body.meeting.otherEndPrayer;
+            }
+            if(req.body.meeting.cleaningGroup !== ""){
+                meeting.cleaningGroup = req.body.meeting.cleaningGroup;
+            }
+            if(req.body.meeting.lead !== ""){
+                meeting.lead = req.body.meeting.lead;
+                sendNotificationToPreacher(req.body.meeting.lead, i18n.__("leadLabel"), meeting.date)
+            }
+            if(req.body.meeting.beginSong !== ""){
+                meeting.beginSong = +req.body.meeting.beginSong;
+            }
+            if(req.body.meeting.beginPrayer !== ""){
+                meeting.beginPrayer = req.body.meeting.beginPrayer;
+                sendNotificationToPreacher(req.body.meeting.beginPrayer, i18n.__("beginPrayerLabel"), meeting.date)
+            }
+            if(req.body.meeting.endPrayer !== ""){
+                meeting.endPrayer = req.body.meeting.endPrayer;
+                sendNotificationToPreacher(req.body.meeting.endPrayer, i18n.__("endPrayerLabel"), meeting.date)
+            }
             meeting.save();
             
             res.json(meeting);

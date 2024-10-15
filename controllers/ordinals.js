@@ -4,6 +4,8 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import { __dirname } from "../app.js";
 import Meeting from "../models/meeting.js";
+import { sendNotificationToPreacher } from "../notifications.js";
+import i18n from "i18n";
 const app = express();
 
 app.use(flash());
@@ -11,16 +13,28 @@ app.use(methodOverride("_method"))
 
 export const createOrdinal = (req, res, next) => {
     let newOrdinal = {
-        hallway1: req.body.hallway1,
-        auditorium: req.body.auditorium,
         meeting: req.params.meeting_id
     }
 
     Ordinal
         .create(newOrdinal)
         .then((createdOrdinal) => {
-            createdOrdinal.hallway2 = req.body.hallway2 !== "" ? req.body.hallway2 : undefined;
-            createdOrdinal.parking = req.body.parking !== "" ? req.body.parking : undefined;
+            if(req.body.hallway1 !== ""){
+                createdOrdinal.hallway1 = req.body.hallway1;
+                sendNotificationToPreacher(req.body.hallway1, i18n.__("hallwayLabel"), req.body.meetingDate)
+            }
+            if(req.body.auditorium !== ""){
+                createdOrdinal.auditorium = req.body.auditorium;
+                sendNotificationToPreacher(req.body.auditorium, i18n.__("auditoriumLabel"), req.body.meetingDate)
+            }
+            if(req.body.hallway2 !== ""){
+                createdOrdinal.hallway2 = req.body.hallway2;
+                sendNotificationToPreacher(req.body.hallway2, i18n.__("hallway2Label"), req.body.meetingDate)
+            }
+            if(req.body.parking !== ""){
+                createdOrdinal.parking = req.body.parking;
+                sendNotificationToPreacher(req.body.parking, i18n.__("parkingLabel"), req.body.meetingDate)
+            }
             
             createdOrdinal.save();
             Meeting
@@ -44,10 +58,23 @@ export const editOrdinal = (req, res, next) => {
         .findById(req.params.ordinal_id)
         .exec()
         .then((ordinal) => {
-            ordinal.hallway2 = req.body.attendant.hallway2 !== "" ? req.body.attendant.hallway2 : undefined;
-            ordinal.parking = req.body.attendant.parking !== "" ? req.body.attendant.parking : undefined;
-            ordinal.hallway1 = req.body.attendant.hallway1;
-            ordinal.auditorium = req.body.attendant.auditorium;
+            if(req.body.attendant.hallway1 !== ""){
+                ordinal.hallway1 = req.body.attendant.hallway1;
+                sendNotificationToPreacher(req.body.attendant.hallway1, i18n.__("hallwayLabel"), req.body.meetingDate)
+            }
+            if(req.body.attendant.auditorium !== ""){
+                ordinal.auditorium = req.body.attendant.auditorium;
+                sendNotificationToPreacher(req.body.attendant.auditorium, i18n.__("auditoriumLabel"), req.body.meetingDate)
+            }
+            if(req.body.attendant.hallway2 !== ""){
+                ordinal.hallway2 = req.body.attendant.hallway2;
+                sendNotificationToPreacher(req.body.attendant.hallway2, i18n.__("hallway2Label"), req.body.meetingDate)
+            }
+            if(req.body.attendant.parking !== ""){
+                ordinal.parking = req.body.attendant.parking;
+                sendNotificationToPreacher(req.body.attendant.parking, i18n.__("parkingLabel"), req.body.meetingDate)
+            }
+
             
             ordinal.save();
             

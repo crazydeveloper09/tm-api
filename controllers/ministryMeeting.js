@@ -5,6 +5,7 @@ import methodOverride from "method-override";
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 import i18n from "i18n";
+import { sendNotificationToPreacher } from "../notifications.js";
 const app = express();
 
 app.use(flash());
@@ -56,6 +57,7 @@ export const createMinistryMeeting = (req, res, next) => {
             }
             if(req.body.lead){
                 createdMinistryMeeting.lead = req.body.lead;
+                sendNotificationToPreacher(req.body.lead, i18n.__("leadMiniLabel"), createdMinistryMeeting.date)
             }
             createdMinistryMeeting.save();
             res.json(createdMinistryMeeting);
@@ -67,17 +69,20 @@ export const createMinistryMeeting = (req, res, next) => {
 
 export const editMinistryMeeting = (req, res, next) => {
     MinistryMeeting
-        .findByIdAndUpdate(req.params.ministryMeeting_id, req.body.ministryMeeting)
+        .findById(req.params.ministryMeeting_id)
         .exec()
         .then((ministryMeeting) => {
             if(req.body.ministryMeeting.topic){
                 ministryMeeting.topic = req.body.ministryMeeting.topic;
-                ministryMeeting.save();
             }
-            if(req.body.ministryMeeting.lead){
+            if(req.body.ministryMeeting.lead !== ""){
                 ministryMeeting.lead = req.body.ministryMeeting.lead;
+                sendNotificationToPreacher(req.body.ministryMeeting.lead, i18n.__("leadMiniLabel"), ministryMeeting.date)
             }
             
+            ministryMeeting.place = req.body.ministryMeeting.place;
+            ministryMeeting.defaultPlace = req.body.ministryMeeting.defaultPlace;
+            ministryMeeting.save();
             res.json(ministryMeeting);
         })
         .catch((err) => console.log(err))
