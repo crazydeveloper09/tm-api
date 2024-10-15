@@ -6,6 +6,7 @@ import { sendEmail } from "../helpers.js";
 import Activity from "../models/activity.js";
 import ipWare from "ipware";
 import i18n from "i18n";
+import { addPushToken } from "../notifications.js";
 
 const app = express();
 const getIP = ipWare().get_ip;
@@ -64,4 +65,9 @@ export const authenticateCongregation = (req, res, next) => {
 export const logOutCongregation = (req, res, next) => {
     req.logout();
     res.send("Poprawnie wylogowano");
+}
+
+export const registerDevice = async (req, res, next) => {
+    await addPushToken(req.body.preacherId.replaceAll('"', ''), req.body.token);
+    res.json("Successfully added device to send notifications")
 }

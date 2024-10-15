@@ -9,7 +9,8 @@ const preacherSchema = new mongoose.Schema({
         ref:"Congregation"
     },
     link: String,
-    roles: Array
+    roles: Array,
+    pushTokens: [String]
 });
 preacherSchema.plugin(passportLocalMongoose);
 preacherSchema.plugin(mongoosePaginate)

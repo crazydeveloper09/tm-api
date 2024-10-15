@@ -1,14 +1,11 @@
 import express from "express";
 import MeetingAssignment from "../models/meetingAssignment.js";
-import Preacher from "../models/preacher.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
-import ejs from 'ejs';
-import pdf from 'html-pdf';
-import path from 'path';
 import { __dirname } from "../app.js";
-import { months } from "../helpers.js";
 import Meeting from "../models/meeting.js";
+import { sendNotificationToPreacher } from "../notifications.js";
+import i18n from "i18n";
 const app = express();
 
 app.use(flash());
@@ -36,14 +33,16 @@ export const createMeetingAssignment = (req, res, next) => {
     MeetingAssignment
         .create(newMeetingAssignment)
         .then((createdMeetingAssignment) => {
-            if(req.body.otherParticipant){
+            if(req.body.otherParticipant !== ""){
                 createdMeetingAssignment.otherParticipant = req.body.otherParticipant;
             }
-            if(req.body.participant){
+            if(req.body.participant !== ""){
                 createdMeetingAssignment.participant = req.body.participant;
+                sendNotificationToPreacher(req.body.participant, createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic, req.body.meetingDate)
             }
-            if(req.body.reader){
+            if(req.body.reader !== ""){
                 createdMeetingAssignment.reader = req.body.reader;
+                sendNotificationToPreacher(req.body.participant, `${createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic} - Lektor`, req.body.meetingDate)
             }
             createdMeetingAssignment.save();
             Meeting
@@ -65,15 +64,23 @@ export const createMeetingAssignment = (req, res, next) => {
 export const editMeetingAssignment = (req, res, next) => {
     MeetingAssignment
         .findById(req.params.meetingAssignment_id)
+        .populate("meeting")
         .exec()
         .then((meetingAssignment) => {
             meetingAssignment.topic = req.body.assignment.topic;
             meetingAssignment.defaultTopic = req.body.assignment.defaultTopic;
             meetingAssignment.type = req.body.assignment.type;
-            meetingAssignment.otherParticipant = req.body.assignment.otherParticipant !== "" ? req.body.assignment.otherParticipant : undefined;
-            meetingAssignment.participant = req.body.assignment.participant !== "" ? req.body.assignment.participant : undefined;
-            meetingAssignment.reader = req.body.assignment.reader !== "" ? req.body.assignment.reader : undefined;
-            
+            if(req.body.assignment.otherParticipant !== ""){
+                meetingAssignment.otherParticipant = req.body.assignment.otherParticipant;
+            }
+            if(req.body.assignment.participant !== ""){
+                meetingAssignment.participant = req.body.assignment.participant;
+                sendNotificationToPreacher(req.body.participant, req.body.assignment.topic || req.body.assignment.defaultTopic, meetingAssignment.meeting.date)
+            }
+            if(req.body.assignment.reader !== ""){
+                meetingAssignment.reader = req.body.assignment.reader;
+                sendNotificationToPreacher(req.body.assignment.reader, `${req.body.assignment.topic || req.body.assignment.defaultTopic} - Lektor`, meetingAssignment.meeting.date)
+            }
             meetingAssignment.save();
             
             res.json(meetingAssignment);

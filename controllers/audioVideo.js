@@ -5,6 +5,8 @@ import flash from "connect-flash";
 import methodOverride from "method-override";
 import { __dirname } from "../app.js";
 import Meeting from "../models/meeting.js";
+import { sendNotificationToPreacher } from "../notifications.js";
+import i18n from "i18n";
 const app = express();
 
 app.use(flash());
@@ -12,19 +14,27 @@ app.use(methodOverride("_method"))
 
 export const createAudioVideo = (req, res, next) => {
     let newAudioVideo = {
-        videoOperator: req.body.videoOperator,
-        microphone1Operator: req.body.microphone1Operator,
         meeting: req.params.meeting_id
     }
 
     AudioVideo
         .create(newAudioVideo)
         .then((createdAudioVideo) => {
-            if(req.body.microphone2Operator){
+            if(req.body.microphone2Operator !== ""){
                 createdAudioVideo.microphone2Operator = req.body.microphone2Operator;
+                sendNotificationToPreacher(req.body.microphone2Operator, i18n.__("mic2Label"), req.body.meetingDate)
             }
-            if(req.body.audioOperator){
+            if(req.body.audioOperator !== ""){
                 createdAudioVideo.audioOperator = req.body.audioOperator;
+                sendNotificationToPreacher(req.body.audioOperator, i18n.__("audioOperatorLabel"), req.body.meetingDate)
+            }
+            if(req.body.microphone1Operator !== ""){
+                createdAudioVideo.microphone1Operator = req.body.microphone1Operator;
+                sendNotificationToPreacher(req.body.microphone1Operator, i18n.__("mic1Label"), req.body.meetingDate)
+            }
+            if(req.body.videoOperator !== ""){
+                createdAudioVideo.videoOperator = req.body.videoOperator;
+                sendNotificationToPreacher(req.body.videoOperator, i18n.__("videoOperatorLabel"), req.body.meetingDate)
             }
             
             createdAudioVideo.save();
@@ -47,15 +57,30 @@ export const createAudioVideo = (req, res, next) => {
 export const editAudioVideo = (req, res, next) => {
     AudioVideo
         .findById(req.params.audioVideo_id)
+        .populate("meeting")
         .exec()
         .then((audioVideo) => {
-            audioVideo.microphone2Operator = req.body.audioVideo.microphone2Operator !== "" ? req.body.audioVideo.microphone2Operator : undefined;
-            audioVideo.audioOperator = req.body.audioVideo.audioOperator !== "" ? req.body.audioVideo.audioOperator : undefined;
-            audioVideo.videoOperator = req.body.audioVideo.videoOperator !== "" ? req.body.audioVideo.videoOperator : undefined;
-            audioVideo.microphone1Operator = req.body.audioVideo.microphone1Operator !== "" ? req.body.audioVideo.microphone1Operator : undefined;
+            if(req.body.audioVideo.microphone2Operator !== ""){
+                audioVideo.microphone2Operator = req.body.audioVideo.microphone2Operator;
+                sendNotificationToPreacher(req.body.audioVideo.microphone2Operator, i18n.__("mic2Label"), audioVideo.meeting.date)
+            }
+            if(req.body.audioVideo.audioOperator !== ""){
+                audioVideo.audioOperator = req.body.audioVideo.audioOperator;
+                sendNotificationToPreacher(req.body.audioVideo.audioOperator, i18n.__("audioOperatorLabel"), audioVideo.meeting.date)
+            }
+            if(req.body.audioVideo.microphone1Operator !== ""){
+                audioVideo.microphone1Operator = req.body.audioVideo.microphone1Operator;
+                sendNotificationToPreacher(req.body.audioVideo.microphone1Operator, i18n.__("mic1Label"), audioVideo.meeting.date)
+            }
+            if(req.body.audioVideo.videoOperator !== ""){
+                console.log(req.body.audioVideo.videoOperator);
+                console.log(req.body.audioVideo)
+                audioVideo.videoOperator = req.body.audioVideo.videoOperator;
+                sendNotificationToPreacher(req.body.audioVideo.videoOperator, i18n.__("videoOperatorLabel"), audioVideo.meeting.date)
+            }
             
             audioVideo.save();
-            
+            console.log(audioVideo)
             res.json(audioVideo);
         })
         .catch((err) => console.log(err))
