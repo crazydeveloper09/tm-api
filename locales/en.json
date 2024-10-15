@@ -21,5 +21,20 @@
     "december": "December",
     "mailWelcome": "Hello",
     "mailGreetings": "Your brother",
-    "automaticMessageInfo": "Message sent automatically, don't respond to it"
+    "automaticMessageInfo": "Message sent automatically, don't respond to it",
+    "notificationTitle": "New assignment",
+    "notificationBodyPart1": "You have new assignment",
+    "notificationBodyPart2": "Open the app and add it to calendar to not forget about it",
+    "videoOperatorLabel": "Video operator",
+    "audioOperatorLabel": "Audio operator",
+    "mic1Label": "Mic 1 (left)",
+    "mic2Label": "Mic 2 (right)",
+    "hallwayLabel": "Attendant",
+    "hallway2Label": "Attendant 2",
+    "auditoriumLabel": "Auditorium attendant",
+    "parkingLabel": "Parking attendant",
+    "leadLabel": "Meeting chairman",
+    "beginPrayerLabel": "Begin meeting prayer",
+    "endPrayerLabel": "End meeting prayer",
+    "leadMiniLabel": "Field service meeting chairman"
 }
