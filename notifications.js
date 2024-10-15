@@ -7,7 +7,6 @@ const expo = new Expo();
 
 // Function to add a push token to a user
 async function addPushToken(userId, pushToken) {
-  console.log(pushToken)
   try {
     const user = await Preacher.findByIdAndUpdate(
       userId,

@@ -23,6 +23,7 @@ export const getListOfMeetingAssignments = (req, res, next) => {
 }
 
 export const createMeetingAssignment = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     let newMeetingAssignment = {
         topic: req.body.topic,
         defaultTopic: req.body.defaultTopic,
@@ -62,6 +63,7 @@ export const createMeetingAssignment = (req, res, next) => {
 
 
 export const editMeetingAssignment = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     MeetingAssignment
         .findById(req.params.meetingAssignment_id)
         .populate("meeting")

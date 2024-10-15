@@ -68,6 +68,7 @@ export const createMinistryMeeting = (req, res, next) => {
 
 
 export const editMinistryMeeting = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     MinistryMeeting
         .findById(req.params.ministryMeeting_id)
         .exec()
