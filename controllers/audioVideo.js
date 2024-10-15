@@ -16,7 +16,7 @@ export const createAudioVideo = (req, res, next) => {
     let newAudioVideo = {
         meeting: req.params.meeting_id
     }
-
+    i18n.setLocale(req.query.locale);
     AudioVideo
         .create(newAudioVideo)
         .then((createdAudioVideo) => {
@@ -55,6 +55,7 @@ export const createAudioVideo = (req, res, next) => {
 
 
 export const editAudioVideo = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     AudioVideo
         .findById(req.params.audioVideo_id)
         .populate("meeting")

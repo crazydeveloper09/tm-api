@@ -12,6 +12,7 @@ app.use(flash());
 app.use(methodOverride("_method"))
 
 export const createOrdinal = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     let newOrdinal = {
         meeting: req.params.meeting_id
     }
@@ -54,6 +55,7 @@ export const createOrdinal = (req, res, next) => {
 
 
 export const editOrdinal = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     Ordinal
         .findById(req.params.ordinal_id)
         .exec()
