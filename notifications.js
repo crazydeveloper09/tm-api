@@ -50,11 +50,10 @@ async function sendNotificationToPreacher(userId, description, date, data = {}) 
               to: pushToken,
               sound: 'default',
               title: i18n.__("notificationTitle"),
-              body: `${i18n.__("notificationBodyPart1")} ${description} ${date.toLocaleDateString()}. ${i18n.__("notificationBodyPart2")}`,
+              body: `${i18n.__("notificationBodyPart1")} ${description} ${date.toLocaleDateString("pl-PL")}. ${i18n.__("notificationBodyPart2")}`,
               data: { ...data, userId },
             }));
-        
-            console.log(messages)
+    
         
             const chunks = expo.chunkPushNotifications(messages);
             const tickets = [];
@@ -93,7 +92,6 @@ async function sendNotificationToPreacher(userId, description, date, data = {}) 
               }
             }
         
-            console.log(tickets)
         
             return tickets;
     }
