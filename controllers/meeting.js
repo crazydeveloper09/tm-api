@@ -155,6 +155,7 @@ export const createMeeting = (req, res, next) => {
 
 
 export const editMeeting = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
     Meeting
         .findById(req.params.meeting_id)
         .exec()
