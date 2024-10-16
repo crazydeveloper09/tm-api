@@ -5,7 +5,7 @@ import {
 import i18n from "i18n";
 import admin from 'firebase-admin';
 import apn from 'apn';
-import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-594e8a280e.json'
+import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-594e8a280e.js';
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
