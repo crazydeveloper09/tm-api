@@ -1,2 +1,4 @@
 .env
 /node_modules
+*.p8
+congregation-planner-firebase-adminsdk-9agxd-594e8a280e.json
