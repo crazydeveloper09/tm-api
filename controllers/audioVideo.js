@@ -16,7 +16,7 @@ export const createAudioVideo = (req, res, next) => {
     let newAudioVideo = {
         meeting: req.params.meeting_id
     }
-    i18n.setLocale(req.query.locale);
+    i18n.setLocale(req.query.locale || "pl");
     AudioVideo
         .create(newAudioVideo)
         .then((createdAudioVideo) => {
