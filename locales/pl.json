@@ -36,5 +36,6 @@
   "leadLabel": "Prowadzący zebrania",
   "beginPrayerLabel": "Modlitwa początkowa",
   "endPrayerLabel": "Modlitwa końcowa",
-  "leadMiniLabel": "Prowadzący zbiórkę"
+  "leadMiniLabel": "Prowadzący zbiórkę",
+  "readerLabel": "Lektor"
 }

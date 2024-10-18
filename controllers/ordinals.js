@@ -13,7 +13,11 @@ app.use(methodOverride("_method"))
 
 export const createOrdinal = (req, res, next) => {
     i18n.setLocale(req.query.locale);
-    let newOrdinal = {
+        Meeting
+                .findById(req.params.meeting_id)
+                .exec()
+                .then((meeting) => {
+            let newOrdinal = {
         meeting: req.params.meeting_id
     }
 
@@ -22,34 +26,32 @@ export const createOrdinal = (req, res, next) => {
         .then((createdOrdinal) => {
             if(req.body.hallway1 !== ""){
                 createdOrdinal.hallway1 = req.body.hallway1;
-                sendNotificationToPreacher(req.body.hallway1, i18n.__("hallwayLabel"), req.body.meetingDate)
+                sendNotificationToPreacher(req.body.hallway1, i18n.__("hallwayLabel"), meeting.date)
             }
             if(req.body.auditorium !== ""){
                 createdOrdinal.auditorium = req.body.auditorium;
-                sendNotificationToPreacher(req.body.auditorium, i18n.__("auditoriumLabel"), req.body.meetingDate)
+                sendNotificationToPreacher(req.body.auditorium, i18n.__("auditoriumLabel"), meeting.date)
             }
             if(req.body.hallway2 !== ""){
                 createdOrdinal.hallway2 = req.body.hallway2;
-                sendNotificationToPreacher(req.body.hallway2, i18n.__("hallway2Label"), req.body.meetingDate)
+                sendNotificationToPreacher(req.body.hallway2, i18n.__("hallway2Label"), meeting.date)
             }
             if(req.body.parking !== ""){
                 createdOrdinal.parking = req.body.parking;
-                sendNotificationToPreacher(req.body.parking, i18n.__("parkingLabel"), req.body.meetingDate)
+                sendNotificationToPreacher(req.body.parking, i18n.__("parkingLabel"), meeting.date)
             }
             
             createdOrdinal.save();
-            Meeting
-                .findById(req.params.meeting_id)
-                .exec()
-                .then((meeting) => {
-                    meeting.ordinal = createdOrdinal;
+       meeting.ordinal = createdOrdinal;
                     meeting.save();
                     res.json(createdOrdinal);
-                })
-                .catch((err) => console.log(err))
             
         })
         .catch((err) => console.log(err))
+                    
+                })
+                .catch((err) => console.log(err))
+  
 }
 
 

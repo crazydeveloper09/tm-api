@@ -24,6 +24,10 @@ export const getListOfMeetingAssignments = (req, res, next) => {
 
 export const createMeetingAssignment = (req, res, next) => {
     i18n.setLocale(req.query.locale);
+  Meeting
+                .findById(req.params.meeting_id)
+                .exec()
+                .then((meeting) => {
     let newMeetingAssignment = {
         topic: req.body.topic,
         defaultTopic: req.body.defaultTopic,
@@ -39,25 +43,23 @@ export const createMeetingAssignment = (req, res, next) => {
             }
             if(req.body.participant !== ""){
                 createdMeetingAssignment.participant = req.body.participant;
-                sendNotificationToPreacher(req.body.participant, createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic, req.body.meetingDate)
+                sendNotificationToPreacher(req.body.participant, createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic, meeting.date)
             }
             if(req.body.reader !== ""){
                 createdMeetingAssignment.reader = req.body.reader;
-                sendNotificationToPreacher(req.body.participant, `${createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic} - Lektor`, req.body.meetingDate)
+                sendNotificationToPreacher(req.body.participant, `${createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic} - ${i18n.__("readerLabel")}`, meeting.date)
             }
             createdMeetingAssignment.save();
-            Meeting
-                .findById(req.params.meeting_id)
-                .exec()
-                .then((meeting) => {
-                    meeting.assignments.push(createdMeetingAssignment);
+      
+             meeting.assignments.push(createdMeetingAssignment);
                     meeting.save();
                     res.json(createdMeetingAssignment);
-                })
-                .catch((err) => console.log(err))
-            
         })
         .catch((err) => console.log(err))
+                   
+                })
+                .catch((err) => console.log(err))
+    
 }
 
 

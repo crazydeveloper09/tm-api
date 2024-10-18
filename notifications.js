@@ -5,7 +5,14 @@ import {
 import i18n from "i18n";
 import admin from 'firebase-admin';
 import apn from 'apn';
-import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-594e8a280e.json'
+import { fileURLToPath } from 'url';
+import path from 'path';
+import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-594e8a280e.json' assert {type: "json"}
+
+// Get the equivalent of __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -13,7 +20,7 @@ admin.initializeApp({
 
 const apnProvider = new apn.Provider({
     token: {
-      key: './AuthKey_RK97HAB8TC.p8',
+      key: path.resolve(__dirname, './AuthKey_RK97HAB8TC.p8'),
       keyId: 'RK97HAB8TC',
       teamId: '9V23KDCG5Z',
     },
@@ -72,9 +79,8 @@ async function sendNotificationToPreacher(userId, description, date, data = {}) 
             const expoMessages = [];
             const fcmMessages = [];
             const apnsTokens = [];
-
-            user.pushTokens.forEach(token => {
-                const message = {
+          
+             const message = {
                     title: i18n.__("notificationTitle"),
                     body: `${i18n.__("notificationBodyPart1")} ${description} ${date.toLocaleDateString()}. ${i18n.__("notificationBodyPart2")}`,
                     data: {
@@ -82,6 +88,9 @@ async function sendNotificationToPreacher(userId, description, date, data = {}) 
                         userId
                     },
                 };
+
+            user.pushTokens.forEach(token => {
+               
 
                 if (Expo.isExpoPushToken(token)) {
                     expoMessages.push({
@@ -163,7 +172,15 @@ async function sendFCMNotifications(messages) {
 
     const results = await Promise.all(messages.map(async (message) => {
         try {
-            const result = await admin.messaging().send(message);
+            const fcmMessage = {
+                token: message.token,
+                notification: {
+                    title: message.title,
+                    body: message.body
+                },
+                data: message.data
+            };
+            const result = await admin.messaging().send(fcmMessage);
             return {
                 id: result,
                 status: 'ok'
@@ -192,6 +209,7 @@ async function sendAPNsNotifications(tokens, message) {
             title: message.title,
             body: message.body,
         },
+        topic: 'com.miszki.congregation-planner',
         sound: 'default',
         payload: message.data,
     });

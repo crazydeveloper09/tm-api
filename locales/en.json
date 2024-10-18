@@ -36,5 +36,6 @@
     "leadLabel": "Meeting chairman",
     "beginPrayerLabel": "Begin meeting prayer",
     "endPrayerLabel": "End meeting prayer",
-    "leadMiniLabel": "Field service meeting chairman"
+    "leadMiniLabel": "Field service meeting chairman",
+  "readerLabel": "Reader"
 }
