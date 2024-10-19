@@ -68,6 +68,9 @@ export const logOutCongregation = (req, res, next) => {
 }
 
 export const registerDevice = async (req, res, next) => {
-    await addPushToken(req.body.preacherId.replaceAll('"', ''), req.body.token);
-    res.json("Successfully added device to send notifications")
+    if(req.body.preacherId) {
+      await addPushToken(req.body.preacherId.replaceAll('"', ''), req.body.token);
+      res.json("Successfully added device to send notifications")
+    }
+    res.json(null)
 }
