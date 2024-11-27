@@ -2,6 +2,11 @@ import mailgun from 'mailgun-js';
 import passport from 'passport';
 import Checkout from './models/checkout.js';
 import i18n from 'i18n';
+import mongoose from 'mongoose';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const isLoggedIn = passport.authenticate('jwt');
 
@@ -117,4 +122,32 @@ export const chooseMeetingTypeColorAndIcon = (type) => {
   }
 
   return { iconName, fontColor }
+};
+
+
+const encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
+const algorithm = 'aes-256-gcm';
+
+export const encrypt = (text) => {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv(algorithm, encryptionKey, iv);
+
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  const authTag = cipher.getAuthTag().toString('hex');
+
+  return `${iv.toString('hex')}:${encrypted}:${authTag}`;
+};
+
+export const decrypt = (encryptedText) => {
+  const [ivHex, encrypted, authTagHex] = encryptedText.split(':');
+  const iv = Buffer.from(ivHex, 'hex');
+  const authTag = Buffer.from(authTagHex, 'hex');
+
+  const decipher = crypto.createDecipheriv(algorithm, encryptionKey, iv);
+  decipher.setAuthTag(authTag);
+
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
 };

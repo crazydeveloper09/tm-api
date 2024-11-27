@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 import MeetingAssignment from "../models/meetingAssignment.js";
+import { sendNotificationToPreacher } from "../notifications.js";
 import ordinal from "../models/ordinal.js";
 import audioVideo from "../models/audioVideo.js";
 import i18n from "i18n";

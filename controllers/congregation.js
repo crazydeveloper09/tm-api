@@ -26,8 +26,9 @@ let geocoder = node_geocoder(options);
 
 
 export const getCongregationInfo = (req, res, next) => {
+    const congregationID = req.user.username ? req.user._id : req.user.congregation;
     Congregation
-        .findById(req.user._id)
+        .findById(congregationID)
         .populate(["preacher", "territories"])
         .exec()
         .then((congregation) => {
@@ -107,7 +108,7 @@ export const resendTwoFactorCode = (req, res, next) => {
 
 export const getAllCongregationActivities = (req, res, next) => {
     Activity
-        .find({ congregation: req.params.congregation_id })
+        .find({ $and: [{ congregation: req.params.congregation_id }, { appName: req.query.app }] })
         .exec()
         .then((activities) => res.json(activities))
         .catch((err) => console.log(err))

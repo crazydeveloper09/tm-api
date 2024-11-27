@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { decrypt, encrypt } from "../helpers.js";
 
 const meetingAssignmentSchema = new mongoose.Schema({
     topic: String,
@@ -6,7 +7,11 @@ const meetingAssignmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
     },
-    otherParticipant: String,
+    otherParticipant: {
+        type: String,
+        set: (otherParticipant) => encrypt(otherParticipant),
+        get: (encryptedOtherParticipant) => decrypt(encryptedOtherParticipant),
+    },
     reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
@@ -18,5 +23,7 @@ const meetingAssignmentSchema = new mongoose.Schema({
         ref: "Meeting"
     }
 })
+
+meetingAssignmentSchema.set("toJSON", { getters: true })
 
 export default mongoose.model("MeetingAssignment", meetingAssignmentSchema)

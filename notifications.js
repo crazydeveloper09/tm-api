@@ -7,7 +7,7 @@ import admin from 'firebase-admin';
 import apn from 'apn';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-594e8a280e.json' assert {type: "json"}
+import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-20f00d2461.json' assert {type: "json"}
 
 // Get the equivalent of __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { decrypt, encrypt } from "../helpers.js";
 
 const meetingSchema = new mongoose.Schema({
     date: Date,
@@ -23,7 +24,11 @@ const meetingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Congregation"
     },
-    otherEndPrayer: String,
+    otherEndPrayer: {
+        type: String,
+        set: (otherEndPrayer) => encrypt(otherEndPrayer),
+        get: (encryptedOtherEndPrayer) => decrypt(encryptedOtherEndPrayer),
+    },
     assignments: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -43,5 +48,7 @@ const meetingSchema = new mongoose.Schema({
         ref: "MinistryGroup"
     },
 });
+
+meetingSchema.set("toJSON", { getters: true })
 
 export default mongoose.model("Meeting", meetingSchema)

@@ -1,10 +1,12 @@
 import express from "express";
-import { authenticateCongregation, logOutCongregation, registerDevice } from "../controllers/index.js";
+import { authenticateCongregation, encryptAllData, logOutCongregation, registerDevice } from "../controllers/index.js";
 
 const router = express.Router({mergeParams: true});
 
 
 router.get("/logout", logOutCongregation);
+
+router.post("/encrypt-data", encryptAllData)
 
 router.post("/login", authenticateCongregation);
 

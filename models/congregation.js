@@ -1,11 +1,20 @@
 import mongoose from"mongoose";
 import passportLocalMongoose from"passport-local-mongoose";
+import { decrypt, encrypt } from "../helpers.js";
 
 const congregationSchema = new mongoose.Schema({
     username: String,
     password: String,
-    territoryServantEmail: String,
-    ministryOverseerEmail: String,
+    territoryServantEmail: {
+        type: String,
+        set: (email) => encrypt(email),
+        get: (encryptedEmail) => decrypt(encryptedEmail),
+    },
+    ministryOverseerEmail: {
+        type: String,
+        set: (email) => encrypt(email),
+        get: (encryptedEmail) => decrypt(encryptedEmail),
+    },
     verificationNumber: Number,
     verificationExpires: Date,
     verificated: {
@@ -29,4 +38,5 @@ const congregationSchema = new mongoose.Schema({
     mainCityLongitude: Number,
 })
 congregationSchema.plugin(passportLocalMongoose);
+congregationSchema.set("toJSON", { getters: true })
 export default mongoose.model("Congregation", congregationSchema);

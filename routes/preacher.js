@@ -4,6 +4,7 @@ import {
     createPreacher,
     deletePreacher,
     editPreacher,
+    encryptData,
     generateLinkForPreacher,
     getAllPreachers,
     getListOfPreachers,
@@ -21,6 +22,7 @@ router.get("/:preacher_id", isLoggedIn, getPreacherInfo);
 
 router.post("/", isLoggedIn, createPreacher);
 router.post("/login", preacherLogIn);
+router.post("/encrypt-data", encryptData)
 router.post("/:preacher_id/generateLink", isLoggedIn, generateLinkForPreacher);
 
 router.put("/:preacher_id", isLoggedIn, editPreacher);

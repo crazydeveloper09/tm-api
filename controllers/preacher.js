@@ -2,7 +2,7 @@ import express from "express";
 import Preacher from "../models/preacher.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
-import { escapeRegex } from "../helpers.js";
+import { decrypt, encrypt, escapeRegex } from "../helpers.js";
 import Territory from "../models/territory.js";
 import jwt from "jsonwebtoken";
 import Checkout from "../models/checkout.js";
@@ -58,6 +58,9 @@ export const createPreacher = (req, res, next) => {
             if(req.body.roles){
                 createdPreacher.roles = typeof req.body.roles === 'string' ? [req.body.roles] : [...req.body.roles]
             }
+            if(req.body.privileges){
+                createdPreacher.privileges = typeof req.body.privileges === 'string' ? [req.body.privileges] : [...req.body.privileges]
+            }
             createdPreacher.save();
             res.json(createdPreacher);
         })
@@ -73,7 +76,9 @@ export const editPreacher = (req, res, next) => {
             if(req.body.preacher.roles){
                 preacher.roles = typeof req.body.preacher.roles === 'string' ? [req.body.preacher.roles] : [...req.body.preacher.roles]
             }
-            
+            if(req.body.preacher.privileges){
+                preacher.privileges = typeof req.body.preacher.privileges === 'string' ? [req.body.preacher.privileges] : [...req.body.preacher.privileges]
+            }
             preacher.save();
             res.json(preacher);
         })
@@ -93,17 +98,17 @@ export const generateLinkForPreacher = (req, res, next) => {
 }
 
 export const preacherLogIn = (req, res, next) => {
-    Preacher
-        .findOne({ link: req.body.link })
-        .exec()
-        .then((preacher) => {
-            if(!preacher){
-                return res.json("Nie znaleziono takiego użytkownika")
-            }
-            const token = jwt.sign({ preacher: preacher._id }, process.env.JWT_SECRET);
-            res.json({ token, preacher })
-        })
-        .catch((err) => console.log(err))
+    Preacher.find()
+    .exec()
+    .then((preachers) => {
+        const preacher = preachers.find((p) => p.link === req.body.link);
+        if (!preacher) {
+            return res.json("Nie znaleziono takiego użytkownika");
+        }
+        const token = jwt.sign({ preacher: preacher._id }, process.env.JWT_SECRET);
+        res.json({ token, preacher });
+    })
+    .catch((err) => console.error(err));
 }
 
 export const deletePreacher = (req, res, next) => {
@@ -157,16 +162,27 @@ export const deletePreacher = (req, res, next) => {
 export const searchPreachers = (req, res, next) => {
     const regex = new RegExp(escapeRegex(req.query.search), 'gi');
     Preacher
-        .find({
-            $and: [
-                {name: regex}, 
-                {congregation: req.user._id}
-            ]
-        })
+        .find({congregation: req.user._id})
         .sort({name: 1})
         .exec()
         .then((preachers) => {
-            res.json(preachers)
+            const filteredResults = preachers.filter((preacher) => preacher.name.match(regex))
+            res.json(filteredResults)
         })
         .catch((err) => console.log(err))
+}
+
+export const encryptData = async (req, res, next) => {
+    Preacher
+                .find({})
+                .exec()
+                .then((preachers) => {
+                    preachers.forEach((preacher) => {
+                        preacher.name = preacher.name;
+                        preacher.link = preacher.link;
+                        preacher.save()
+                    })
+                    res.json("done")
+                })
+                .catch((err) => console.log(err))
 }
