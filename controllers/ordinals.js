@@ -62,19 +62,19 @@ export const editOrdinal = (req, res, next) => {
         .findById(req.params.ordinal_id)
         .exec()
         .then((ordinal) => {
-            if(req.body.attendant.hallway1 !== ""){
+            if(req.body.attendant.hallway1 !== "" && ordinal.hallway1?.toString() !== req.body.attendant.hallway1){
                 ordinal.hallway1 = req.body.attendant.hallway1;
                 sendNotificationToPreacher(req.body.attendant.hallway1, i18n.__("hallwayLabel"), req.body.meetingDate)
             }
-            if(req.body.attendant.auditorium !== ""){
+            if(req.body.attendant.auditorium !== "" && ordinal.auditorium?.toString() !== req.body.attendant.auditorium){
                 ordinal.auditorium = req.body.attendant.auditorium;
                 sendNotificationToPreacher(req.body.attendant.auditorium, i18n.__("auditoriumLabel"), req.body.meetingDate)
             }
-            if(req.body.attendant.hallway2 !== ""){
+            if(req.body.attendant.hallway2 !== "" && ordinal.hallway2?.toString() !== req.body.attendant.hallway2){
                 ordinal.hallway2 = req.body.attendant.hallway2;
                 sendNotificationToPreacher(req.body.attendant.hallway2, i18n.__("hallway2Label"), req.body.meetingDate)
             }
-            if(req.body.attendant.parking !== ""){
+            if(req.body.attendant.parking !== "" && ordinal.parking?.toString() !== req.body.attendant.parking){
                 ordinal.parking = req.body.attendant.parking;
                 sendNotificationToPreacher(req.body.attendant.parking, i18n.__("parkingLabel"), req.body.meetingDate)
             }

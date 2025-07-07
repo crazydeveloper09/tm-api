@@ -1,9 +1,8 @@
 import mailgun from 'mailgun-js';
 import passport from 'passport';
 import Checkout from './models/checkout.js';
-import i18n from 'i18n';
-import mongoose from 'mongoose';
 import crypto from 'crypto';
+import i18n from 'i18n';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -40,18 +39,39 @@ export const sendEmail = async (subject, to, text, congregation, app) => {
         text: text,
         username: congregation.username,
         verificationCode: congregation.verificationNumber,
-        appName: app || 'Territory Manager',
-        headerColor: app ? '#1f8aad': '#28a745',
+        appName: 'Congregation Planner',
+        headerColor: '#1f8aad',
         mailWelcome: i18n.__("mailWelcome"),
         mailGreetings: i18n.__("mailGreetings"),
         automaticMessageInfo: i18n.__("automaticMessageInfo"),
     })
     const data = {
-        from: `Weryfikacja konta ${app || 'Territory Manager'} <admin@websiteswithpassion.pl>`,
+        from: `Weryfikacja konta Congregation Planner <admin@websiteswithpassion.pl>`,
         to: to,
         subject: subject,
         template: 'weryfikacja territory manager',
         'h:X-Mailgun-Variables': mailgunVariables
+    };
+    mg.messages().send(data, function (error, body) {
+        if (error) {
+            console.log(error)
+        }
+    });
+}
+
+export const sendNotificationEmail = async (to, title, details) => {
+  const DOMAIN = 'websiteswithpassion.pl';
+    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });
+
+    const data = {
+        from: `Powiadomienie o nowej prośbie <admin@websiteswithpassion.pl>`,
+        to: "maciejkuta6@gmail.com",
+        subject: "Nowa prośba o dostęp",
+         template: "powiadomienie",
+        "h:X-Mailgun-Variables": JSON.stringify({
+          title,
+          details
+        }),
     };
     mg.messages().send(data, function (error, body) {
         if (error) {
@@ -124,30 +144,33 @@ export const chooseMeetingTypeColorAndIcon = (type) => {
   return { iconName, fontColor }
 };
 
-
 const encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
 const algorithm = 'aes-256-gcm';
 
 export const encrypt = (text) => {
-  const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv(algorithm, encryptionKey, iv);
+  if(text){
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(algorithm, encryptionKey, iv);
 
-  let encrypted = cipher.update(text, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  const authTag = cipher.getAuthTag().toString('hex');
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    const authTag = cipher.getAuthTag().toString('hex');
 
-  return `${iv.toString('hex')}:${encrypted}:${authTag}`;
+    return `${iv.toString('hex')}:${encrypted}:${authTag}`;
+  }
 };
 
 export const decrypt = (encryptedText) => {
-  const [ivHex, encrypted, authTagHex] = encryptedText.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-  const authTag = Buffer.from(authTagHex, 'hex');
+  if(encryptedText){
+    const [ivHex, encrypted, authTagHex] = encryptedText?.split(':');
+    const iv = Buffer.from(ivHex, 'hex');
+    const authTag = Buffer.from(authTagHex, 'hex');
 
-  const decipher = crypto.createDecipheriv(algorithm, encryptionKey, iv);
-  decipher.setAuthTag(authTag);
+    const decipher = crypto.createDecipheriv(algorithm, encryptionKey, iv);
+    decipher.setAuthTag(authTag);
 
-  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  }
 };

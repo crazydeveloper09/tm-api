@@ -9,6 +9,7 @@ import node_geocoder from "node-geocoder";
 import methodOverride from "method-override";
 import { sendEmail } from "../helpers.js";
 import Activity from "../models/activity.js";
+import i18n from "i18n";
 
 dotenv.config();
 
@@ -26,7 +27,7 @@ let geocoder = node_geocoder(options);
 
 
 export const getCongregationInfo = (req, res, next) => {
-    const congregationID = req.user.username ? req.user._id : req.user.congregation;
+  const congregationID = req.user.username ? req.user._id : req.user.congregation;
     Congregation
         .findById(congregationID)
         .populate(["preacher", "territories"])
@@ -42,17 +43,90 @@ export const editCongregation = (req, res, next) => {
         .findByIdAndUpdate(req.params.congregation_id, req.body.congregation)
         .exec()
         .then((congregation) => {
-            geocoder.geocode(req.body.congregation.mainCity, function (err, data) {
-                if (err || !data.length) {
-                    return res.send(err.message);
-                }
+            res.json(congregation)
+        })
+        .catch((err) => console.log(err))
+}
 
-                congregation.mainCity = req.body.congregation.mainCity;
-                congregation.mainCityLatitude = data[0].latitude;
-                congregation.mainCityLongitude = data[0].longitude;
-                congregation.save();
-                res.json(congregation)
+export const registerCongregation = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
+            let verificationCode = '';
+            for (let i = 0; i <= 5; i++) {
+                let number = Math.floor(Math.random() * 10);
+                let numberString = number.toString();
+                verificationCode += numberString;
+            }
+            let newUser = new Congregation({
+                username: req.body.username,
+                territoryServantEmail: req.body.mainAdminEmail,
+                ministryOverseerEmail: req.body.secondAdminEmail,
+                verificationNumber: verificationCode,
+                verificationExpires: Date.now() + 360000
             });
+            Congregation.register(newUser, req.body.password, function(err, congregation) {
+                if(err) {
+                    
+                    return res.send(err.message);
+                } 
+                passport.authenticate("local")(req, res, function() {
+                    const subject = i18n.__("emailVerificationTitle");
+                    const emailText = i18n.__("emailVerificationMessage");
+                    sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+                    sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
+                    res.json({userID: congregation._id});
+                });
+            });
+    
+}
+
+export const verifyCongregation = (req, res, next) => {
+    i18n.setLocale(req.language);
+    Congregation
+        .findOne({
+            $and: [
+                {_id: req.params.congregation_id},
+                {verificationExpires: { $gt: Date.now()}},
+            ]
+        })
+        .exec()
+        .then((congregation) => {
+            if(congregation){
+                if(congregation.verificationNumber === +req.body.code){
+                    congregation.verificated = true;
+                    congregation.save();
+        
+                    const token = jwt.sign({ userId: congregation._id }, process.env.JWT_SECRET)
+                    res.send({message: `Witaj w Congregation Planner`, token})
+                } else {
+                    res.json(i18n.__("wrongCode"))
+                }
+            } else {
+                res.json(i18n.__("expiredCode"))
+            }
+        })
+        .catch((err) => console.log(err))
+}
+
+export const resendVerificationCode = (req, res, next) => {
+    i18n.setLocale(req.query.locale);
+    Congregation
+        .findById(req.params.congregation_id)
+        .exec()
+        .then((congregation) => {
+            let verificationCode = '';
+            for (let i = 0; i <= 5; i++) {
+                let number = Math.floor(Math.random() * 10);
+                let numberString = number.toString();
+                verificationCode += numberString;
+            }
+            congregation.verificationNumber = verificationCode;
+            congregation.verificationExpires = Date.now() + 360000;
+            congregation.save()
+            const subject = i18n.__("resendEmailVerificationTitle");
+            const emailText = i18n.__("resendEmailVerificationMessage");
+            sendEmail(subject, congregation.territoryServantEmail, emailText, congregation)
+            sendEmail(subject, congregation.ministryOverseerEmail, emailText, congregation)
+            res.json("Poprawnie wysłano kod weryfikacyjny");
         })
         .catch((err) => console.log(err))
 }

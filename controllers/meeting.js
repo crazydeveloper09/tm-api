@@ -6,10 +6,10 @@ import mongoose from "mongoose";
 import { __dirname } from "../app.js";
 import { months } from "../helpers.js";
 import MeetingAssignment from "../models/meetingAssignment.js";
-import { sendNotificationToPreacher } from "../notifications.js";
 import ordinal from "../models/ordinal.js";
 import audioVideo from "../models/audioVideo.js";
 import i18n from "i18n";
+import { sendNotificationToPreacher } from "../notifications.js";
 const app = express();
 
 app.use(flash());
@@ -167,21 +167,29 @@ export const editMeeting = (req, res, next) => {
             if(req.body.meeting.cleaningGroup !== ""){
                 meeting.cleaningGroup = req.body.meeting.cleaningGroup;
             }
-            if(req.body.meeting.lead !== ""){
+            if(req.body.meeting.lead !== "" && meeting.lead?.toString() !== req.body.meeting.lead){
                 meeting.lead = req.body.meeting.lead;
                 sendNotificationToPreacher(req.body.meeting.lead, i18n.__("leadLabel"), meeting.date)
             }
             if(req.body.meeting.beginSong !== ""){
                 meeting.beginSong = +req.body.meeting.beginSong;
             }
-            if(req.body.meeting.beginPrayer !== ""){
+            if(req.body.meeting.midSong !== ""){
+                meeting.midSong = +req.body.meeting.midSong;
+            }
+            if(req.body.meeting.endSong !== ""){
+                meeting.endSong = +req.body.meeting.endSong;
+            }
+            if(req.body.meeting.beginPrayer !== "" && meeting.beginPrayer?.toString() !== req.body.meeting.beginPrayer){
                 meeting.beginPrayer = req.body.meeting.beginPrayer;
                 sendNotificationToPreacher(req.body.meeting.beginPrayer, i18n.__("beginPrayerLabel"), meeting.date)
             }
-            if(req.body.meeting.endPrayer !== ""){
+            if(req.body.meeting.endPrayer !== "" && meeting.endPrayer?.toString() !== req.body.meeting.endPrayer){
                 meeting.endPrayer = req.body.meeting.endPrayer;
                 sendNotificationToPreacher(req.body.meeting.endPrayer, i18n.__("endPrayerLabel"), meeting.date)
             }
+            meeting.date = req.body.meeting.date;
+      
             meeting.save();
             
             res.json(meeting);

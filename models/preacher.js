@@ -18,7 +18,9 @@ const preacherSchema = new mongoose.Schema({
         set: (link) => encrypt(link),
         get: (encryptedLink) => decrypt(encryptedLink),
     },
-    roles: Array
+    pushTokens: Array,
+    roles: Array,
+    privileges: Array
 });
 preacherSchema.plugin(passportLocalMongoose);
 preacherSchema.plugin(mongoosePaginate)

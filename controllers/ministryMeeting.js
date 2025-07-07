@@ -16,6 +16,7 @@ export const getListOfMinistryMeetings = (req, res, next) => {
     MinistryMeeting
         .find({ congregation: congregationID })
         .populate("lead")
+        .sort({ date: 1 })
         .exec()
         .then((ministryMeetings) => {
             res.json(ministryMeetings)
@@ -76,13 +77,15 @@ export const editMinistryMeeting = (req, res, next) => {
             if(req.body.ministryMeeting.topic){
                 ministryMeeting.topic = req.body.ministryMeeting.topic;
             }
-            if(req.body.ministryMeeting.lead !== ""){
+            if(req.body.ministryMeeting.lead !== "" && ministryMeeting.lead?.toString() !== req.body.ministryMeeting.lead){
+              console.log(ministryMeeting.lead, req.body.ministryMeeting.lead)
                 ministryMeeting.lead = req.body.ministryMeeting.lead;
                 sendNotificationToPreacher(req.body.ministryMeeting.lead, i18n.__("leadMiniLabel"), ministryMeeting.date)
             }
             
             ministryMeeting.place = req.body.ministryMeeting.place;
             ministryMeeting.defaultPlace = req.body.ministryMeeting.defaultPlace;
+            ministryMeeting.date = req.body.ministryMeeting.date;
             ministryMeeting.save();
             res.json(ministryMeeting);
         })

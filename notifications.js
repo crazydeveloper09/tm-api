@@ -5,26 +5,38 @@ import {
 import i18n from "i18n";
 import admin from 'firebase-admin';
 import apn from 'apn';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import serviceAccount from './congregation-planner-firebase-adminsdk-9agxd-20f00d2461.json' assert {type: "json"}
+import { decrypt } from './helpers.js';
 
-// Get the equivalent of __dirname in ES modules
+// __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(__filename); 
 
+// Write decrypted files to disk
+const firebaseKeyPath = path.join(__dirname, 'firebase-key.json');
+const apnKeyPath = path.join(__dirname, 'apn-key.p8');
+ 
+fs.writeFileSync(firebaseKeyPath, decrypt(process.env.ENCRYPTED_FIREBASE_KEY));
+fs.writeFileSync(apnKeyPath, decrypt(process.env.ENCRYPTED_APN_KEY));
 
+// Import Firebase credentials after writing
+const serviceAccount = JSON.parse(fs.readFileSync(firebaseKeyPath, 'utf8'));
+
+// Initialize Firebase Admin
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-})
+  credential: admin.credential.cert(serviceAccount),
+});
 
+// Initialize APNs provider
 const apnProvider = new apn.Provider({
-    token: {
-      key: path.resolve(__dirname, './AuthKey_RK97HAB8TC.p8'),
-      keyId: 'RK97HAB8TC',
-      teamId: '9V23KDCG5Z',
-    },
-    production: true // Set to true for production
+  token: {
+    key: apnKeyPath,
+    keyId: 'RK97HAB8TC',
+    teamId: '9V23KDCG5Z',
+  },
+  production: true,
 });
 // Initialize Expo SDK
 const expo = new Expo();
@@ -74,7 +86,8 @@ async function removePushToken(userId, pushToken) {
 }
 async function sendNotificationToPreacher(userId, description, date, data = {}) {
     try {
-        const user = await Preacher.findById(userId);
+        const user = await Preacher.findById(userId).lean();
+      
         if (user && user.pushTokens && user.pushTokens.length > 0) {
             const expoMessages = [];
             const fcmMessages = [];
@@ -82,7 +95,7 @@ async function sendNotificationToPreacher(userId, description, date, data = {}) 
           
              const message = {
                     title: i18n.__("notificationTitle"),
-                    body: `${i18n.__("notificationBodyPart1")} ${description} ${date.toLocaleDateString()}. ${i18n.__("notificationBodyPart2")}`,
+                    body: `${i18n.__("notificationBodyPart1")} ${description} ${date.toLocaleDateString("pl-PL")}. ${i18n.__("notificationBodyPart2")}`,
                     data: {
                         ...data,
                         userId
@@ -108,12 +121,14 @@ async function sendNotificationToPreacher(userId, description, date, data = {}) 
                     });
                 }
             });
+            
 
             const results = await Promise.all([
                 sendExpoNotifications(expoMessages),
                 sendFCMNotifications(fcmMessages),
                 sendAPNsNotifications(apnsTokens, message)
             ]);
+          
 
 
             return results.flat();
@@ -227,6 +242,7 @@ async function sendAPNsNotifications(tokens, message) {
                     status: 'error'
                 };
             }
+      
             return {
                 id: result.sent[0].device,
                 status: 'ok'
@@ -239,7 +255,7 @@ async function sendAPNsNotifications(tokens, message) {
             };
         }
     }));
-
+    console.log(results)
     return results;
 }
 

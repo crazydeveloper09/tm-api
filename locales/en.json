@@ -37,5 +37,9 @@
     "beginPrayerLabel": "Begin meeting prayer",
     "endPrayerLabel": "End meeting prayer",
     "leadMiniLabel": "Field service meeting chairman",
-  "readerLabel": "Reader"
+    "readerLabel": "Reader",
+    "emailVerificationTitle": "Email verification in Congregation Planner",
+	  "emailVerificationMessage": "You're on the final stretch to being able to plan various things in Congregation Planner. All that's left is for you or the other admin to confirm the email with the verification code below:",
+    "resendEmailVerificationTitle": "Verification email code resend",
+	"resendEmailVerificationMessage": "I just received a request to resend the email verification code for Congregation Planner. If this wasn't you, please ignore this message."
 }

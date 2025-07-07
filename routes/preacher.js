@@ -4,13 +4,13 @@ import {
     createPreacher,
     deletePreacher,
     editPreacher,
-    encryptData,
     generateLinkForPreacher,
     getAllPreachers,
     getListOfPreachers,
     getPreacherInfo,
     preacherLogIn,
     searchPreachers,
+  encryptData
 } from "../controllers/preacher.js";
 
 const router = express.Router({ mergeParams: true });

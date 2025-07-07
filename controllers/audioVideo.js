@@ -63,19 +63,19 @@ export const editAudioVideo = (req, res, next) => {
         .populate("meeting")
         .exec()
         .then((audioVideo) => {
-            if(req.body.audioVideo.microphone2Operator !== ""){
+            if(req.body.audioVideo.microphone2Operator !== "" && audioVideo.microphone2Operator?.toString() !== req.body.audioVideo.microphone2Operator){
                 audioVideo.microphone2Operator = req.body.audioVideo.microphone2Operator;
                 sendNotificationToPreacher(req.body.audioVideo.microphone2Operator, i18n.__("mic2Label"), audioVideo.meeting.date)
             }
-            if(req.body.audioVideo.audioOperator !== ""){
+            if(req.body.audioVideo.audioOperator !== "" && audioVideo.audioOperator?.toString() !== req.body.audioVideo.audioOperator){
                 audioVideo.audioOperator = req.body.audioVideo.audioOperator;
                 sendNotificationToPreacher(req.body.audioVideo.audioOperator, i18n.__("audioOperatorLabel"), audioVideo.meeting.date)
             }
-            if(req.body.audioVideo.microphone1Operator !== ""){
+            if(req.body.audioVideo.microphone1Operator !== "" && audioVideo.microphone1Operator?.toString() !== req.body.audioVideo.microphone1Operator){
                 audioVideo.microphone1Operator = req.body.audioVideo.microphone1Operator;
                 sendNotificationToPreacher(req.body.audioVideo.microphone1Operator, i18n.__("mic1Label"), audioVideo.meeting.date)
             }
-            if(req.body.audioVideo.videoOperator !== ""){
+            if(req.body.audioVideo.videoOperator !== "" && audioVideo.videoOperator?.toString() !== req.body.audioVideo.videoOperator){
                 audioVideo.videoOperator = req.body.audioVideo.videoOperator;
                 sendNotificationToPreacher(req.body.audioVideo.videoOperator, i18n.__("videoOperatorLabel"), audioVideo.meeting.date)
             }

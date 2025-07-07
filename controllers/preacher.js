@@ -2,7 +2,7 @@ import express from "express";
 import Preacher from "../models/preacher.js";
 import flash from "connect-flash";
 import methodOverride from "method-override";
-import { decrypt, encrypt, escapeRegex } from "../helpers.js";
+import { escapeRegex, encrypt } from "../helpers.js";
 import Territory from "../models/territory.js";
 import jwt from "jsonwebtoken";
 import Checkout from "../models/checkout.js";
@@ -41,13 +41,13 @@ export const getAllPreachers = (req, res, next) => {
     const congregationID = req.user.username ? req.user._id : req.user.congregation;
     Preacher
     .find({congregation: congregationID})
-    .sort({name: 1})
     .exec()
     .then((preachers) => {
-        res.json(preachers)
+        res.json(preachers.sort((a, b) => a.name.localeCompare(b.name)))
     })
     .catch((err) => console.log(err))
 }
+
 
 export const createPreacher = (req, res, next) => {
     Preacher
@@ -110,7 +110,6 @@ export const preacherLogIn = (req, res, next) => {
     })
     .catch((err) => console.error(err));
 }
-
 export const deletePreacher = (req, res, next) => {
     Preacher
         .findByIdAndDelete(req.params.preacher_id)
@@ -178,8 +177,8 @@ export const encryptData = async (req, res, next) => {
                 .exec()
                 .then((preachers) => {
                     preachers.forEach((preacher) => {
-                        preacher.name = preacher.name;
-                        preacher.link = preacher.link;
+                        preacher.name = encrypt(preacher.name);
+                        preacher.link = encrypt(preacher.link && preacher.link);
                         preacher.save()
                     })
                     res.json("done")
