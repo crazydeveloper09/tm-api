@@ -121,6 +121,28 @@ export const createMeeting = (req, res, next) => {
         endSong: +req.body.endSong
     }
 
+    const meetingKind = req.body.type === i18n.__("weekend") ? "weekend" : "week";
+
+    const defaultAssignmentsMap = {
+        weekend: [
+            { type: i18n.__("bibleTalk") },
+            { type: i18n.__("watchtowerStudy") },
+        ],
+        week: [
+            { type: i18n.__("treasuresFromGodsWord") },
+            { type: i18n.__("treasuresFromGodsWord"), defaultTopic: i18n.__("spiritualGems") },
+            { type: i18n.__("treasuresFromGodsWord"), defaultTopic: i18n.__("bibleReading") },
+
+            { type: i18n.__("applyYourselfToMinistry") },
+            { type: i18n.__("applyYourselfToMinistry") },
+            { type: i18n.__("applyYourselfToMinistry") },
+
+            { type: i18n.__("livingAsChristians") },
+            { type: i18n.__("livingAsChristians") },
+            { type: i18n.__("livingAsChristians"), defaultTopic: i18n.__("congregationStudy") },
+        ]
+    };
+
     Meeting
         .create(newMeeting)
         .then((createdMeeting) => {
@@ -147,8 +169,20 @@ export const createMeeting = (req, res, next) => {
                 createdMeeting.endPrayer = req.body.endPrayer;
                 sendNotificationToPreacher(req.body.endPrayer, i18n.__("endPrayerLabel"), createdMeeting.date)
             }
-            createdMeeting.save();
-            res.json(createdMeeting);
+            const assignmentsData = defaultAssignmentsMap[meetingKind].map(a => ({
+                type: a.type,
+                defaultTopic: a.defaultTopic || "",
+                meeting: createdMeeting._id
+            }));
+            MeetingAssignment.insertMany(assignmentsData)
+                .then(createdAssignments => {
+                    createdMeeting.assignments = createdAssignments.map(a => a._id);
+                    return createdMeeting.save(); // Zapisujemy referencje zadań
+                })
+                .then(() => {
+                    res.json(createdMeeting);
+                })
+                .catch(err => next(err));
         })
         .catch((err) => console.log(err))
 }

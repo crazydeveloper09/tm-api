@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --experimental-json-modules app.js"
+    "start": "node app.js"
   },
   "author": "Maciej Kuta",
   "license": "ISC",
@@ -44,8 +44,5 @@
   "type": "module",
   "devDependencies": {
     "@googlemaps/markerclusterer": "^2.4.0"
-  },
-  "engines": {
-    "node": "16.20.1"
   }
 }
