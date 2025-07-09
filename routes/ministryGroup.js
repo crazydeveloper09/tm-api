@@ -4,13 +4,11 @@ import {
     createMinistryGroup,
     deleteMinistryGroup,
     editMinistryGroup,
-    generateListOfMinistryGroups,
     getListOfMinistryGroups,
 } from "../controllers/ministryGroup.js";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/generate-pdf", isLoggedIn, generateListOfMinistryGroups);
 router.get("/", isLoggedIn, getListOfMinistryGroups);
 
 router.post("/", isLoggedIn, createMinistryGroup);

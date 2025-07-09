@@ -1,22 +1,20 @@
 
 body {
   font-family: 'Montserrat', sans-serif;
-  background: #28a745;
+  background: #1f8aad;
 }
 #info {
-  background: #28a745;
+  background: #1f8aad;
   height: 100vh;
   color: white;
   
 }
 #form {
   background:#ece9e9;
-  padding: 15px;
+  padding: 25px;
   border-radius: 10px;
   margin: 3% 0;
-  -webkit-box-shadow: 0 0 53px 12px #1c7330;
--moz-box-shadow: 0 0 53px 12px #1c7330;
-box-shadow: 0 0 53px 12px #1c7330;
+
 }
 
 #form1 a {
@@ -31,7 +29,7 @@ box-shadow: 0 0 53px 12px #1c7330;
 
 .form-control:focus,
 .form-select:focus {
-    border: 2px solid #28a745;
+    border: 2px solid #1f8aad;
     box-shadow: none;
 }
 
@@ -40,13 +38,13 @@ box-shadow: 0 0 53px 12px #1c7330;
   font-size: 45px;
   font-weight: 700;
   text-align: center;
-  color:#28a745;
+  color:#1f8aad;
 }
 
 #form .username {
   font-size: 18px;
   font-weight: 700;
-  color: #28a745;
+  color: #1f8aad;
 }
 
 .button {
@@ -62,20 +60,31 @@ box-shadow: 0 0 53px 12px #1c7330;
 }
 
 .btn-green {
-  background: #28a745;
-  border-color: #28a745;
+  background: #1f8aad;
+  border-color: #1f8aad;
 }
 
 @media (max-width: 992px) {
   #info {
       display: none;
   }
+  #form {
+    padding: 15px;
+    margin: 0 16px;
+    -webkit-box-shadow: none;
+-moz-box-shadow: none;
+box-shadow: none;
+  }
   #form1 {
       margin: 4%;
   }
+
+  #form1 img {
+    width: 100%;
+  }
   body {
     padding: 20px;
-    background: #28a745;
+    background: #1f8aad;
   }
   .container-full {
     margin: 0;
@@ -93,18 +102,19 @@ box-shadow: 0 0 53px 12px #1c7330;
   font-size: 20px;
   margin-top: 10px;
   font-weight: normal;
+  word-wrap: break-word;
 }
 
  .title {
-  font-size: 35px;
-  color: #fb8200;
+  font-size: 30px;
+  color: #9999cc;
   font-weight: 700;
   
 }
 
 .title_r {
   font-size: 45px;
-  color: #28a745;
+  color: #1f8aad;
   font-weight: 700;
   
 }

@@ -226,6 +226,7 @@ async function sendAPNsNotifications(tokens, message) {
         },
         topic: 'com.miszki.congregation-planner',
         sound: 'default',
+        pushType: 'alert',
         payload: message.data,
     });
 

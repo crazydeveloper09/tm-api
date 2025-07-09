@@ -12,12 +12,61 @@ import preacher from "../models/preacher.js";
 import cartsHour from "../models/cartsHour.js";
 import meeting from "../models/meeting.js";
 import meetingAssignment from "../models/meetingAssignment.js";
+import mailgun from 'mailgun-js';
 
 const app = express();
 const getIP = ipWare().get_ip;
 
 app.use(flash());
 app.use(methodOverride("_method"));
+
+export const renderLoginForm = (req, res, next) => {
+    i18n.setLocale(req.language);
+    let ipInfo = getIP(req);
+    res.render("login", {
+        header: `${i18n.__("loginHeader")} | Congregation Planner`,
+        ipInfo
+    });
+}
+
+export const sendSupportEmail = (req, res, next) => {
+  const DOMAIN = 'websiteswithpassion.pl';
+    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });
+    const title = `Właśnie ktoś poprosił o kontakt w Congregation Planner. Oto szczegóły: `;
+    const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Krótki opis: <strong>${req.body.shortDescription}</strong> <br> Dłuższy opis: <strong>${req.body.detailedDescription}</strong> <br> Email kontaktowy: <strong>${req.body.email}</strong>`
+    const data = {
+        from: `Powiadomienie o nowej prośbie <admin@websiteswithpassion.pl>`,
+        to: "maciejkuta6@gmail.com",
+        subject: "Nowa prośba o wsparcie",
+        template: "powiadomienie",
+        "h:X-Mailgun-Variables": JSON.stringify({
+          title,
+          details
+        }),
+    };
+    mg.messages().send(data, function (error, body) {
+        if (error) {
+            console.log(error)
+        }
+    });
+    req.flash("success", i18n.__("successSupport"))
+    res.redirect("/support")
+}
+
+export const renderSupportForm = (req, res, next) => {
+  i18n.setLocale(req.language);
+  res.render("support", {
+    header: `${i18n.__("supportSectionHeader")} | Congregation Planner`
+  })
+}
+
+export const renderPrivacyPolicy = (req, res, next) => {
+    i18n.setLocale(req.language);
+    res.render(`policy_${req.language === "pl" ? "pl": "en"}`, {
+        header: `${i18n.__("policyLabel")} | Congregation Planner`
+    });
+}
+
 
 
 export const authenticateCongregation = (req, res, next) => {
