@@ -54,11 +54,12 @@
 	"shortDescriptionLabel": "Krótki opis/tytuł",
 	"detailedDescriptionLabel": "Szczegółowy opis",
 	"emailLabel": "Email kontaktowy",
-	"supportButtonText":"Poproś o kontakt",
+	"supportButtonText": "Poproś o kontakt",
 	"readerLabel": "Lektor",
 	"emailVerificationTitle": "Weryfikacja maila w Congregation Planner",
 	"emailVerificationMessage": "Jesteś na ostatniej prostej do możliwości planowania różnych rzeczy w Congregation Planner. Wystarczy, że Ty lub drugi admin potwierdzicie email poniższym kodem weryfikacyjnym:",
 	"resendEmailVerificationTitle": "Ponowne wysłanie kodu, by potwierdzić email",
 	"resendEmailVerificationMessage": "Właśnie dostałem prośbę o ponowne wysłanie kodu do weryfikacji emaila w Congregation Planner. Jeśli to nie byłeś ty, zignoruj wiadomość.",
-	"loginAction": "loginAction"
+	"loginAction": "Wysyłanie prośby...",
+	"helperLabel": "Pomocnik"
 }

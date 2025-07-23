@@ -10,6 +10,7 @@ import ordinal from "../models/ordinal.js";
 import audioVideo from "../models/audioVideo.js";
 import i18n from "i18n";
 import { sendNotificationToPreacher } from "../notifications.js";
+import { getWeekProgram } from "../fetchProgram.js";
 const app = express();
 
 app.use(flash());
@@ -32,6 +33,13 @@ export const meetingPopulate = [
         path: 'assignments',
         populate: {
             path: 'reader',
+            model: 'Preacher'
+        } 
+    }, 
+     { 
+        path: 'assignments',
+        populate: {
+            path: 'helper',
             model: 'Preacher'
         } 
     }, 
@@ -110,36 +118,40 @@ export const getListOfMeetings = (req, res, next) => {
         .catch((err) => console.log(err))
 }
 
-export const createMeeting = (req, res, next) => {
+export const createMeeting = async (req, res, next) => {
     i18n.setLocale(req.query.locale);
+    
+    const meetingKind = req.body.type === i18n.__("weekend") ? "weekend" : "week";
+    const weekProgram = await getWeekProgram(new Date(req.body.date).toLocaleDateString("pl-PL"), req.query.locale, meetingKind);
+    console.log(weekProgram)
     let month = `${i18n.__(months[new Date(req.body.date).getMonth()])} ${new Date(req.body.date).getFullYear()}`;
+
     let newMeeting = {
         date: req.body.date,
         month,
         type: req.body.type,
-        midSong: +req.body.midSong,
-        endSong: +req.body.endSong
+        midSong: meetingKind === "weekend" ? weekProgram.w_study_opening_song : weekProgram.mwb_song_middle,
+        endSong: meetingKind === "weekend" ? weekProgram.w_study_concluding_song : weekProgram.mwb_song_conclude
     }
-
-    const meetingKind = req.body.type === i18n.__("weekend") ? "weekend" : "week";
 
     const defaultAssignmentsMap = {
         weekend: [
-            { type: i18n.__("bibleTalk") },
-            { type: i18n.__("watchtowerStudy") },
+            { type: "bibleTalk" },
+            { type: "watchtowerStudy", topic: weekProgram.w_study_title },
         ],
         week: [
-            { type: i18n.__("treasuresFromGodsWord") },
-            { type: i18n.__("treasuresFromGodsWord"), defaultTopic: i18n.__("spiritualGems") },
-            { type: i18n.__("treasuresFromGodsWord"), defaultTopic: i18n.__("bibleReading") },
+            { type: "treasuresFromGodsWord", topic: weekProgram.mwb_tgw_talk },
+            { type: "treasuresFromGodsWord", defaultTopic: i18n.__("spiritualGems") },
+            { type: "treasuresFromGodsWord", defaultTopic: i18n.__("bibleReading") },
 
-            { type: i18n.__("applyYourselfToMinistry") },
-            { type: i18n.__("applyYourselfToMinistry") },
-            { type: i18n.__("applyYourselfToMinistry") },
+            { type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part1_type || weekProgram.mwb_ayf_part1 },
+            { type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part2_type || weekProgram.mwb_ayf_part3 },
+            { type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part3_type || weekProgram.mwb_ayf_part2 },
+            weekProgram.mwb_ayf_count === 4 ? {type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part4_type || weekProgram.mwb_ayf_part4}: null,
 
-            { type: i18n.__("livingAsChristians") },
-            { type: i18n.__("livingAsChristians") },
-            { type: i18n.__("livingAsChristians"), defaultTopic: i18n.__("congregationStudy") },
+            { type: "livingAsChristians", topic: weekProgram.mwb_lc_part1 },
+            weekProgram.lc_count === 2 ? { type: "livingAsChristians", topic: weekProgram.mwb_lc_part2 }: null,
+            { type: "livingAsChristians", defaultTopic: i18n.__("congregationStudy") },
         ]
     };
 
@@ -158,8 +170,11 @@ export const createMeeting = (req, res, next) => {
                 createdMeeting.lead = req.body.lead;
                 sendNotificationToPreacher(req.body.lead, i18n.__("leadLabel"), createdMeeting.date)
             }
-            if(req.body.beginSong !== ""){
+            if(req.body.type === i18n.__("weekend") && req.body.beginSong !== ""){
                 createdMeeting.beginSong = +req.body.beginSong;
+            }
+            if(req.body.type === i18n.__("midWeek")){
+                createdMeeting.beginSong = weekProgram.mwb_song_first;
             }
             if(req.body.beginPrayer !== ""){
                 createdMeeting.beginPrayer = req.body.beginPrayer;
@@ -169,9 +184,10 @@ export const createMeeting = (req, res, next) => {
                 createdMeeting.endPrayer = req.body.endPrayer;
                 sendNotificationToPreacher(req.body.endPrayer, i18n.__("endPrayerLabel"), createdMeeting.date)
             }
-            const assignmentsData = defaultAssignmentsMap[meetingKind].map(a => ({
-                type: a.type,
-                defaultTopic: a.defaultTopic || "",
+            const assignmentsData = defaultAssignmentsMap[meetingKind].filter(a => a !== null).map(a => ({
+                type: a?.type,
+                defaultTopic: a?.defaultTopic || "",
+                topic: a?.topic || "",
                 meeting: createdMeeting._id
             }));
             MeetingAssignment.insertMany(assignmentsData)

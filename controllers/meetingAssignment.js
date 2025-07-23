@@ -47,7 +47,11 @@ export const createMeetingAssignment = (req, res, next) => {
             }
             if(req.body.reader !== ""){
                 createdMeetingAssignment.reader = req.body.reader;
-                sendNotificationToPreacher(req.body.participant, `${createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic} - ${i18n.__("readerLabel")}`, meeting.date)
+                sendNotificationToPreacher(req.body.reader, `${createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic} - ${i18n.__("readerLabel")}`, meeting.date)
+            }
+            if(req.body.helper !== ""){
+                createdMeetingAssignment.helper = req.body.helper;
+                sendNotificationToPreacher(req.body.helper, `${createdMeetingAssignment.topic || createdMeetingAssignment.defaultTopic} - ${i18n.__("helperLabel")}`, meeting.date)
             }
             createdMeetingAssignment.save();
       
@@ -71,6 +75,7 @@ export const editMeetingAssignment = (req, res, next) => {
         .populate("meeting")
         .exec()
         .then((meetingAssignment) => {
+            console.log(req.body.assignment)
             meetingAssignment.topic = req.body.assignment.topic;
             meetingAssignment.defaultTopic = req.body.assignment.defaultTopic;
             meetingAssignment.type = req.body.assignment.type;
@@ -83,7 +88,12 @@ export const editMeetingAssignment = (req, res, next) => {
             }
             if(req.body.assignment.reader !== "" && meetingAssignment.reader?.toString() !== req.body.assignment.reader){
                 meetingAssignment.reader = req.body.assignment.reader;
-                sendNotificationToPreacher(req.body.assignment.reader, `${req.body.assignment.topic || req.body.assignment.defaultTopic} - Lektor`, meetingAssignment.meeting.date)
+                sendNotificationToPreacher(req.body.assignment.reader, `${req.body.assignment.topic || req.body.assignment.defaultTopic} - ${i18n.__("readerLabel")}`, meetingAssignment.meeting.date)
+            }
+            if(req.body.assignment.helper !== "" && meetingAssignment.helper?.toString() !== req.body.assignment.helper){
+                meetingAssignment.helper = req.body.assignment.helper;
+                console.log(req.body.assignment.helper)
+                sendNotificationToPreacher(req.body.assignment.helper, `${req.body.assignment.topic || req.body.assignment.defaultTopic} - ${i18n.__("helperLabel")}`, meetingAssignment.meeting.date)
             }
             meetingAssignment.save();
             

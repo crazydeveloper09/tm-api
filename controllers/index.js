@@ -8,7 +8,6 @@ import ipWare from "ipware";
 import i18n from "i18n";
 import { addPushToken } from "../notifications.js";
 import congregation from "../models/congregation.js";
-import preacher from "../models/preacher.js";
 import cartsHour from "../models/cartsHour.js";
 import meeting from "../models/meeting.js";
 import meetingAssignment from "../models/meetingAssignment.js";
@@ -19,6 +18,7 @@ const getIP = ipWare().get_ip;
 
 app.use(flash());
 app.use(methodOverride("_method"));
+
 
 export const renderLoginForm = (req, res, next) => {
     i18n.setLocale(req.language);

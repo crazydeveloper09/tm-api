@@ -16,6 +16,10 @@ const meetingAssignmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
     },
+    helper: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Preacher"
+    },
     type: String,
     defaultTopic: String,
     meeting: {
