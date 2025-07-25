@@ -26,6 +26,10 @@ import ordinalRoutes from './routes/ordinal.js';
 import cors from 'cors';
 import i18n from "i18n";
 
+if (typeof global.crypto === 'undefined') {
+  global.crypto = require('crypto');
+}
+
 const __filename = fileURLToPath(import.meta.url);
 
 export const __dirname = path.dirname(__filename);
