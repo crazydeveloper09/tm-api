@@ -25,9 +25,10 @@ import audioVideoRoutes from './routes/audioVideo.js';
 import ordinalRoutes from './routes/ordinal.js';
 import cors from 'cors';
 import i18n from "i18n";
+import crypto from "crypto";
 
 if (typeof global.crypto === 'undefined') {
-  global.crypto = require('crypto');
+  global.crypto = crypto;
 }
 
 const __filename = fileURLToPath(import.meta.url);
