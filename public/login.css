@@ -64,7 +64,19 @@ body {
   border-color: #1f8aad;
 }
 
+.resetSuccessContainer { 
+  margin-top: 20%;
+}
+
+.resetSuccessContainer h3 {
+  margin-top: 20px;
+  color: white;
+}
+
 @media (max-width: 992px) {
+  .resetSuccessContainer {
+    margin-top: 50%;
+  }
   #info {
       display: none;
   }

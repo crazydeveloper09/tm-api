@@ -1,0 +1,55 @@
+<%- include ("partials/headera") %> 
+
+    <div class="row justify-content-center align-items-center">
+        <div class="col-lg-6 col-md-12" id="form">
+            <div id="form1">
+                <div class="text-center">
+                    <img src="/logo_cong_website.png" alt="logo">
+                </div>
+                
+                <h1 class="login"><%= language.__("forgotPasswordHeader") %></h1>
+                <% if(error.length > 0){ %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
+                <% if(success.length > 0){ %>
+                    <div class="alert alert-success" role="alert">
+                        <%= success %>
+                    </div>
+                <% } %>
+                    
+                        <form method="post" action="/forgot" id="form4">
+                                    
+                                    <div class="form-floating mb-3">
+                       
+                                        <input required type="email" class="form-control" autocomplete="off" name="email" id="email" placeholder="1234" aria-label="Hasło" aria-describedby="basic-addon1">
+                                        <label for="email" class="username">
+                                            <%= language.__("emailLabel") %>
+                                            
+                                        </label>
+                                        
+                                    </div>
+                                    <input type="submit" value="<%= language.__("forgotPasswordButtonText") %>" class="btn btn-primary button btn-green" id="send">
+
+                        </form>
+                    </div>
+                            
+                </div>
+                
+            </div>
+
+
+
+<script src="/script.js"></script>
+<script>
+
+    document.getElementById("form4").addEventListener("submit", function(){
+        document.getElementById("send").setAttribute("disabled", "disabled");
+        document.getElementById("send").innerText = `<%= language.__("forgotPasswordLoading") %>`;
+    })
+
+    
+</script>    
+</body>
+</html>

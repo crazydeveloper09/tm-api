@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import node_geocoder from "node-geocoder";
 import methodOverride from "method-override";
-import { sendEmail } from "../helpers.js";
+import { hashEmail, sendEmail } from "../helpers.js";
 import Activity from "../models/activity.js";
 import i18n from "i18n";
 
@@ -43,6 +43,13 @@ export const editCongregation = (req, res, next) => {
         .findByIdAndUpdate(req.params.congregation_id, req.body.congregation)
         .exec()
         .then((congregation) => {
+            let mainAdminEmailHash = hashEmail(req.body.congregation.territoryServantEmail);
+            let secondAdminEmailHash = hashEmail(req.body.congregation.ministryOverseerEmail);
+
+            congregation.territoryServantEmail = mainAdminEmailHash;
+            congregation.ministryOverseerEmail = secondAdminEmailHash;
+            congregation.save();
+            
             res.json(congregation)
         })
         .catch((err) => console.log(err))
@@ -56,10 +63,14 @@ export const registerCongregation = (req, res, next) => {
                 let numberString = number.toString();
                 verificationCode += numberString;
             }
+            let mainAdminEmailHash = hashEmail(req.body.mainAdminEmail);
+            let secondAdminEmailHash = hashEmail(req.body.secondAdminEmail);
             let newUser = new Congregation({
                 username: req.body.username,
                 territoryServantEmail: req.body.mainAdminEmail,
                 ministryOverseerEmail: req.body.secondAdminEmail,
+                territoryServantEmailHash: mainAdminEmailHash,
+                ministryOverseerEmailHash: secondAdminEmailHash,
                 verificationNumber: verificationCode,
                 verificationExpires: Date.now() + 360000
             });

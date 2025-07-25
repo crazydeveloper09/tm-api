@@ -59,6 +59,34 @@ export const sendEmail = async (subject, to, text, congregation, app) => {
     });
 }
 
+export const sendEmailWithLink = async (subject, to, text, congregation, linkURL, linkText) => {
+    const DOMAIN = 'websiteswithpassion.pl';
+    const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });
+    const mailgunVariables = JSON.stringify({
+        text: text,
+        username: congregation.username,
+        linkURL,
+        linkText,
+        appName: 'Congregation Planner',
+        headerColor: '#1f8aad',
+        mailWelcome: i18n.__("mailWelcome"),
+        mailGreetings: i18n.__("mailGreetings"),
+        automaticMessageInfo: i18n.__("automaticMessageInfo"),
+    })
+    const data = {
+        from: `Weryfikacja konta Congregation Planner <admin@websiteswithpassion.pl>`,
+        to: to,
+        subject: subject,
+        template: 'planner with link',
+        'h:X-Mailgun-Variables': mailgunVariables
+    };
+    mg.messages().send(data, function (error, body) {
+        if (error) {
+            console.log(error)
+        }
+    });
+}
+
 export const sendNotificationEmail = async (to, title, details) => {
   const DOMAIN = 'websiteswithpassion.pl';
     const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN, host: "api.eu.mailgun.net" });
@@ -79,6 +107,9 @@ export const sendNotificationEmail = async (to, title, details) => {
         }
     });
 }
+
+export const hashEmail = (email) =>
+  crypto.createHash('sha256').update(email).digest('hex');
 
 export const dateToISOString = (date) => {
     let newDate = new Date();

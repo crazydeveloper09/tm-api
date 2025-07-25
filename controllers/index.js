@@ -2,15 +2,13 @@ import express from "express";
 import flash from "connect-flash";
 import passport from "passport";
 import methodOverride from "method-override";
-import { sendEmail, encrypt, sendNotificationEmail } from "../helpers.js";
+import { sendEmail, encrypt, sendNotificationEmail, sendEmailWithLink, hashEmail } from "../helpers.js";
 import Activity from "../models/activity.js";
 import ipWare from "ipware";
 import i18n from "i18n";
 import { addPushToken } from "../notifications.js";
-import congregation from "../models/congregation.js";
-import cartsHour from "../models/cartsHour.js";
-import meeting from "../models/meeting.js";
-import meetingAssignment from "../models/meetingAssignment.js";
+import Congregation from "../models/congregation.js";
+import crypto from 'crypto';
 import mailgun from 'mailgun-js';
 
 const app = express();
@@ -19,6 +17,103 @@ const getIP = ipWare().get_ip;
 app.use(flash());
 app.use(methodOverride("_method"));
 
+export const redirectToApp = (req, res, next) => {
+  res.redirect("https://app.congregationplanner.pl")
+}
+
+export const renderForgotForm = (req, res, next) => {
+    i18n.setLocale(req.language);
+    res.render("forgot", {
+        header: `${i18n.__("forgotPasswordHeader")} | Congregation Planner`
+    });
+}
+
+export const editCongregationEmailHash = (req, res, next) => {
+  Congregation
+    .find({})
+    .exec()
+    .then((congregations) => {
+      for(let congreagation of congregations){
+        congreagation.territoryServantEmailHash = hashEmail(congreagation.territoryServantEmail);
+        congreagation.ministryOverseerEmailHash = hashEmail(congreagation.ministryOverseerEmail || "");
+        congreagation.save();
+      }
+      res.json("done")
+    })
+}
+
+export const sendPasswordResetEmail = (req, res, next) => {
+  i18n.setLocale(req.language);
+  const email = hashEmail(req.body.email);
+  Congregation
+    .findOne({ $or: [ {ministryOverseerEmailHash: email}, {territoryServantEmailHash: email} ]})
+    .exec()
+    .then(async (congregation) => {
+      let token = crypto.randomBytes(20).toString('hex');
+      congregation.resetPasswordToken = token;
+      congregation.resetPasswordExpires = Date.now() + 360000;
+      congregation.save();
+
+      let resetEmailTitle = i18n.__("resetEmailTitle");
+      let linkText = i18n.__("resetLinkLabel");
+      let linkURL = 'https://' + req.headers.host + '/reset/' + token;
+      let text = i18n.__("resetEmailText");
+
+      await sendEmailWithLink(resetEmailTitle, congregation.territoryServantEmail, text, congregation, linkURL, linkText);
+      await sendEmailWithLink(resetEmailTitle, congregation.ministryOverseerEmail, text, congregation, linkURL, linkText);
+
+      req.flash("success", i18n.__("resetEmailSuccess"));
+      res.redirect("/forgot")
+    })
+    .catch((err) => console.log(err))
+}
+
+export const renderResetForm = (req, res, next) => {
+  i18n.__(req.language);
+  Congregation
+    .findOne({resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() }})
+    .exec()
+    .then((congregation) => {
+        if(!congregation) {
+            req.flash("error", i18n.__("resetPasswordTokenError"));
+            return res.redirect("/forgot");
+        }
+        let header = `${i18n.__("resetPasswordHeader")} | Congregation Planner`;
+        res.render("reset", { token: req.params.token, header: header });
+    })
+    .catch((err) => console.log(err))
+}
+
+
+export const resetPassword = (req, res, next) => {
+  i18n.__(req.language);
+  Congregation
+    .findOne({resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() }})
+    .exec()
+    .then((congregation) => {
+        if(!congregation) {
+            req.flash("error", i18n.__("resetPasswordTokenError"));
+            return res.redirect("/forgot");
+        }
+       if (req.body.password === req.body.confirm) {
+         congregation.setPassword(req.body.password, function (err) {
+            congregation.resetPasswordExpires = undefined;
+            congregation.resetPasswordToken = undefined;
+            congregation.save();
+            res.redirect("/reset/success")
+         });
+       } else {
+         req.flash("error", i18n.__("passwordsNotTheSame"));
+         return res.redirect("back");
+       }
+    })
+    .catch((err) => console.log(err))
+}
+
+export const renderResetSuccessPage = (req, res, next) => {
+  i18n.setLocale(req.language)
+  res.render("reset_success", { header: `${i18n.__("resetPasswordSuccessHeader")} | Congregation Planner` })
+}
 
 export const renderLoginForm = (req, res, next) => {
     i18n.setLocale(req.language);
@@ -157,60 +252,3 @@ export const helpInTranslation = async (req, res, next) => {
   await sendNotificationEmail("maciejkuta6@gmail.com", emailTitle, details);
   res.json("done")
 }
-
-export const encryptAllData = async (req, res, next) => {
-  congregation
-    .find({})
-    .exec()
-    .then((congregations) => {
-      congregations.forEach((congregation) => {
-        congregation.territoryServantEmail =
-          congregation.territoryServantEmail &&
-          encrypt(congregation.territoryServantEmail);
-        congregation.ministryOverseerEmail =
-          congregation.ministryOverseerEmail &&
-          encrypt(congregation.ministryOverseerEmail);
-        congregation.save();
-      });
-
-      cartsHour
-        .find({})
-        .exec()
-        .then((cartHours) => {
-          cartHours.forEach((cartHour) => {
-            cartHour.otherPreacher1 =
-              cartHour.otherPreacher1 && encrypt(cartHour.otherPreacher1);
-            cartHour.otherPreacher2 =
-              cartHour.otherPreacher2 && encrypt(cartHour.otherPreacher2);
-            cartHour.save();
-          });
-          meeting
-            .find({})
-            .exec()
-            .then((meetings) => {
-              meetings.forEach((meeting) => {
-                meeting.otherEndPrayer =
-                  meeting.otherEndPrayer && encrypt(meeting.otherEndPrayer);
-                meeting.save();
-              });
-              meetingAssignment
-                .find({})
-                .exec()
-                .then((meetingAssignments) => {
-                  meetingAssignments.forEach((meetingAssignment) => {
-                    meetingAssignment.otherParticipant =
-                      meetingAssignment.otherParticipant &&
-                      encrypt(meetingAssignment.otherParticipant);
-                    meetingAssignment.save();
-                  });
-                  res.json("done");
-                })
-                .catch((err) => console.log(err));
-            })
-            .catch((err) => console.log(err));
-        })
-        .catch((err) => console.log(err));
-    })
-
-    .catch((err) => console.log(err));
-};

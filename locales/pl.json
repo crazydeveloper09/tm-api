@@ -61,5 +61,22 @@
 	"resendEmailVerificationTitle": "Ponowne wysłanie kodu, by potwierdzić email",
 	"resendEmailVerificationMessage": "Właśnie dostałem prośbę o ponowne wysłanie kodu do weryfikacji emaila w Congregation Planner. Jeśli to nie byłeś ty, zignoruj wiadomość.",
 	"loginAction": "Wysyłanie prośby...",
-	"helperLabel": "Pomocnik"
+	"helperLabel": "Pomocnik",
+	"resetLinkLabel": "Resetuj hasło",
+	"resetEmailTitle": "Resetowanie hasła w Congregation Planner",
+	"resetEmailSuccess": "Email został wysłany do administratorów z dalszymi instrukcjami",
+	"resetEmailText": "Otrzymujesz ten email, ponieważ ty lub drugi admin (albo ktoś inny) zażądał zmianę hasła w aplikacji Congregation Planner. Prosimy kliknij w poniższy przycisk, by dokończyć ten proces. Jeśli to nie ty zażądałeś zmiany, prosimy zignoruj ten email, a twoje hasło nie zostanie zmienione.",
+	"resetPasswordTokenError": "Token wygasł lub jest niepoprawny",
+	"passwordsNotTheSame": "Hasła nie są te same",
+	"forgotPasswordHeader": "Poproś o zmianę hasła",
+	"forgotPasswordButtonText": "Poproś o zmianę hasła",
+	"forgotPasswordLoading": "Wysyłam prośbę o zmianę hasła",
+	"resetPasswordSuccessHeader": "Hasło poprawnie zmienione",
+	"resetPasswordSuccessText": "Poprawnie zmieniono hasło. Za chwilę zostaniesz przekierowany do aplikacji",
+	"pl": "pl",
+	"resetPasswordHeader": "Resetuj hasło",
+	"passwordLabel": "Hasło",
+	"repeatPasswordLabel": "Powtórz hasło",
+	"resetPasswordButtonText": "Resetuj hasło",
+	"resetPasswordLoading": "Resetowanie..."
 }

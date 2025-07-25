@@ -15,8 +15,12 @@ const congregationSchema = new mongoose.Schema({
         set: (email) => encrypt(email),
         get: (encryptedEmail) => decrypt(encryptedEmail),
     },
+    territoryServantEmailHash: String,
+    ministryOverseerEmailHash: String,
     verificationNumber: Number,
     verificationExpires: Date,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     verificated: {
         type: Boolean,
         default: false

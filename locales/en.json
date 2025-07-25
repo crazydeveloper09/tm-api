@@ -60,5 +60,22 @@
     "emailVerificationTitle": "Email verification in Congregation Planner",
 	  "emailVerificationMessage": "You're on the final stretch to being able to plan various things in Congregation Planner. All that's left is for you or the other admin to confirm the email with the verification code below:",
     "resendEmailVerificationTitle": "Verification email code resend",
-	"resendEmailVerificationMessage": "I just received a request to resend the email verification code for Congregation Planner. If this wasn't you, please ignore this message."
+	"resendEmailVerificationMessage": "I just received a request to resend the email verification code for Congregation Planner. If this wasn't you, please ignore this message.",
+	"resetLinkLabel": "Reset password",
+	"resetEmailTitle": "Reset password in Congregation Planner",
+	"resetEmailSuccess": "Email has been sent to admins with next instructions",
+	"resetEmailText": "You got this email, because you, second admin (or someone else) requested password reset in Congregation Planner app. Please click button below to continue process. If you haven't requested anything, please ignore this email and your password won't be changed",
+	"resetPasswordTokenError": "Token expired or is not good",
+	"passwordsNotTheSame": "Passwords are not the same",
+	"forgotPasswordHeader": "Make password reset request",
+	"forgotPasswordButtonText": "Make request",
+	"forgotPasswordLoading": "I am sending your request...",
+	"resetPasswordSuccessHeader": "Password succesfully changed",
+	"resetPasswordSuccessText": "Password succesfully changed. You will be redirected to app in a moment",
+	"pl": "pl",
+	"resetPasswordHeader": "Reset password",
+	"passwordLabel": "Password",
+	"repeatPasswordLabel": "Confirm password",
+	"resetPasswordButtonText": "Reset password",
+	"resetPasswordLoading": "Resetting..."
 }
