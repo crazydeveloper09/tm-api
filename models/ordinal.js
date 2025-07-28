@@ -17,6 +17,10 @@ const ordinalSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
     },
+    zoom: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Preacher"
+    },
     meeting: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Meeting"

@@ -101,6 +101,13 @@ export const meetingPopulate = [
             model: 'Preacher'
         } 
     },
+    { 
+        path: 'ordinal',
+        populate: {
+            path: 'zoom',
+            model: 'Preacher'
+        } 
+    },
 ]
 
 export const getListOfMeetings = (req, res, next) => {

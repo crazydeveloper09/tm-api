@@ -40,11 +40,15 @@ export const createOrdinal = (req, res, next) => {
                 createdOrdinal.parking = req.body.parking;
                 sendNotificationToPreacher(req.body.parking, i18n.__("parkingLabel"), meeting.date)
             }
+            if(req.body.zoom !== ""){
+                createdOrdinal.zoom = req.body.zoom;
+                sendNotificationToPreacher(req.body.zoom, i18n.__("zoomLabel"), meeting.date)
+            }
             
             createdOrdinal.save();
-       meeting.ordinal = createdOrdinal;
-                    meeting.save();
-                    res.json(createdOrdinal);
+            meeting.ordinal = createdOrdinal;
+            meeting.save();
+            res.json(createdOrdinal);
             
         })
         .catch((err) => console.log(err))
@@ -77,6 +81,10 @@ export const editOrdinal = (req, res, next) => {
             if(req.body.attendant.parking !== "" && ordinal.parking?.toString() !== req.body.attendant.parking){
                 ordinal.parking = req.body.attendant.parking;
                 sendNotificationToPreacher(req.body.attendant.parking, i18n.__("parkingLabel"), req.body.meetingDate)
+            }
+            if(req.body.attendant.zoom !== "" && ordinal.zoom?.toString() !== req.body.attendant.zoom){
+                ordinal.zoom = req.body.attendant.zoom;
+                sendNotificationToPreacher(req.body.attendant.zoom, i18n.__("zoomLabel"), req.body.meetingDdate)
             }
 
             
