@@ -69,12 +69,23 @@ function getCorrectIssueMonth(dateString, meetingKind) {
 }
 
 async function getJWPubUrl(issueMonth, language, meetingKind) {
-    const symbol = meetingKind === "weekend" ? "w" : 'mwb';
+    const symbol = meetingKind === "weekend" ? "w" : "mwb";
     const apiUrl = `https://b.jw-cdn.org/apis/pub-media/GETPUBMEDIALINKS?pub=${symbol}&issue=${issueMonth}&output=json&langwritten=${language}`;
-    const response = await axios.get(apiUrl);
-    const epubLink = response.data.files?.[language]?.JWPUB?.[0]?.file?.url;
 
-    return epubLink;
+    try {
+        const response = await axios.get(apiUrl);
+        const epubLink = response.data.files?.[language]?.JWPUB?.[0]?.file?.url;
+
+        if (!epubLink) {
+            console.warn(`⚠️ Brak linku JWPUB w odpowiedzi dla ${issueMonth} (${meetingKind}, ${language})`);
+            return null;
+        }
+
+        return epubLink;
+    } catch (error) {
+        console.error(`❌ Błąd pobierania JWPub dla ${issueMonth} (${meetingKind}, ${language}):`, error.message);
+        return null;
+    }
 }
 
 function parseWeekDate(text, year) {
