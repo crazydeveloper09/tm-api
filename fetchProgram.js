@@ -127,6 +127,26 @@ function parseStudyDate(studyString) {
 
 }
 
+function addMonthsToIssue(issue, delta) {
+    const year = parseInt(issue.substring(0, 4), 10);
+    const month = parseInt(issue.substring(4, 6), 10);
+
+    let newMonth = month + delta;
+    let newYear = year;
+
+    while (newMonth > 12) {
+        newMonth -= 12;
+        newYear += 1;
+    }
+
+    while (newMonth < 1) {
+        newMonth += 12;
+        newYear -= 1;
+    }
+
+    return `${newYear}${String(newMonth).padStart(2, '0')}`;
+}
+
 export async function getWeekProgram(dateString, languageQuery, meetingKind) {
     const language = getJWLanguageCode(languageQuery);
     const issueMonth = getCorrectIssueMonth(dateString, meetingKind);
@@ -139,14 +159,15 @@ export async function getWeekProgram(dateString, languageQuery, meetingKind) {
         weeks.push(...epubWeeks)
     }
 
-    const previousIssueMonth = meetingKind === "weekend" ? (issueMonthNumber - 1).toString() : (issueMonthNumber - 2).toString();
+    const previousIssueMonth = meetingKind === "weekend" ? addMonthsToIssue(issueMonth, -1) : addMonthsToIssue(issueMonth, -2);
     const epubPreviousUrl = await getJWPubUrl(previousIssueMonth, language, meetingKind);
     if(epubPreviousUrl){
         const epubPreviousWeeks = await loadPub({ url: epubPreviousUrl });
         weeks.push(...epubPreviousWeeks)
     }
 
-    const nextIssueMonth = meetingKind === "weekend" ? (issueMonthNumber + 1).toString() : (issueMonthNumber + 2).toString();
+    const nextIssueMonth = meetingKind === "weekend" ? addMonthsToIssue(issueMonth, 1) : addMonthsToIssue(issueMonth, 2);
+
     const epubNextUrl = await getJWPubUrl(nextIssueMonth, language, meetingKind);
     if(epubNextUrl){
         const epubNextWeeks = await loadPub({ url: epubNextUrl });
