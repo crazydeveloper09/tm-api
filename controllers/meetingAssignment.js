@@ -84,7 +84,7 @@ export const editMeetingAssignment = (req, res, next) => {
             }
             if(req.body.assignment.participant !== "" && meetingAssignment.participant?.toString() !== req.body.assignment.participant){
                 meetingAssignment.participant = req.body.assignment.participant;
-                sendNotificationToPreacher(req.body.participant, req.body.assignment.topic || req.body.assignment.defaultTopic, meetingAssignment.meeting.date)
+                sendNotificationToPreacher(req.body.assignment.participant, req.body.assignment.topic || req.body.assignment.defaultTopic, meetingAssignment.meeting.date)
             }
             if(req.body.assignment.reader !== "" && meetingAssignment.reader?.toString() !== req.body.assignment.reader){
                 meetingAssignment.reader = req.body.assignment.reader;

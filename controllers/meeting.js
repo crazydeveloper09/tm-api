@@ -137,27 +137,27 @@ export const createMeeting = async (req, res, next) => {
         date: req.body.date,
         month,
         type: req.body.type,
-        midSong: meetingKind === "weekend" ? weekProgram.w_study_opening_song : weekProgram.mwb_song_middle,
-        endSong: meetingKind === "weekend" ? weekProgram.w_study_concluding_song : weekProgram.mwb_song_conclude
+        midSong: meetingKind === "weekend" ? weekProgram?.w_study_opening_song : weekProgram?.mwb_song_middle,
+        endSong: meetingKind === "weekend" ? weekProgram?.w_study_concluding_song : weekProgram?.mwb_song_conclude
     }
 
     const defaultAssignmentsMap = {
         weekend: [
             { type: "bibleTalk" },
-            { type: "watchtowerStudy", topic: weekProgram.w_study_title },
+            { type: "watchtowerStudy", topic: weekProgram?.w_study_title },
         ],
         week: [
-            { type: "treasuresFromGodsWord", topic: weekProgram.mwb_tgw_talk },
+            { type: "treasuresFromGodsWord", topic: weekProgram?.mwb_tgw_talk },
             { type: "treasuresFromGodsWord", defaultTopic: i18n.__("spiritualGems") },
             { type: "treasuresFromGodsWord", defaultTopic: i18n.__("bibleReading") },
 
-            { type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part1_type || weekProgram.mwb_ayf_part1 },
-            { type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part2_type || weekProgram.mwb_ayf_part3 },
-            { type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part3_type || weekProgram.mwb_ayf_part2 },
-            weekProgram.mwb_ayf_count === 4 ? {type: "applyYourselfToMinistry", topic: weekProgram.mwb_ayf_part4_type || weekProgram.mwb_ayf_part4}: null,
+            { type: "applyYourselfToMinistry", topic: weekProgram?.mwb_ayf_part1_type || weekProgram?.mwb_ayf_part1 },
+            { type: "applyYourselfToMinistry", topic: weekProgram?.mwb_ayf_part2_type || weekProgram?.mwb_ayf_part3 },
+            { type: "applyYourselfToMinistry", topic: weekProgram?.mwb_ayf_part3_type || weekProgram?.mwb_ayf_part2 },
+            weekProgram.mwb_ayf_count === 4 ? {type: "applyYourselfToMinistry", topic: weekProgram?.mwb_ayf_part4_type || weekProgram?.mwb_ayf_part4}: null,
 
-            { type: "livingAsChristians", topic: weekProgram.mwb_lc_part1 },
-            weekProgram.lc_count === 2 ? { type: "livingAsChristians", topic: weekProgram.mwb_lc_part2 }: null,
+            { type: "livingAsChristians", topic: weekProgram?.mwb_lc_part1 },
+            weekProgram.lc_count === 2 ? { type: "livingAsChristians", topic: weekProgram?.mwb_lc_part2 }: null,
             { type: "livingAsChristians", defaultTopic: i18n.__("congregationStudy") },
         ]
     };
