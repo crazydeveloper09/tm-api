@@ -44,9 +44,8 @@ export const editCongregationEmailHash = (req, res, next) => {
 
 export const sendPasswordResetEmail = (req, res, next) => {
   i18n.setLocale(req.language);
-  const email = hashEmail(req.body.email);
   Congregation
-    .findOne({ $or: [ {ministryOverseerEmailHash: email}, {territoryServantEmailHash: email} ]})
+    .findOne({ username: req.body.username })
     .exec()
     .then(async (congregation) => {
       let token = crypto.randomBytes(20).toString('hex');
@@ -197,7 +196,7 @@ export const authenticateCongregation = (req, res, next) => {
                             createdActivity.appName = req.query.app;
                             createdActivity.save();
                         }
-                        if(user.username === "Testy aplikacji mobilnej") {
+                        if(user.username === "Testy aplikacji mobilnej" || user.username === "London Test") {
                             return  res.send({ message: `${i18n.__("successfulLogInWithCode")} ${verificationCode}`, userID: user._id})
                         }
                         res.send({ message: i18n.__("successfulLogIn"), userID: user._id})
