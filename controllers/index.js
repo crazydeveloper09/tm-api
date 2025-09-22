@@ -196,7 +196,7 @@ export const authenticateCongregation = (req, res, next) => {
                             createdActivity.appName = req.query.app;
                             createdActivity.save();
                         }
-                        if(user.username === "Mobile application testing" || user.username === "London Test") {
+                        if(user.username === 'Mobile application testing' || user.username === "London Test") {
                             return  res.send({ message: `${i18n.__("successfulLogInWithCode")} ${verificationCode}`, userID: user._id})
                         }
                         res.send({ message: i18n.__("successfulLogIn"), userID: user._id})
