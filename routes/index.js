@@ -11,6 +11,9 @@ router.get("/forgot", renderForgotForm);
 router.get("/reset/success", renderResetSuccessPage);
 router.get("/reset/:token", renderResetForm);
 router.get("/update-congs", editCongregationEmailHash)
+router.get("/tm/policy", (req, res, next) => {
+    res.render("tm_policy", { header: "Polityka prywatności | Territory Manager"})
+})
 
 router.post("/support", sendSupportEmail)
 router.post("/login", authenticateCongregation);
