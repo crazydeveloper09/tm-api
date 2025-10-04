@@ -82,18 +82,19 @@ export const searchAllTerritories = (req, res, next) => {
         populate: 'preacher',
         sort: {number: 1}
     }
+    const congregationID = req.user.username ? req.user._id : req.user.congregation;
     if(typeof req.query.city !== 'undefined'){
         const regex = new RegExp(escapeRegex(req.query.city), 'gi');
         Territory
             .paginate({
                 $and: [
                     {city: regex}, 
-                    {congregation: req.user._id}
+                    {congregation: congregationID}
                 ]
             }, paginationOptions)
             .then((result) => {
                 Preacher
-                    .find({congregation: req.user._id})
+                    .find({congregation: congregationID})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
@@ -108,12 +109,12 @@ export const searchAllTerritories = (req, res, next) => {
             .paginate({
                 $and: [
                     {street: regex}, 
-                    {congregation: req.user._id}
+                    {congregation: congregationID}
                 ]
             }, paginationOptions)
             .then((result) => {
                 Preacher
-                    .find({congregation: req.user._id})
+                    .find({congregation: congregationID})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
@@ -129,12 +130,12 @@ export const searchAllTerritories = (req, res, next) => {
             .paginate({
                 $and: [
                     {number: req.query.number}, 
-                    {congregation: req.user._id}
+                    {congregation: congregationID}
                 ]
             }, paginationOptions)
             .then((result) => {
                 Preacher
-                    .find({congregation: req.user._id})
+                    .find({congregation: congregationID})
                     .sort({name: 1})
                     .exec()
                     .then((preachers) => {
@@ -147,7 +148,7 @@ export const searchAllTerritories = (req, res, next) => {
         Preacher
             .findOne({ 
                 $and: [
-                    { congregation: req.user._id }, 
+                    { congregation: congregationID }, 
                     {_id: req.query.preacher}
                 ] 
             })
@@ -157,12 +158,12 @@ export const searchAllTerritories = (req, res, next) => {
                     .paginate({
                         $and: [
                             {preacher: preacher._id}, 
-                            {congregation: req.user._id}
+                            {congregation: congregationID}
                         ]
                     }, paginationOptions)
                     .then((result) => {
                         Preacher
-                            .find({congregation: req.user._id})
+                            .find({congregation: congregationID})
                             .sort({name: 1})
                             .exec()
                             .then((preachers) => {
