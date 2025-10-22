@@ -130,7 +130,7 @@ export const sendSupportEmail = (req, res, next) => {
     const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Krótki opis: <strong>${req.body.shortDescription}</strong> <br> Dłuższy opis: <strong>${req.body.detailedDescription}</strong> <br> Email kontaktowy: <strong>${req.body.email}</strong>`
     const data = {
         from: `Powiadomienie o nowej prośbie <admin@websiteswithpassion.pl>`,
-        to: "maciejkuta6@gmail.com",
+        to: "congregationplanner33@gmail.com",
         subject: "Nowa prośba o wsparcie",
         template: "powiadomienie",
         "h:X-Mailgun-Variables": JSON.stringify({
@@ -227,27 +227,27 @@ export const registerDevice = async (req, res, next) => {
 export const askAccess = async (req, res, next) => {
   const emailTitle = `Właśnie pojawiła się nowa prośba o dostęp w Congregation Planner. Oto szczegóły: `;
   const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Nazwa zboru: <strong>${req.body.congName}</strong> <br> Email kontaktowy: <strong>${req.body.contactEmail}</strong>`
-  await sendNotificationEmail("maciejkuta6@gmail.com", emailTitle, details);
+  await sendNotificationEmail("maciejkuta6congregationplanner33@gmail.com", emailTitle, details);
   res.json("done")
 }
 
 export const shareIdea = async (req, res, next) => {
   const emailTitle = `Właśnie ktoś podzielił się sugestią ulepszenia czegoś w Congregation Planner. Oto szczegóły: `;
   const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Krótki opis: <strong>${req.body.shortDescription}</strong> <br> Dłuższy opis: <strong>${req.body.detailedDescription}</strong> <br> Email kontaktowy: <strong>${req.body.contactEmail}</strong>`
-  await sendNotificationEmail("maciejkuta6@gmail.com", emailTitle, details);
+  await sendNotificationEmail("congregationplanner33@gmail.com", emailTitle, details);
   res.json("done")
 }
 
 export const raiseIssue = async (req, res, next) => {
   const emailTitle = `Właśnie ktoś zgłosił błąd w Congregation Planner. Oto szczegóły: `;
   const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Krótki opis: <strong>${req.body.shortDescription}</strong> <br> Dłuższy opis: <strong>${req.body.detailedDescription}</strong> <br> Email kontaktowy: <strong>${req.body.contactEmail}</strong>`
-  await sendNotificationEmail("maciejkuta6@gmail.com", emailTitle, details);
+  await sendNotificationEmail("congregationplanner33@gmail.com", emailTitle, details);
   res.json("done")
 }
 
 export const helpInTranslation = async (req, res, next) => {
   const emailTitle = `Właśnie ktoś zgłosił chęć przetłumaczenia Congregation Planner na inny język. Oto szczegóły: `;
   const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Język podstawowy: <strong>${req.body.primaryLanguage}</strong> <br> Język tłumaczenia: <strong>${req.body.toLanguage}</strong> <br> Email kontaktowy: <strong>${req.body.contactEmail}</strong>`
-  await sendNotificationEmail("maciejkuta6@gmail.com", emailTitle, details);
+  await sendNotificationEmail("congregationplanner33@gmail.com", emailTitle, details);
   res.json("done")
 }

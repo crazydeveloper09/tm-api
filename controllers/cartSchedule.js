@@ -13,7 +13,7 @@ app.use(methodOverride("_method"))
 export const getCurrentCartDay = (req, res, next) => {
     const congregationID = req.user.username ? req.user._id : req.user.congregation;
     CartDay
-        .findOne({ $and: [{date: req.query.date}, {congregation: congregationID}] })
+        .find({ $and: [{date: req.query.date}, {congregation: congregationID}] })
         .populate(["hours", { 
             path: 'hours',
             populate: {
@@ -28,8 +28,8 @@ export const getCurrentCartDay = (req, res, next) => {
             } 
          }])
         .exec()
-        .then((cartDay) => {
-            res.json(cartDay)
+        .then((cartDays) => {
+            if (cartDays.length === 1) res.json(cartDays[0]); else res.json(cartDays);
         })
         .catch((err) => console.log(err))
 }
