@@ -9,13 +9,13 @@ const meetingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
     },
-    beginSong: Number,
+    beginSong: mongoose.Schema.Types.Mixed,
     beginPrayer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"
     },
-    midSong: Number,
-    endSong: Number,
+    midSong: mongoose.Schema.Types.Mixed,
+    endSong: mongoose.Schema.Types.Mixed,
     endPrayer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Preacher"

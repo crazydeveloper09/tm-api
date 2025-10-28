@@ -227,7 +227,7 @@ export const registerDevice = async (req, res, next) => {
 export const askAccess = async (req, res, next) => {
   const emailTitle = `Właśnie pojawiła się nowa prośba o dostęp w Congregation Planner. Oto szczegóły: `;
   const details = `Imię i nazwisko: <strong>${req.body.name}</strong> <br> Nazwa zboru: <strong>${req.body.congName}</strong> <br> Email kontaktowy: <strong>${req.body.contactEmail}</strong>`
-  await sendNotificationEmail("maciejkuta6congregationplanner33@gmail.com", emailTitle, details);
+  await sendNotificationEmail("congregationplanner33@gmail.com", emailTitle, details);
   res.json("done")
 }
 
