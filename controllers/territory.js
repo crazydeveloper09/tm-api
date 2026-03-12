@@ -57,6 +57,7 @@ export const getListOfAllTerritories = (req, res, next) => {
 
 export const getAllTerritoriesWithoutPagination = (req, res, next) => {
   Territory.find({ congregation: req.user._id })
+    .sort({ number: 1 })
     .exec()
     .then((territories) => {
       res.json(territories);
