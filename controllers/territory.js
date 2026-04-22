@@ -14,6 +14,7 @@ import {
   dateToISOString,
   escapeRegex,
 } from "../helpers.js";
+import path from "path";
 
 dotenv.config();
 
@@ -58,6 +59,10 @@ export const getListOfAllTerritories = (req, res, next) => {
 export const getAllTerritoriesWithoutPagination = (req, res, next) => {
   Territory.find({ congregation: req.user._id })
     .sort({ number: 1 })
+    .populate([
+      "history",
+      { path: "history", populate: { path: "preacher", model: "Preacher" } },
+    ])
     .exec()
     .then((territories) => {
       res.json(territories);
