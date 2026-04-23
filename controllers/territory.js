@@ -41,9 +41,14 @@ export const getListOfAllTerritories = (req, res, next) => {
     limit: req.query.limit || 20,
     page: req.query.page || 1,
     populate: "preacher",
-    sort: { number: 1 },
+    sort: req.query.status === "Wolne" ? { lastWorked: 1 } : { number: 1 },
   };
-  Territory.paginate({ congregation: req.user._id }, paginationOptions)
+
+  const condition =
+    req.query.status === "Wolne"
+      ? { $and: [{ congregation: req.user._id }, { type: "free" }] }
+      : { congregation: req.user._id };
+  Territory.paginate(condition, paginationOptions)
     .then((result) => {
       Preacher.find({ congregation: req.user._id })
         .sort({ name: 1 })
@@ -62,6 +67,7 @@ export const getAllTerritoriesWithoutPagination = (req, res, next) => {
     .populate([
       "history",
       { path: "history", populate: { path: "preacher", model: "Preacher" } },
+      "preacher",
     ])
     .exec()
     .then((territories) => {
